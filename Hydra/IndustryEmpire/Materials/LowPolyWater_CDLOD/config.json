@@ -1,0 +1,35 @@
+﻿[
+	{
+		"Name": "Unshaded",
+		"TechniqueName": "Default",
+		"UniformBlocks": [
+			{
+				"BlockName": "Texture/Color",
+				"UniformSubBlocks": [
+					{
+						"SubBlockName": "Texture",
+						"DefineConnection": "",
+						"Uniforms": [
+							{"Type": "Texture2D", "Name": "Texture", "ShaderName": "Texture"}
+						]
+					}
+				]
+			},
+			{
+				"BlockName": "HeightMap",
+				"UniformSubBlocks": [
+					{
+						"SubBlockName": "Settings",
+						"DefineConnection": "",
+						"Uniforms": [
+							{"Type": "Texture2D", "Name": "Texture", "ShaderName": "HeightMap"},
+							{"Type": "Float", "Name": "Scale", "ShaderName": "ScaleY"},
+							{"Type": "Bool", "Name": "Smooth", "ShaderName": "UseEvaluationBezier"},
+							{"Type": "Float", "Name": "Normal map strength", "ShaderName": "NormalMapStrength"}
+						]
+					}
+				]
+			}
+		]
+	}
+]

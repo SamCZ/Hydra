@@ -1,0 +1,20 @@
+﻿[
+	{
+		"Name": "Sky",
+		"TechniqueName": "Default",
+		"UniformBlocks": [
+			{
+				"BlockName": "Noise",
+				"UniformSubBlocks": [
+					{
+						"SubBlockName": "Texture mode",
+						"DefineConnection": "USE_TEXTURE",
+						"Uniforms": [
+							{"Type": "Texture2D", "Name": "Texture", "ShaderName": "iChannel0", "Value": "Assets/Materials/Clouds/Textures/white.jpg"}
+						]
+					}
+				]
+			}
+		]
+	}
+]

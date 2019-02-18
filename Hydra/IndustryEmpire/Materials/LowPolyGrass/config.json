@@ -1,0 +1,29 @@
+﻿[
+	{
+		"Name": "Lighting",
+		"TechniqueName": "Default",
+		"UniformBlocks": [
+			{
+				"BlockName": "Texture/Color",
+				"UniformSubBlocks": [
+					{
+						"SubBlockName": "Texture mode",
+						"DefineConnection": "USE_TEXTURE",
+						"Uniforms": [
+							{"Type": "Texture2D", "Name": "Texture", "ShaderName": "Texture"},
+							{"Type": "Vector2", "Name": "Scale", "ShaderName": "Scale"},
+							{"Type": "Vector4", "Name": "Tint", "ShaderName": "Tint"}
+						]
+					},
+					{
+						"SubBlockName": "Color mode",
+						"DefineConnection": "USE_COLOR",
+						"Uniforms": [
+							{"Type": "Vector4", "Name": "Color", "ShaderName": "Color"}
+						]
+					}
+				]
+			}
+		]
+	}
+]

@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{0600F8C5-A252-4546-8982-0EF976413165}</ProjectGuid>
+    <RootNamespace>Hydra</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\Sam\Projekty\C++\Hydra\Hydra;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/Zc:strictStrings %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>false</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\Sam\Projekty\C++\Hydra\Hydra;D:\Sam\Projekty\C++\Hydra\Hydra\nvapi-public;D:\Sam\Projekty\C++\Hydra\Hydra\assimp-c4d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USE_D3D11=1;NVRHI_WITH_WRL;NOMINMAX;WIN32;_DEBUG;DEBUG;PROFILE;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\Sam\Projekty\C++\Hydra\Hydra\nvapi-public\amd64;D:\Sam\Projekty\C++\Hydra\Hydra\assimp-c4d\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>false</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\Sam\Projekty\C++\Hydra\Hydra;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Hydra\Core\Log.h" />
+    <ClInclude Include="Hydra\Core\Resource.h" />
+    <ClInclude Include="Hydra\Engine.h" />
+    <ClInclude Include="Hydra\Import\MeshImporter.h" />
+    <ClInclude Include="Hydra\Import\ShaderImporter.h" />
+    <ClInclude Include="Hydra\Import\TextureImporter.h" />
+    <ClInclude Include="Hydra\Render\Mesh.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\BindingHelpers.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\DDS\DDS.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\DDS\DDSTextureLoader.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\DDS\DirectXHelpers.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\DDS\LoaderHelpers.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\DDS\PlatformHelpers.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\DeviceManager11.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\GFSDK_NVRHI.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\GFSDK_NVRHI_D3D11.h" />
+    <ClInclude Include="Hydra\Render\Shader.h" />
+    <ClInclude Include="Hydra\Scene\Component.h" />
+    <ClInclude Include="Hydra\Scene\Components\Camera.h" />
+    <ClInclude Include="Hydra\Scene\Components\Renderer.h" />
+    <ClInclude Include="Hydra\Scene\Spatial.h" />
+    <ClInclude Include="Hydra\Scene\Transformable.h" />
+    <ClInclude Include="Hydra\Core\ColorRGBA.h" />
+    <ClInclude Include="Hydra\Core\Common.h" />
+    <ClInclude Include="Hydra\Core\Container.h" />
+    <ClInclude Include="Hydra\Core\File.h" />
+    <ClInclude Include="Hydra\Core\SmartPointer.h" />
+    <ClInclude Include="Hydra\Core\String.h" />
+    <ClInclude Include="Hydra\Core\Vector.h" />
+    <ClInclude Include="ImGui\imconfig.h" />
+    <ClInclude Include="ImGui\imgui.h" />
+    <ClInclude Include="ImGui\ImGuizmo.h" />
+    <ClInclude Include="ImGui\imgui_helper.h" />
+    <ClInclude Include="ImGui\imgui_impl_dx11.h" />
+    <ClInclude Include="ImGui\imgui_internal.h" />
+    <ClInclude Include="ImGui\imgui_style.h" />
+    <ClInclude Include="ImGui\stb_rect_pack.h" />
+    <ClInclude Include="ImGui\stb_textedit.h" />
+    <ClInclude Include="ImGui\stb_truetype.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Hydra.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Hydra\Core\Resource.cpp" />
+    <ClCompile Include="Hydra\Engine.cpp" />
+    <ClCompile Include="Hydra\Import\MeshImporter.cpp" />
+    <ClCompile Include="Hydra\Import\ShaderImporter.cpp" />
+    <ClCompile Include="Hydra\Import\TextureImporter.cpp" />
+    <ClCompile Include="Hydra\Render\Mesh.cpp" />
+    <ClCompile Include="Hydra\Render\Pipeline\DDS\DDSTextureLoader.cpp" />
+    <ClCompile Include="Hydra\Render\Pipeline\DeviceManager11.cpp" />
+    <ClCompile Include="Hydra\Render\Pipeline\GFSDK_NVRHI_D3D11.cpp" />
+    <ClCompile Include="Hydra\Render\Shader.cpp" />
+    <ClCompile Include="Hydra\Scene\Components\Camera.cpp" />
+    <ClCompile Include="Hydra\Scene\Component.cpp" />
+    <ClCompile Include="Hydra\Scene\Components\Renderer.cpp" />
+    <ClCompile Include="Hydra\Scene\Spatial.cpp" />
+    <ClCompile Include="Hydra\Scene\Transformable.cpp" />
+    <ClCompile Include="Hydra\Core\ColorRGBA.cpp" />
+    <ClCompile Include="Hydra\Core\File.cpp" />
+    <ClCompile Include="ImGui\imgui.cpp" />
+    <ClCompile Include="ImGui\ImGuizmo.cpp" />
+    <ClCompile Include="ImGui\imgui_demo.cpp" />
+    <ClCompile Include="ImGui\imgui_draw.cpp" />
+    <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
