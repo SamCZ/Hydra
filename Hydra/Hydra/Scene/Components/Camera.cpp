@@ -7,7 +7,7 @@
 
 namespace Hydra
 {
-	Camera::Camera() : _FovY(75.0f), _Znear(0.01f), _Zfar(1000.0f)
+	Camera::Camera() : _FovY(75.0f), _Znear(0.1f), _Zfar(1000.0f)
 	{
 		
 	}

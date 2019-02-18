@@ -8,6 +8,7 @@ namespace Hydra
 
 	Renderer::Renderer() : _RenderInterface(nullptr), _IndexHandle(nullptr), _VertexBuffer(nullptr), _InstBuffer(nullptr), _Mesh(nullptr), _IsInstanced(false), _LastInstanceCount(0), _NeedsUpdate(true), _NeedsUpdateInstances(true)
 	{
+		
 	}
 
 	Renderer::~Renderer()
@@ -99,21 +100,21 @@ namespace Hydra
 			{
 				entry.texCoord = _Mesh->TexCoords[i];
 			}
-			/*
+			
 			if (useNormals)
 			{
 				entry.normal = _Mesh->Normals[i];
 			}
-
+			
 			if (useTangents)
 			{
 				entry.tangent = _Mesh->Tangents[i];
 			}
-
+			
 			if (useBiNormals)
 			{
 				entry.binormal = _Mesh->BiNormals[i];
-			}*/
+			}
 
 			VertexData.push_back(entry);
 		}
@@ -123,13 +124,13 @@ namespace Hydra
 		vertexBufferDesc.byteSize = uint32_t(VertexData.size() * sizeof(VertexBufferEntry));
 		_VertexBuffer = renderInterface->createBuffer(vertexBufferDesc, &VertexData[0]);
 
-		_DrawArguments.instanceCount = 0;
+		_DrawArguments.instanceCount = 1;
 		_DrawArguments.startIndexLocation = 0;
 		_DrawArguments.startInstanceLocation = 0;
 		_DrawArguments.startVertexLocation = 0;
 		_DrawArguments.vertexCount = _Mesh->Indices.size();
 
-		std::cout << "WriteMeshData (" << ToString(VertexData.size()) << ", " + ToString(_DrawArguments.vertexCount) + ")" << std::endl;
+		//std::cout << "WriteMeshData (" << ToString(VertexData.size()) << ", " + ToString(_DrawArguments.vertexCount) + ")" << std::endl;
 	}
 
 	void Renderer::UpdateInstancing(NVRHI::IRendererInterface* renderInterface, NVRHI::DrawCallState& state)
@@ -204,7 +205,7 @@ namespace Hydra
 
 		UpdateInstancing(renderInterface, state);
 	}
-	NVRHI::DrawArguments & Renderer::GetDrawArguments()
+	NVRHI::DrawArguments& Renderer::GetDrawArguments()
 	{
 		return _DrawArguments;
 	}

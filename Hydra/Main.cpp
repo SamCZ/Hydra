@@ -1,5 +1,6 @@
 #include <iostream>
 #include <algorithm>
+#include <random>
 
 #include "Hydra/Core/SmartPointer.h"
 
@@ -64,6 +65,10 @@ class RendererErrorCallback : public NVRHI::IErrorCallback
 };
 RendererErrorCallback g_ErrorCallback;
 
+static float AO_Radius = 0.085f;
+static float AO_Bias = 0.025f;
+static bool AO_Preview = false;
+
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 class GuiVisualController : public IVisualController
 {
@@ -89,7 +94,12 @@ public:
 		ImGui_ImplDX11_NewFrame();
 		//BeginIds();
 
-		ImGui::Text("yo");
+		ImGui::Text("AO Settings");
+
+		ImGui::DragFloat("Radius", &AO_Radius, 0.001f);
+		ImGui::DragFloat("Bias", &AO_Bias, 0.001f);
+
+		ImGui::Checkbox("Preview", &AO_Preview);
 
 		//ImGui::Image()
 
@@ -113,11 +123,25 @@ public:
 	}
 };
 
-__declspec(align(16)) struct BasicConstantBuffer
+struct alignas(16) BasicConstantBuffer
 {
-	Matrix4 ProjectionMatrix;
-	Matrix4 ViewMatrix;
-	//Matrix4 ModelMatrix;
+	alignas(16) Matrix4 ProjectionMatrix;
+	alignas(16) Matrix4 ViewMatrix;
+	alignas(16) Matrix4 ModelMatrix;
+	alignas(16) Matrix3 NormalMatrix;
+	alignas(16) Vector2 _Spacing0;
+	alignas(16) Vector3 TestColor;
+};
+
+struct alignas(16) SSAO_CB
+{
+	alignas(16) Matrix4 Projection;
+	alignas(16) Vector4 Samples[64];
+};
+
+struct alignas(16) SSAO_CB_RT
+{
+	alignas(16) Vector4 RadiusBias;
 };
 
 class MainRenderView : public IVisualController
@@ -127,21 +151,34 @@ private:
 
 	Shader* _mainSahder;
 	Shader* _blitShader;
+	Shader* _ssaoShader;
+
 	NVRHI::InputLayoutHandle _mainInputLayout;
 	NVRHI::SamplerHandle m_pDefaultSamplerState;
 	NVRHI::TextureHandle textur;
 
 	NVRHI::TextureHandle sceneTarget;
+	NVRHI::TextureHandle normalTarget;
 	NVRHI::TextureHandle depthTarget;
+	NVRHI::TextureHandle positionTarget;
 
 	Spatial* testModel;
 	Spatial* quadModel;
+	Renderer* _renderer;
 
 	NVRHI::ConstantBufferHandle _basicConstantBuffer;
+
+	NVRHI::ConstantBufferHandle _ssaoCB;
+	NVRHI::ConstantBufferHandle _ssaoCB_RB;
 
 	Camera* camera;
 
 public:
+	float lerp(float a, float b, float f)
+	{
+		return a + f * (b - a);
+	}
+
 	inline HRESULT DeviceCreated()
 	{
 		_renderInterface = MakeShared<NVRHI::RendererInterfaceD3D11>(&g_ErrorCallback, _deviceManager->GetImmediateContext());
@@ -154,19 +191,26 @@ public:
 		camera = quadModel->AddComponent<Camera>();
 		camera->Start();
 
-		quadModel->Position.z = 10;
+		quadModel->Position.y = 2;
+		quadModel->Position.z = 5;
 
 		camera->Update();
 
+		PrintMatrix(camera->GetProjectionMatrix());
 
-		Renderer* _renderer = quadModel->AddComponent<Renderer>();
+		std::cout << std::endl;
+
+		PrintMatrix(camera->GetViewMatrix());
+
+		_renderer = quadModel->AddComponent<Renderer>();
 		Mesh* mesh = new Mesh();
 		mesh->Vertices = {
-			{ -0.25, -0.5, 0 },
-			{ -0.25, 0.5, 0 },
-			{ 0.25, 0.5, 0 },
-			{ 0.25, -0.5, 0 }
+			{ -0.5, -0.5, 0 },
+			{ -0.5, 0.5, 0 },
+			{ 0.5, 0.5, 0 },
+			{ 0.5, -0.5, 0 }
 		};
+
 		mesh->TexCoords = {
 			{0, 0},
 			{0, 1},
@@ -180,12 +224,12 @@ public:
 
 		_mainSahder = ShaderImporter::Import("Assets/Shaders/basic.hlsl");
 		_blitShader = ShaderImporter::Import("Assets/Shaders/blit.hlsl");
+		_ssaoShader = ShaderImporter::Import("Assets/Shaders/ssao.hlsl");
 
 		textur = TextureImporter::Import("Assets/Textures/Grassblock_02.dds");
 
-		testModel = Meshimporter::Import("IndustryEmpire/Models/03.fbx", MeshImportOptions());
-		//testModel->Scale = Vector3(0.01f, 0.01f, 0.01f);
-		testModel->PrintHiearchy();
+		testModel = Meshimporter::Import("IndustryEmpire/Models/BrickFactory.fbx", MeshImportOptions());
+		testModel->Scale = Vector3(0.01f, 0.01f, 0.01f);
 
 		const NVRHI::VertexAttributeDesc SceneLayout[] = {
 			{ "POSITION", 0, NVRHI::Format::RGB32_FLOAT, 0, offsetof(VertexBufferEntry, position), false },
@@ -220,6 +264,38 @@ public:
 
 		_basicConstantBuffer = _renderInterface->createConstantBuffer(NVRHI::ConstantBufferDesc(sizeof(BasicConstantBuffer), "GlobalConstants"), nullptr);
 
+
+
+		SSAO_CB cb = {};
+		cb.Projection = camera->GetProjectionMatrix();
+
+		std::uniform_real_distribution<float> randomFloats(0.0, 1.0); // random floats between 0.0 - 1.0
+		std::default_random_engine generator;
+		for (unsigned int i = 0; i < 64; ++i)
+		{
+			glm::vec3 sample(randomFloats(generator) * 2.0 - 1.0, randomFloats(generator) * 2.0 - 1.0, randomFloats(generator));
+			sample = glm::normalize(sample);
+			sample *= randomFloats(generator);
+			float scale = float(i) / 64.0;
+
+			// scale samples s.t. they're more aligned to center of kernel
+			scale = lerp(0.1f, 1.0f, scale * scale);
+			sample *= scale;
+
+			cb.Samples[i] = Vector4(sample, 0.0);
+		}
+
+
+
+		_ssaoCB = _renderInterface->createConstantBuffer(NVRHI::ConstantBufferDesc(sizeof(SSAO_CB), nullptr), nullptr);
+		_renderInterface->writeConstantBuffer(_ssaoCB, &cb, sizeof(SSAO_CB));
+
+		SSAO_CB_RT cb_rt = {};
+		cb_rt.RadiusBias = Vector4(AO_Radius, AO_Bias, 0.0, 1.0);
+
+		_ssaoCB_RB = _renderInterface->createConstantBuffer(NVRHI::ConstantBufferDesc(sizeof(SSAO_CB_RT), nullptr), nullptr);
+		_renderInterface->writeConstantBuffer(_ssaoCB_RB, &cb_rt, sizeof(SSAO_CB_RT));
+
 		return S_OK;
 	}
 
@@ -227,6 +303,8 @@ public:
 	{
 		depthTarget = CreateViewportTarget("DPBR_Depth", NVRHI::Format::D24S8, width, height, NVRHI::Color(1.f, 0.f, 0.f, 0.f), sampleCount);
 		sceneTarget = CreateViewportTarget("DPBR_AlbedoMetallic", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(0.f), sampleCount);
+		normalTarget = CreateViewportTarget("DPBR_Normal", NVRHI::Format::RGBA16_FLOAT, width, height, NVRHI::Color(0.f), sampleCount);
+		positionTarget = CreateViewportTarget("DPBR_Pos", NVRHI::Format::RGBA16_FLOAT, width, height, NVRHI::Color(0.f), sampleCount);
 	}
 
 	NVRHI::TextureHandle CreateViewportTarget(std::string name, const NVRHI::Format::Enum& format, UINT width, UINT height, const NVRHI::Color& clearColor, UINT sampleCount)
@@ -267,10 +345,12 @@ public:
 			static BasicConstantBuffer basicConstants = {};
 			basicConstants.ProjectionMatrix = camera->GetProjectionMatrix();
 			basicConstants.ViewMatrix = camera->GetViewMatrix();
-			//basicConstants.ModelMatrix = spatial->GetModelMatrix();
+			basicConstants.ModelMatrix = spatial->GetModelMatrix();
+			basicConstants.NormalMatrix = glm::transpose(glm::inverse(Matrix3(camera->GetViewMatrix() * spatial->GetModelMatrix())));
+			basicConstants.TestColor = renderer->TestColor;
 			_renderInterface->writeConstantBuffer(_basicConstantBuffer, &basicConstants, sizeof(BasicConstantBuffer));
 			NVRHI::BindConstantBuffer(state.VS, 0, _basicConstantBuffer);
-
+			
 			
 			_renderInterface->drawIndexed(state, &renderer->GetDrawArguments(), 1);
 
@@ -291,7 +371,8 @@ public:
 		NVRHI::TextureHandle mainRenderTarget = _renderInterface->getHandleForTexture(pMainResource);
 		pMainResource->Release();
 
-		camera->Parent->Rotation.y += 0.5f;
+		testModel->Rotation.y += 0.1f;
+		//camera->Parent->Rotation.y += 0.1f;
 		camera->Update();
 
 		{
@@ -305,30 +386,66 @@ public:
 			state.renderState.viewportCount = 1;
 			state.renderState.viewports[0] = NVRHI::Viewport(float(1280), float(720));
 
-			state.renderState.targetCount = 1;
+			state.renderState.targetCount = 3;
 			state.renderState.targets[0] = sceneTarget;
+			state.renderState.targets[1] = normalTarget;
+			state.renderState.targets[2] = positionTarget;
 			state.renderState.depthTarget = depthTarget;
 
 			state.inputLayout = _mainInputLayout;
 			state.VS.shader = _mainSahder->GetShader(NVRHI::ShaderType::SHADER_VERTEX);
 			state.PS.shader = _mainSahder->GetShader(NVRHI::ShaderType::SHADER_PIXEL);
 
-			
-			
+
 			NVRHI::BindTexture(state.PS, 0, textur);
 			NVRHI::BindSampler(state.PS, 0, m_pDefaultSamplerState);
 
-			state.renderState.depthStencilState.depthEnable = false;
+			state.renderState.depthStencilState.depthEnable = true;
 			state.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_NONE;
 
 			RenderSpatial(testModel, state);
 
+			//RenderSpatial(quadModel, state);
+
 			_renderInterface->endRenderingPass();
 
-			Blit(sceneTarget, mainRenderTarget);
+			BlitSSAO(mainRenderTarget);
+			//Blit(positionTarget, mainRenderTarget);
 		}
 
 		_renderInterface->forgetAboutTexture(pMainResource);
+	}
+
+	void BlitSSAO(NVRHI::TextureHandle pDest)
+	{
+		NVRHI::DrawCallState state;
+
+		state.primType = NVRHI::PrimitiveType::TRIANGLE_STRIP;
+		state.VS.shader = _ssaoShader->GetShader(NVRHI::ShaderType::SHADER_VERTEX);
+		state.PS.shader = _ssaoShader->GetShader(NVRHI::ShaderType::SHADER_PIXEL);
+
+		state.renderState.targetCount = 1;
+		state.renderState.targets[0] = pDest;
+		state.renderState.viewportCount = 1;
+		state.renderState.viewports[0] = NVRHI::Viewport(float(1280), float(720));
+		state.renderState.depthStencilState.depthEnable = false;
+		state.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_NONE;
+
+		NVRHI::BindTexture(state.PS, 0, sceneTarget);
+		NVRHI::BindTexture(state.PS, 1, normalTarget);
+		NVRHI::BindTexture(state.PS, 2, positionTarget);
+
+		SSAO_CB_RT cb_rt = {};
+		cb_rt.RadiusBias = Vector4(AO_Radius, AO_Bias, AO_Preview ? 1.0 : 0.0, 0.0f);
+		_renderInterface->writeConstantBuffer(_ssaoCB_RB, &cb_rt, sizeof(SSAO_CB_RT));
+
+		NVRHI::BindConstantBuffer(state.PS, 0, _ssaoCB);
+		NVRHI::BindConstantBuffer(state.PS, 1, _ssaoCB_RB);
+
+
+		NVRHI::DrawArguments args;
+		args.vertexCount = 4;
+		_renderInterface->draw(state, &args, 1);
 	}
 
 	void Blit(NVRHI::TextureHandle pSource, NVRHI::TextureHandle pDest)

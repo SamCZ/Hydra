@@ -8,13 +8,15 @@ namespace Hydra
 	{
 	}
 
-	Spatial::Spatial()
+	Spatial::Spatial() : Spatial("Unknown")
 	{
 	}
 
-	Spatial::Spatial(const String & name) : Name(name)
+	Spatial::Spatial(const String & name) : Name(name), Parent(nullptr)
 	{
-
+		Position = Vector3(0, 0, 0);
+		Rotation = Vector3(0, 0, 0);
+		Scale = Vector3(1.0, 1.0, 1.0);
 	}
 
 	void Spatial::AddChild(Spatial* spatial)

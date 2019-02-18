@@ -1,4 +1,4 @@
-//#pragma pack_matrix( column_major )
+#pragma pack_matrix( column_major )
 
 struct VS_Input
 {
@@ -13,14 +13,20 @@ struct VS_Input
 struct PS_Input
 {
 	float4 position : SV_Position;
+	float4 positionWS : WSPOSITION;
 	float2 texCoord : TEXCOORD;
+	float3 normal   : NORMAL;
+	float3 color    : COLOR;
 };
 
 cbuffer GlobalConstants : register(b0)
 {
 	float4x4 g_ProjectionMatrix;
 	float4x4 g_ViewMatrix;
-	//float4x4 g_ModelMatrix;
+	float4x4 g_ModelMatrix;
+	float3x3 g_NormalMatrix;
+	float2 space0;
+	float3 g_TestColor;
 }
 
 static float4x4 Identity = {
@@ -46,17 +52,39 @@ PS_Input MainVS(VS_Input input, unsigned int InstanceID : SV_InstanceID, uint id
 		instanceMatrix = Identity;
 	}
 
-	float4x4 modelMatrix = Identity;
+	float4x4 modelMatrix = mul(instanceMatrix, g_ModelMatrix);
 
-	output.position = mul(mul(mul(g_ProjectionMatrix, g_ViewMatrix), modelMatrix), float4(input.position.xyz, 1.0f));
-	//output.position = mul(g_ProjectionMatrix, float4(input.position.xyz, 1.0f));
+	float4 viewPos = mul(mul(g_ViewMatrix, modelMatrix), float4(input.position.xyz, 1.0f));
+
+	output.position = mul(g_ProjectionMatrix, viewPos);
+	output.positionWS = viewPos;
 	output.texCoord = input.texCoord;
+
+	output.normal = input.normal;
+
+	output.color = g_TestColor;
 
 	return output;
 }
 
-float4 MainPS(PS_Input input) : SV_Target0
+struct PS_Output
 {
+	float4 color : SV_Target0;
+	float3 normal : SV_Target1;
+	float4 position : SV_Target2;
+};
+
+PS_Output MainPS(PS_Input input) : SV_Target
+{
+	PS_Output output;
+
+	float fl = (input.normal.x + input.normal.y + input.normal.z) / 3.0;
+	fl = saturate(fl);
+
 	//return Map_Albedo.Sample(DefaultSampler, input.texCoord);
-	return float4(1.0, 1.0, 1.0, 1.0);
+	output.color = float4(input.color, 1.0);
+	output.normal = input.normal;
+	output.position = input.positionWS;
+
+	return output;
 }

@@ -37,6 +37,8 @@ namespace Hydra
 		Renderer();
 		~Renderer();
 
+		glm::vec3 TestColor;
+
 		virtual void Start();
 		virtual void Update();
 

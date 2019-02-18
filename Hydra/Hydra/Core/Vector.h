@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include "glm/basic.hpp"
 
 namespace Hydra
@@ -16,4 +17,12 @@ namespace Hydra
 	typedef glm::mat3 Matrix3;
 
 	typedef glm::quat Quaternion;
+
+	static inline void PrintMatrix(const Matrix4& mat)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			std::cout << mat[i].x << ", " << mat[i].y << ", " << mat[i].z << ", " << mat[i].w << std::endl;
+		}
+	}
 }
