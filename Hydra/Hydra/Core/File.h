@@ -33,6 +33,8 @@ namespace Hydra
 
 		List<File> ListFiles(bool recursive = false);
 
+		List<String> ReadLines() const;
+
 		static String FixPath(String path, const char from = '\\', const char to = '/');
 	private:
 		String _rootPath;

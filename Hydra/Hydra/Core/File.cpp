@@ -1,6 +1,7 @@
 #include "Hydra/Core/File.h"
 
 #include <iostream>
+#include <fstream>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdio.h>
@@ -238,6 +239,25 @@ namespace Hydra
 #endif
 
 		return files;
+	}
+
+	List<String> File::ReadLines() const
+	{
+		List<String> lines;
+
+		std::ifstream stream(GetPath());
+		String line;
+
+		if (stream.is_open())
+		{
+			while (std::getline(stream, line))
+			{
+				lines.push_back(line);
+			}
+			stream.close();
+		}
+
+		return lines;
 	}
 
 

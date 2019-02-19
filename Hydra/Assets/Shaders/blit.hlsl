@@ -1,9 +1,10 @@
+#pragma hydra vert:MainVS pixel:MainPS
+
 struct FullScreenQuadOutput
 {
 	float4 position     : SV_Position;
 	float2 uv           : TEXCOORD;
 };
-
 
 FullScreenQuadOutput MainVS(uint id : SV_VertexID)
 {

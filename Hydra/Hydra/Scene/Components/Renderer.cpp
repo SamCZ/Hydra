@@ -128,7 +128,7 @@ namespace Hydra
 		_DrawArguments.startIndexLocation = 0;
 		_DrawArguments.startInstanceLocation = 0;
 		_DrawArguments.startVertexLocation = 0;
-		_DrawArguments.vertexCount = _Mesh->Indices.size();
+		_DrawArguments.vertexCount = static_cast<uint32_t>(_Mesh->Indices.size());
 
 		//std::cout << "WriteMeshData (" << ToString(VertexData.size()) << ", " + ToString(_DrawArguments.vertexCount) + ")" << std::endl;
 	}

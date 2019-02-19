@@ -49,54 +49,178 @@ namespace Hydra
 		return hr;
 	}
 
-	/*std::wstring s2ws(const std::string& s)
+	HRESULT CompileShaderFromString(_In_ const String& shaderSource, _In_ const String& name, _In_ LPCSTR entryPoint, _In_ LPCSTR profile, _Outptr_ ID3DBlob** blob)
 	{
-		int len;
-		int slength = (int)s.length() + 1;
-		len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0);
-		wchar_t* buf = new wchar_t[len];
-		MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
-		std::wstring r(buf);
-		delete[] buf;
-		return r;
-	}*/
+		if (!entryPoint || !profile || !blob)
+			return E_INVALIDARG;
+
+		*blob = nullptr;
+
+		UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
+#if defined( DEBUG ) || defined( _DEBUG ) || true
+		flags |= D3DCOMPILE_DEBUG;
+#endif
+
+		//const D3D_SHADER_MACRO defines[0];
+
+		ID3DBlob* shaderBlob = nullptr;
+		ID3DBlob* errorBlob = nullptr;
+		HRESULT hr = D3DCompile(shaderSource.c_str(), shaderSource.length(), name.c_str(), NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, entryPoint, profile, flags, 0, &shaderBlob, &errorBlob);
+		if (FAILED(hr))
+		{
+			if (errorBlob)
+			{
+				//OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+				std::cout << (char*)errorBlob->GetBufferPointer() << std::endl;
+				errorBlob->Release();
+			}
+
+			if (shaderBlob)
+				shaderBlob->Release();
+
+			return hr;
+		}
+
+		*blob = shaderBlob;
+
+		return hr;
+	}
+
+	String GetFeatureLevelForShaderType(const NVRHI::ShaderType::Enum& type)
+	{
+		switch (type)
+		{
+		case NVRHI::ShaderType::SHADER_VERTEX:
+			return "vs_5_0";
+			break;
+		case NVRHI::ShaderType::SHADER_HULL:
+			return "hs_5_0";
+			break;
+		case NVRHI::ShaderType::SHADER_DOMAIN:
+			return "ds_5_0";
+			break;
+		case NVRHI::ShaderType::SHADER_GEOMETRY:
+			return "gs_5_0";
+			break;
+		case NVRHI::ShaderType::SHADER_PIXEL:
+			return "ps_5_0";
+			break;
+		case NVRHI::ShaderType::SHADER_COMPUTE:
+			return "cs_5_0";
+			break;
+		default:
+			return String();
+		}
+	}
 
 	Shader* ShaderImporter::Import(const File& file)
 	{
-		wchar_t wchTitle[256];
-		MultiByteToWideChar(CP_ACP, 0, file.GetPath().c_str(), -1, wchTitle, 256);
+		String shaderSource;
+		Map<NVRHI::ShaderType::Enum, String> shaderTypes;
 
-		LPCWSTR path = wchTitle;
-
-		ID3DBlob *vsBlob = nullptr;
-		HRESULT hr = CompileShader(path, "MainVS", "vs_5_0", &vsBlob);
-		if (FAILED(hr))
+		List<String> shaderLines = file.ReadLines();
+		for (String& line : shaderLines)
 		{
-			printf("Failed compiling vertex shader %08X\n", hr);
-		}
+			if (StartsWith(line, "#pragma hydra"))
+			{
+				String pragmaData = line.substr(13);
+				if (pragmaData.length() > 0)
+				{
+					if (pragmaData[0] == ' ')
+					{
+						pragmaData = pragmaData.substr(1);
+					}
 
-		ID3DBlob *psBlob = nullptr;
-		hr = CompileShader(path, "MainPS", "ps_5_0", &psBlob);
-		if (FAILED(hr))
-		{
-			printf("Failed compiling pixel shader %08X\n", hr);
+					List<String> pragmaParams = SplitString(pragmaData, ' ');
+
+					for (String pragmaParam : pragmaParams)
+					{
+						if (StringContains(pragmaParam, ':'))
+						{
+							List<String> paramSplit = SplitString(pragmaParam, ':');
+							
+							if (paramSplit.size() == 2)
+							{
+								String paramName = paramSplit[0];
+								String paramValue = paramSplit[1];
+
+								if (paramName == "vert")
+								{
+									shaderTypes[NVRHI::ShaderType::SHADER_VERTEX] = paramValue;
+								}
+
+								if (paramName == "hull")
+								{
+									shaderTypes[NVRHI::ShaderType::SHADER_HULL] = paramValue;
+								}
+
+								if (paramName == "dom")
+								{
+									shaderTypes[NVRHI::ShaderType::SHADER_DOMAIN] = paramValue;
+								}
+
+								if (paramName == "geom")
+								{
+									shaderTypes[NVRHI::ShaderType::SHADER_GEOMETRY] = paramValue;
+								}
+
+								if (paramName == "pixel")
+								{
+									shaderTypes[NVRHI::ShaderType::SHADER_PIXEL] = paramValue;
+								}
+
+								if (paramName == "cmp")
+								{
+									shaderTypes[NVRHI::ShaderType::SHADER_COMPUTE] = paramValue;
+								}
+							}
+						}
+						else
+						{
+							// Do other paraments
+						}
+					}
+				}
+
+				//break;
+			}
+			else
+			{
+				shaderSource += line + "\r\n";
+			}
 		}
 
 		IRendererInterface renderer = Engine::GetRenderInterface();
 
-		if (vsBlob == nullptr || psBlob == nullptr)
+		if (shaderTypes.size() == 0)
 		{
 			return nullptr;
 		}
 
-		NVRHI::ShaderHandle vertexShader = renderer->createShader(NVRHI::ShaderDesc(NVRHI::ShaderType::SHADER_VERTEX), vsBlob->GetBufferPointer(), vsBlob->GetBufferSize());
-		NVRHI::ShaderHandle pixelShader = renderer->createShader(NVRHI::ShaderDesc(NVRHI::ShaderType::SHADER_PIXEL), psBlob->GetBufferPointer(), psBlob->GetBufferSize());
-
 		Shader* shader = new Shader();
 		shader->SetSource(file.GetPath());
+		
+		ITER(shaderTypes, it)
+		{
+			NVRHI::ShaderType::Enum type = it->first;
+			String entryPoint = it->second;
 
-		shader->SetShader(NVRHI::ShaderType::SHADER_VERTEX, vertexShader, vsBlob);
-		shader->SetShader(NVRHI::ShaderType::SHADER_PIXEL, pixelShader, psBlob);
+			ID3DBlob* shaderBlob = nullptr;
+			HRESULT hr = CompileShaderFromString(shaderSource, file.GetName(), entryPoint.c_str(), GetFeatureLevelForShaderType(type).c_str(), &shaderBlob);
+
+			if (FAILED(hr))
+			{
+				printf("Failed compiling vertex shader (%s) %08X\n", file.GetPath().c_str(), hr);
+				continue;
+			}
+
+			NVRHI::ShaderHandle shaderHandle = renderer->createShader(NVRHI::ShaderDesc(type), shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize());
+
+			if (shaderHandle != nullptr)
+			{
+				shader->SetShader(type, shaderHandle, shaderBlob);
+			}
+		}
 
 		return shader;
 	}

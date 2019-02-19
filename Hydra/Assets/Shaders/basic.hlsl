@@ -1,5 +1,7 @@
 #pragma pack_matrix( column_major )
 
+#pragma hydra vert:MainVS pixel:MainPS
+
 struct VS_Input
 {
 	float3 position : POSITION;
@@ -60,7 +62,7 @@ PS_Input MainVS(VS_Input input, unsigned int InstanceID : SV_InstanceID, uint id
 	output.positionWS = viewPos;
 	output.texCoord = input.texCoord;
 
-	output.normal = input.normal;
+	output.normal = mul(g_NormalMatrix, input.normal);
 
 	output.color = g_TestColor;
 

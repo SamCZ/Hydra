@@ -196,12 +196,6 @@ public:
 
 		camera->Update();
 
-		PrintMatrix(camera->GetProjectionMatrix());
-
-		std::cout << std::endl;
-
-		PrintMatrix(camera->GetViewMatrix());
-
 		_renderer = quadModel->AddComponent<Renderer>();
 		Mesh* mesh = new Mesh();
 		mesh->Vertices = {

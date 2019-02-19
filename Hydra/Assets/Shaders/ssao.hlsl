@@ -1,5 +1,7 @@
 #pragma pack_matrix( column_major )
 
+#pragma hydra vert:MainVS pixel:MainPS
+
 struct FullScreenQuadOutput
 {
 	float4 position     : SV_Position;
