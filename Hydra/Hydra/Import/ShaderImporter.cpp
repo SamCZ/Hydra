@@ -115,6 +115,8 @@ namespace Hydra
 
 	Shader* ShaderImporter::Import(const File& file)
 	{
+		Log("ShaderImporter::Import", file.GetPath(), "Loading...");
+
 		String shaderSource;
 		Map<NVRHI::ShaderType::Enum, String> shaderTypes;
 
@@ -181,8 +183,6 @@ namespace Hydra
 						}
 					}
 				}
-
-				//break;
 			}
 			else
 			{
@@ -194,6 +194,8 @@ namespace Hydra
 
 		if (shaderTypes.size() == 0)
 		{
+			Log("ShaderImporter::Import", file.GetPath(), "ERROR: Has 0 defined shaders !");
+
 			return nullptr;
 		}
 
@@ -204,6 +206,8 @@ namespace Hydra
 		{
 			NVRHI::ShaderType::Enum type = it->first;
 			String entryPoint = it->second;
+
+			Log("ShaderImporter::Import", file.GetPath(), "Found entry point: " + entryPoint);
 
 			ID3DBlob* shaderBlob = nullptr;
 			HRESULT hr = CompileShaderFromString(shaderSource, file.GetName(), entryPoint.c_str(), GetFeatureLevelForShaderType(type).c_str(), &shaderBlob);
@@ -221,6 +225,8 @@ namespace Hydra
 				shader->SetShader(type, shaderHandle, shaderBlob);
 			}
 		}
+
+		Log("ShaderImporter::Import", file.GetPath(), "Loaded.");
 
 		return shader;
 	}

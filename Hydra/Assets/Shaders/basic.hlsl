@@ -71,9 +71,9 @@ PS_Input MainVS(VS_Input input, unsigned int InstanceID : SV_InstanceID, uint id
 
 struct PS_Output
 {
-	float4 color : SV_Target0;
-	float3 normal : SV_Target1;
-	float4 position : SV_Target2;
+	float4 Albedo : SV_Target0;
+	float3 Normal : SV_Target1;
+	float4 Position : SV_Target2;
 };
 
 PS_Output MainPS(PS_Input input) : SV_Target
@@ -84,9 +84,11 @@ PS_Output MainPS(PS_Input input) : SV_Target
 	fl = saturate(fl);
 
 	//return Map_Albedo.Sample(DefaultSampler, input.texCoord);
-	output.color = float4(input.color, 1.0);
-	output.normal = input.normal;
-	output.position = input.positionWS;
+	output.Albedo = float4(input.color, 1.0);
+	output.Normal = input.normal;
+	output.Position = input.positionWS;
+
+
 
 	return output;
 }

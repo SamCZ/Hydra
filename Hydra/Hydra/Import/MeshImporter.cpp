@@ -80,7 +80,6 @@ namespace Hydra
 				if (souceMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor) == AI_SUCCESS)
 				{
 					renderer->TestColor = Vector3(diffuseColor[0], diffuseColor[1], diffuseColor[2]);
-					std::cout << diffuseColor[0] << ", " << diffuseColor[1] << ", " << diffuseColor[2] << std::endl;
 				}
 
 				//TODO: Materials
