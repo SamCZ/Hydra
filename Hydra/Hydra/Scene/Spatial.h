@@ -27,7 +27,11 @@ namespace Hydra
 		List<Spatial*>& GetChilds();
 		size_t GetChildCount();
 
+		Spatial* GetChild(int index);
+
 		void PrintHiearchy(int depth = 0) const;
+
+		String GetHiearchy() const;
 
 		template<class T> inline T* GetComponent()
 		{

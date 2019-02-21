@@ -49,7 +49,7 @@ namespace Hydra
 		return hr;
 	}
 
-	HRESULT CompileShaderFromString(_In_ const String& shaderSource, _In_ const String& name, _In_ LPCSTR entryPoint, _In_ LPCSTR profile, _Outptr_ ID3DBlob** blob)
+	HRESULT CompileShaderFromString(_In_ const String& shaderSource, _In_ const String& name, _In_ ID3DInclude* include, _In_ LPCSTR entryPoint, _In_ LPCSTR profile, _Outptr_ ID3DBlob** blob)
 	{
 		if (!entryPoint || !profile || !blob)
 			return E_INVALIDARG;
@@ -112,6 +112,18 @@ namespace Hydra
 			return String();
 		}
 	}
+
+	/**class ShaderInclude : public ID3DInclude
+	{
+		HRESULT __stdcall Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes)
+		{
+
+		}
+		HRESULT __stdcall Close(LPCVOID pData)
+		{
+
+		}
+	};*/
 
 	Shader* ShaderImporter::Import(const File& file)
 	{
@@ -210,7 +222,7 @@ namespace Hydra
 			Log("ShaderImporter::Import", file.GetPath(), "Found entry point: " + entryPoint);
 
 			ID3DBlob* shaderBlob = nullptr;
-			HRESULT hr = CompileShaderFromString(shaderSource, file.GetName(), entryPoint.c_str(), GetFeatureLevelForShaderType(type).c_str(), &shaderBlob);
+			HRESULT hr = CompileShaderFromString(shaderSource, file.GetName(), NULL, entryPoint.c_str(), GetFeatureLevelForShaderType(type).c_str(), &shaderBlob);
 
 			if (FAILED(hr))
 			{

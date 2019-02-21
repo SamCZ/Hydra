@@ -30,8 +30,6 @@
 #include "Hydra/Engine.h"
 #include "Hydra/Render/Mesh.h"
 
-
-
 void signalError(const char* file, int line, const char* errorDesc)
 {
 	char buffer[4096];
@@ -179,6 +177,91 @@ public:
 		return a + f * (b - a);
 	}
 
+	Vector3 ComputeTriangleNormal(const Vector3& p1, const Vector3& p2, const Vector3& p3)
+	{
+		Vector3 U = p2 - p1;
+		Vector3 V = p3 - p1;
+		float x = (U.y * V.z) - (U.z * V.y);
+		float y = (U.z * V.x) - (U.x * V.z);
+		float z = (U.x * V.y) - (U.y * V.x);
+		return glm::normalize(Vector3(x, y, z));
+	}
+
+	int mix(uint32_t a, uint32_t b, uint32_t c)
+	{
+		a = a - b;  a = a - c;  a = a ^ (c >> 13);
+		b = b - c;  b = b - a;  b = b ^ (a << 8);
+		c = c - a;  c = c - b;  c = c ^ (b >> 13);
+		a = a - b;  a = a - c;  a = a ^ (c >> 12);
+		b = b - c;  b = b - a;  b = b ^ (a << 16);
+		c = c - a;  c = c - b;  c = c ^ (b >> 5);
+		a = a - b;  a = a - c;  a = a ^ (c >> 3);
+		b = b - c;  b = b - a;  b = b ^ (a << 10);
+		c = c - a;  c = c - b;  c = c ^ (b >> 15);
+		return c;
+	}
+
+	inline long hash_ivec2(int x, int y)
+	{
+		long A = (unsigned long)(x >= 0 ? 2 * (long)x : -2 * (long)x - 1);
+		long B = (unsigned long)(y >= 0 ? 2 * (long)y : -2 * (long)y - 1);
+		long C = (long)((A >= B ? A * A + A + B : A + B * B) / 2);
+		return x < 0 && y < 0 || x >= 0 && y >= 0 ? C : -C - 1;
+	}
+
+	struct Edge
+	{
+		int EdgeIndex;
+		List<Vector3[3]> Triangles;
+		List<int> TriangleIndices;
+	};
+
+	void GenerateRustTexture(Spatial* spatial)
+	{
+		Renderer* renderer = spatial->GetComponent<Renderer>();
+
+		if (renderer)
+		{
+			Mesh* mesh = renderer->GetMesh();
+
+			bool hasSmoothNormals = true;
+			bool smoothNormalsIndetified = false;
+
+			List<long> alreadyComputedLines;
+
+			for (int i = 0; i < mesh->Indices.size() / 3; i++)
+			{
+				int index0 = mesh->Indices[i * 3 + 0];
+				int index1 = mesh->Indices[i * 3 + 1];
+				int index2 = mesh->Indices[i * 3 + 2];
+
+				Vector3& v1 = mesh->Vertices[index0];
+				Vector3& v2 = mesh->Vertices[index1];
+				Vector3& v3 = mesh->Vertices[index2];
+
+				Vector3 normal = mesh->Normals[index0];
+
+				if (!hasSmoothNormals)
+				{
+					hasSmoothNormals = true;
+					hasSmoothNormals = normal == mesh->Normals[index1] && normal == mesh->Normals[index2];
+				}
+
+				if (hasSmoothNormals)
+				{
+					normal = ComputeTriangleNormal(v1, v2, v3);
+				}
+
+
+			}
+		}
+
+		for (Spatial* child : spatial->GetChilds())
+		{
+			GenerateRustTexture(child);
+		}
+	}
+
 	inline HRESULT DeviceCreated()
 	{
 		_renderInterface = MakeShared<NVRHI::RendererInterfaceD3D11>(&g_ErrorCallback, _deviceManager->GetImmediateContext());
@@ -222,8 +305,10 @@ public:
 
 		textur = TextureImporter::Import("Assets/Textures/Grassblock_02.dds");
 
-		testModel = Meshimporter::Import("IndustryEmpire/Models/BrickFactory.fbx", MeshImportOptions());
+		testModel = Meshimporter::Import("IndustryEmpire/Models/03.fbx", MeshImportOptions());
 		testModel->Scale = Vector3(0.01f, 0.01f, 0.01f);
+
+		GenerateRustTexture(testModel);
 
 		const NVRHI::VertexAttributeDesc SceneLayout[] = {
 			{ "POSITION", 0, NVRHI::Format::RGB32_FLOAT, 0, offsetof(VertexBufferEntry, position), false },
@@ -238,6 +323,7 @@ public:
 			{ "WORLD",    3,    NVRHI::Format::RGBA32_FLOAT, 1, 48, true }
 		};
 
+		
 		
 		ID3DBlob* vsShaderBlob = _mainSahder->GetShaderBlob(NVRHI::ShaderType::SHADER_VERTEX);
 		_mainInputLayout = _renderInterface->createInputLayout(SceneLayout, _countof(SceneLayout), vsShaderBlob->GetBufferPointer(), vsShaderBlob->GetBufferSize());
@@ -258,7 +344,7 @@ public:
 
 		_basicConstantBuffer = _renderInterface->createConstantBuffer(NVRHI::ConstantBufferDesc(sizeof(BasicConstantBuffer), "GlobalConstants"), nullptr);
 
-
+		
 
 		SSAO_CB cb = {};
 		cb.Projection = camera->GetProjectionMatrix();
@@ -278,8 +364,6 @@ public:
 
 			cb.Samples[i] = Vector4(sample, 0.0);
 		}
-
-
 
 		_ssaoCB = _renderInterface->createConstantBuffer(NVRHI::ConstantBufferDesc(sizeof(SSAO_CB), nullptr), nullptr);
 		_renderInterface->writeConstantBuffer(_ssaoCB, &cb, sizeof(SSAO_CB));

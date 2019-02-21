@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include "Hydra/Render/Mesh.h"
+#include "Hydra/Core/Log.h"
 
 namespace Hydra
 {
@@ -81,9 +82,12 @@ namespace Hydra
 		bool useUvs = uvsCount == vertexCount;
 		bool useNormals = normalCount == vertexCount;
 		bool useTangents = tangentCount == vertexCount;
-		bool useBiNormals = binormalCount = vertexCount;
+		bool useBiNormals = binormalCount == vertexCount;
 
-
+		if (!useUvs)
+		{
+			Log("Renderer::WriteMeshData", "Mesh(" + _Mesh->GetSource() + ") has zero UVs that can broke lighting because UVs are needed for tange space callculation !");
+		}
 
 		NVRHI::BufferDesc indexBufferDesc;
 		indexBufferDesc.isIndexBuffer = true;

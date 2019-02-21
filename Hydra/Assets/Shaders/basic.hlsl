@@ -1,16 +1,6 @@
-#pragma pack_matrix( column_major )
-
 #pragma hydra vert:MainVS pixel:MainPS
 
-struct VS_Input
-{
-	float3 position : POSITION;
-	float2 texCoord : TEXCOORD;
-	float3 normal : NORMAL;
-	float3 tangent : TANGENT;
-	float3 binormal : BINORMAL;
-	float4x4 instanceMatrix : WORLD;
-};
+#include "Assets/Shaders/Input/Deffered.hlsli"
 
 struct PS_Input
 {
@@ -62,7 +52,7 @@ PS_Input MainVS(VS_Input input, unsigned int InstanceID : SV_InstanceID, uint id
 	output.positionWS = viewPos;
 	output.texCoord = input.texCoord;
 
-	output.normal = mul(g_NormalMatrix, input.normal);
+	output.normal = input.normal;
 
 	output.color = g_TestColor;
 
@@ -88,7 +78,7 @@ PS_Output MainPS(PS_Input input) : SV_Target
 	output.Normal = input.normal;
 	output.Position = input.positionWS;
 
-
+	//clip(output.Albedo.x < 0.5f ? -1 : 1);
 
 	return output;
 }

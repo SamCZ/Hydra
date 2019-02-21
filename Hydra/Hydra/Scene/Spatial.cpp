@@ -47,6 +47,16 @@ namespace Hydra
 		return _Childs.size();
 	}
 
+	Spatial* Spatial::GetChild(int index)
+	{
+		if (index < 0 | index >= _Childs.size())
+		{
+			return nullptr;
+		}
+
+		return _Childs[index];
+	}
+
 	Matrix4 Spatial::GetModelMatrix()
 	{
 		if (GetComponent<Camera>())
@@ -77,5 +87,18 @@ namespace Hydra
 		{
 			child->PrintHiearchy(depth + 1);
 		}
+	}
+	String Spatial::GetHiearchy() const
+	{
+		String hiearchy;
+		const Spatial* spatial = this;
+
+		while (spatial != nullptr)
+		{
+			hiearchy = spatial->Name + "/" + hiearchy;
+			spatial = spatial->Parent;
+		}
+
+		return hiearchy;
 	}
 }

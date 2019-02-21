@@ -26,7 +26,6 @@ namespace Hydra
 		}
 
 		Spatial* node = new Spatial(file.GetName());
-		//node->setFileSource(file);
 
 		ProcessAnimations(scene, node);
 		ProcessNode(scene, scene->mRootNode, node, node, "");
@@ -67,6 +66,8 @@ namespace Hydra
 				delete mesh;
 				continue;
 			}
+
+			mesh->SetSource("File:" + String("Unknown") + "(" + childScene->GetHiearchy() + ")");
 
 			Spatial* obj = new Spatial("Mesh #" + ToString(i + 1));
 			Renderer* renderer = obj->AddComponent<Renderer>();
