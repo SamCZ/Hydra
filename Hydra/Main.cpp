@@ -469,26 +469,6 @@ public:
 
 		camera->Update();
 
-		RendererPtr _renderer = quadModel->AddComponent<Renderer>();
-		Mesh* mesh = new Mesh();
-		mesh->Vertices = {
-			{ -0.5, -0.5, 0 },
-			{ -0.5, 0.5, 0 },
-			{ 0.5, 0.5, 0 },
-			{ 0.5, -0.5, 0 }
-		};
-
-		mesh->TexCoords = {
-			{0, 0},
-			{0, 1},
-			{1, 1},
-			{1, 0}
-		};
-		mesh->Indices = {
-			0, 1, 2, 0, 2, 3
-		};
-		_renderer->SetMesh(mesh);
-
 		_mainSahder = ShaderImporter::Import("Assets/Shaders/basic.hlsl");
 		_blitShader = ShaderImporter::Import("Assets/Shaders/blit.hlsl");
 		_ssaoShader = ShaderImporter::Import("Assets/Shaders/ssao.hlsl");
