@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{0600F8C5-A252-4546-8982-0EF976413165}</ProjectGuid>
     <RootNamespace>Hydra</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -124,12 +124,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Hydra\Core\FastNoise.h" />
     <ClInclude Include="Hydra\Core\Log.h" />
+    <ClInclude Include="Hydra\Core\Polygonise.h" />
     <ClInclude Include="Hydra\Core\Resource.h" />
     <ClInclude Include="Hydra\Engine.h" />
     <ClInclude Include="Hydra\Import\MeshImporter.h" />
     <ClInclude Include="Hydra\Import\ShaderImporter.h" />
     <ClInclude Include="Hydra\Import\TextureImporter.h" />
+    <ClInclude Include="Hydra\Render\Graphics.h" />
     <ClInclude Include="Hydra\Render\Mesh.h" />
     <ClInclude Include="Hydra\Render\Pipeline\BindingHelpers.h" />
     <ClInclude Include="Hydra\Render\Pipeline\DDS\DDS.h" />
@@ -169,11 +172,14 @@
     <ResourceCompile Include="Hydra.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Hydra\Core\FastNoise.cpp" />
+    <ClCompile Include="Hydra\Core\Polygonise.cpp" />
     <ClCompile Include="Hydra\Core\Resource.cpp" />
     <ClCompile Include="Hydra\Engine.cpp" />
     <ClCompile Include="Hydra\Import\MeshImporter.cpp" />
     <ClCompile Include="Hydra\Import\ShaderImporter.cpp" />
     <ClCompile Include="Hydra\Import\TextureImporter.cpp" />
+    <ClCompile Include="Hydra\Render\Graphics.cpp" />
     <ClCompile Include="Hydra\Render\Mesh.cpp" />
     <ClCompile Include="Hydra\Render\Pipeline\DDS\DDSTextureLoader.cpp" />
     <ClCompile Include="Hydra\Render\Pipeline\DeviceManager11.cpp" />

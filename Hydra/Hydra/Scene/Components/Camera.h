@@ -52,4 +52,6 @@ namespace Hydra
 	private:
 		void UpdateProjectionMatrix();
 	};
+
+	DEFINE_PTR(Camera)
 }

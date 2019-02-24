@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Hydra/Core/SmartPointer.h"
+
 namespace Hydra
 {
 	class Spatial;
@@ -16,5 +18,6 @@ namespace Hydra
 		virtual void Update() = 0;
 	};
 
-	
+	typedef SharedPtr<Component> ComponentPtr;
+	typedef WeakPtr<Component> ComponentWeakPtr;
 }

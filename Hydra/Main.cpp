@@ -30,6 +30,9 @@
 #include "Hydra/Engine.h"
 #include "Hydra/Render/Mesh.h"
 
+#include "Hydra/Core/FastNoise.h"
+#include "Hydra/Core/Polygonise.h"
+
 void signalError(const char* file, int line, const char* errorDesc)
 {
 	char buffer[4096];
@@ -142,14 +145,18 @@ struct alignas(16) SSAO_CB_RT
 	alignas(16) Vector4 RadiusBias;
 };
 
+#define NX 100
+#define NY 100
+#define NZ 100
+
 class MainRenderView : public IVisualController
 {
 private:
 	SharedPtr<NVRHI::RendererInterfaceD3D11> _renderInterface;
 
-	Shader* _mainSahder;
-	Shader* _blitShader;
-	Shader* _ssaoShader;
+	ShaderPtr _mainSahder;
+	ShaderPtr _blitShader;
+	ShaderPtr _ssaoShader;
 
 	NVRHI::InputLayoutHandle _mainInputLayout;
 	NVRHI::SamplerHandle m_pDefaultSamplerState;
@@ -160,16 +167,15 @@ private:
 	NVRHI::TextureHandle depthTarget;
 	NVRHI::TextureHandle positionTarget;
 
-	Spatial* testModel;
-	Spatial* quadModel;
-	Renderer* _renderer;
+	SpatialPtr testModel;
+	SpatialPtr quadModel;
 
 	NVRHI::ConstantBufferHandle _basicConstantBuffer;
 
 	NVRHI::ConstantBufferHandle _ssaoCB;
 	NVRHI::ConstantBufferHandle _ssaoCB_RB;
 
-	Camera* camera;
+	CameraPtr camera;
 
 public:
 	float lerp(float a, float b, float f)
@@ -216,11 +222,11 @@ public:
 		List<int> TriangleIndices;
 	};
 
-	void GenerateRustTexture(Spatial* spatial)
+	void GenerateRustTexture(SpatialPtr spatial)
 	{
-		Renderer* renderer = spatial->GetComponent<Renderer>();
+		RendererWeakPtr rendererWeak = spatial->GetComponent<Renderer>();
 
-		if (renderer)
+		if (auto renderer = rendererWeak.lock())
 		{
 			Mesh* mesh = renderer->GetMesh();
 
@@ -256,10 +262,156 @@ public:
 			}
 		}
 
-		for (Spatial* child : spatial->GetChilds())
+		for (SpatialPtr child : spatial->GetChilds())
 		{
 			GenerateRustTexture(child);
 		}
+	}
+
+	inline LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+	{
+		if (uMsg == WM_MOUSEWHEEL)
+		{
+			WORD fwKeys = GET_KEYSTATE_WPARAM(wParam);
+			short zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+
+			if (zDelta < 0)
+			{
+				quadModel->Position.z += 0.1f;
+			}
+
+			if (zDelta > 0)
+			{
+				quadModel->Position.z -= 0.1f;
+			}
+		}
+
+		if (uMsg == WM_KEYDOWN || uMsg == WM_KEYUP)
+		{
+			UINT c = (UINT)wParam;
+
+			std::cout << (char)c << std::endl;
+		}
+
+		return S_OK;
+	}
+
+
+
+	inline Mesh* CreateVoxelTerrain()
+	{
+		FastNoise noise;
+		noise.SetNoiseType(FastNoise::PerlinFractal);
+		float*** data = new float**[NX];
+		{
+			for (int i = 0; i < NX; i++)
+			{
+				data[i] = new float*[NY];
+				for (int j = 0; j < NY; j++)
+				{
+					data[i][j] = new float[NZ];
+				}
+			}
+		}
+
+		float v = 0;
+		{
+			for (int i = 0; i < NX; i++)
+			{
+				for (int j = 0; j < NY; j++)
+				{
+					for (int k = 0; k < NZ; k++)
+					{
+						int val = 1;
+
+						if (i == 0 || i <= NX - 1) val = 0;
+						if (j == 0 || j <= NY - 1) val = 0;
+						if (k == 0 || k <= NZ - 1) val = 0;
+
+						data[i][j][k] = val;
+						//data[i][j][k] = (noise.GetNoise(i * 5.0f, j * 5.0f, k * 5.f) + 0.5f) * 100.0f;
+						//std::cout << data[i][j][k] << std::endl;
+					}
+				}
+			}
+		}
+
+		int i = 0;
+		int j = 0;
+		int k = 0;
+		int trc = 0;
+		List<TRIANGLE> tris;
+		TRIANGLE* triangles = new TRIANGLE[10];
+		GRIDCELL grid;
+		for (i = 0; i < NX - 1; i++)
+		{
+			for (j = 0; j < NY - 1; j++)
+			{
+				for (k = 0; k < NZ - 1; k++)
+				{
+					grid.p[0].x = i;
+					grid.p[0].y = j;
+					grid.p[0].z = k;
+					grid.val[0] = data[i][j][k];
+					grid.p[1].x = i + 1;
+					grid.p[1].y = j;
+					grid.p[1].z = k;
+					grid.val[1] = data[i + 1][j][k];
+					grid.p[2].x = i + 1;
+					grid.p[2].y = j + 1;
+					grid.p[2].z = k;
+					grid.val[2] = data[i + 1][j + 1][k];
+					grid.p[3].x = i;
+					grid.p[3].y = j + 1;
+					grid.p[3].z = k;
+					grid.val[3] = data[i][j + 1][k];
+					grid.p[4].x = i;
+					grid.p[4].y = j;
+					grid.p[4].z = k + 1;
+					grid.val[4] = data[i][j][k + 1];
+					grid.p[5].x = i + 1;
+					grid.p[5].y = j;
+					grid.p[5].z = k + 1;
+					grid.val[5] = data[i + 1][j][k + 1];
+					grid.p[6].x = i + 1;
+					grid.p[6].y = j + 1;
+					grid.p[6].z = k + 1;
+					grid.val[6] = data[i + 1][j + 1][k + 1];
+					grid.p[7].x = i;
+					grid.p[7].y = j + 1;
+					grid.p[7].z = k + 1;
+					grid.val[7] = data[i][j + 1][k + 1];
+
+
+					int triCount = Polygonise(grid, 1, triangles);
+					trc += triCount;
+					for (int n = 0; n < triCount; n++)
+					{
+						tris.push_back(triangles[n]);
+					}
+				}
+			}
+		}
+		delete[] triangles;
+		unsigned int vertNextId = 0;
+
+		Mesh* mesh = new Mesh();
+
+		for (int i = 0; i < tris.size(); i++)
+		{
+			TRIANGLE& tri = tris[i];
+
+			Vector3 normal = ComputeTriangleNormal(tri.p[0], tri.p[1], tri.p[2]);
+
+			for (int j = 0; j < 3; j++)
+			{
+				mesh->Vertices.push_back(tri.p[j]);
+				mesh->Normals.push_back(normal);
+				mesh->Indices.push_back(vertNextId++);
+			}
+		}
+
+		return mesh;
 	}
 
 	inline HRESULT DeviceCreated()
@@ -269,7 +421,7 @@ public:
 		Engine::SetRenderInterface(_renderInterface);
 		Engine::SetDeviceManager(_deviceManager);
 
-		quadModel = new Spatial("yo");
+		quadModel = New(Spatial, "yo");
 
 		camera = quadModel->AddComponent<Camera>();
 		camera->Start();
@@ -279,7 +431,7 @@ public:
 
 		camera->Update();
 
-		_renderer = quadModel->AddComponent<Renderer>();
+		RendererPtr _renderer = quadModel->AddComponent<Renderer>();
 		Mesh* mesh = new Mesh();
 		mesh->Vertices = {
 			{ -0.5, -0.5, 0 },
@@ -305,10 +457,15 @@ public:
 
 		textur = TextureImporter::Import("Assets/Textures/Grassblock_02.dds");
 
-		testModel = Meshimporter::Import("IndustryEmpire/Models/03.fbx", MeshImportOptions());
+		testModel = Meshimporter::Import("IndustryEmpire/Models/BrickFactory.fbx", MeshImportOptions());
 		testModel->Scale = Vector3(0.01f, 0.01f, 0.01f);
 
-		GenerateRustTexture(testModel);
+		/*testModel = New(Spatial);
+		RendererPtr voxelRender = testModel->AddComponent<Renderer>();
+		Mesh* mesh2 = CreateVoxelTerrain();
+		voxelRender->SetMesh(mesh2);*/
+
+		//GenerateRustTexture(testModel);
 
 		const NVRHI::VertexAttributeDesc SceneLayout[] = {
 			{ "POSITION", 0, NVRHI::Format::RGB32_FLOAT, 0, offsetof(VertexBufferEntry, position), false },
@@ -410,9 +567,9 @@ public:
 		_renderInterface->destroyInputLayout(_mainInputLayout);
 	}
 
-	void RenderSpatial(Spatial* spatial, NVRHI::DrawCallState& state)
+	void RenderSpatial(SpatialPtr spatial, NVRHI::DrawCallState& state)
 	{
-		Renderer* renderer = spatial->GetComponent<Renderer>();
+		RendererPtr renderer = spatial->GetComponent<Renderer>();
 
 		if (renderer)
 		{
@@ -436,7 +593,7 @@ public:
 			state.renderState.clearDepthTarget = false;
 		}
 
-		for (Spatial* child : spatial->GetChilds())
+		for (SpatialPtr child : spatial->GetChilds())
 		{
 			RenderSpatial(child, state);
 		}

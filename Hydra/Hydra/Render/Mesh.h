@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Hydra/Core/SmartPointer.h"
 #include "Hydra/Core/Resource.h"
 #include "Hydra/Core/Vector.h"
 #include "Hydra/Core/Container.h"
@@ -28,4 +29,6 @@ namespace Hydra
 
 		void GenerateNormals();
 	};
+
+	DEFINE_PTR(Mesh)
 }

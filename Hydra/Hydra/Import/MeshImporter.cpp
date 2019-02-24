@@ -2,13 +2,12 @@
 
 #include <iostream>
 #include "Hydra/Core/Log.h"
-#include "Hydra/Scene/Spatial.h"
 #include "Hydra/Render/Mesh.h"
 #include "Hydra/Scene/Components/Renderer.h"
 
 namespace Hydra
 {
-	Spatial* Meshimporter::Import(const File& file, MeshImportOptions& importoptions)
+	SpatialPtr Meshimporter::Import(const File& file, MeshImportOptions& importoptions)
 	{
 		std::cout << "Loading model: " << file << std::endl;
 
@@ -25,7 +24,7 @@ namespace Hydra
 			return nullptr;
 		}
 
-		Spatial* node = new Spatial(file.GetName());
+		SpatialPtr node = New(Spatial, file.GetName());
 
 		ProcessAnimations(scene, node);
 		ProcessNode(scene, scene->mRootNode, node, node, "");
@@ -40,9 +39,9 @@ namespace Hydra
 		return glm::vec3(vec.x, vec.y, vec.z);
 	}
 
-	void Meshimporter::ProcessNode(const aiScene* aScene, aiNode* aNode, Spatial* rootScene, Spatial* scene, String material)
+	void Meshimporter::ProcessNode(const aiScene* aScene, aiNode* aNode, SpatialPtr rootScene, SpatialPtr scene, String material)
 	{
-		Spatial* childScene = new Spatial(std::string(aNode->mName.C_Str()));
+		SpatialPtr childScene = New(Spatial, String(aNode->mName.C_Str()));
 		scene->AddChild(childScene);
 
 		aiVector3D position;
@@ -69,8 +68,10 @@ namespace Hydra
 
 			mesh->SetSource("File:" + String("Unknown") + "(" + childScene->GetHiearchy() + ")");
 
-			Spatial* obj = new Spatial("Mesh #" + ToString(i + 1));
-			Renderer* renderer = obj->AddComponent<Renderer>();
+			SpatialPtr obj = New(Spatial, "Mesh #" + ToString(i + 1));
+			RendererWeakPtr rendererWeak = obj->AddComponent<Renderer>();
+			RendererPtr renderer = rendererWeak.lock();
+
 			renderer->SetMesh(mesh);
 
 			if (sourceMesh->mMaterialIndex >= 0)
@@ -95,7 +96,7 @@ namespace Hydra
 		}
 	}
 
-	void Meshimporter::ProcessAnimations(const aiScene * scene, Spatial * m)
+	void Meshimporter::ProcessAnimations(const aiScene* scene, SpatialPtr m)
 	{
 		//TODO: Animations
 		/*if (scene->HasAnimations())
@@ -161,7 +162,7 @@ namespace Hydra
 		}*/
 	}
 
-	Mesh* Meshimporter::ProcessMesh(aiMesh * mesh, const aiScene * scene, Spatial * rootAnimScene)
+	Mesh* Meshimporter::ProcessMesh(aiMesh* mesh, const aiScene* scene, SpatialPtr rootAnimScene)
 	{
 		Mesh* nMesh = new Mesh();
 

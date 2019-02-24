@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "Hydra/Core/File.h"
-#include "Hydra/Render/Shader.h"
 
 #include <d3dcompiler.h>
 #pragma comment(lib,"d3dcompiler.lib")
@@ -125,7 +124,7 @@ namespace Hydra
 		}
 	};*/
 
-	Shader* ShaderImporter::Import(const File& file)
+	ShaderPtr ShaderImporter::Import(const File& file)
 	{
 		Log("ShaderImporter::Import", file.GetPath(), "Loading...");
 
@@ -211,7 +210,7 @@ namespace Hydra
 			return nullptr;
 		}
 
-		Shader* shader = new Shader();
+		ShaderPtr shader = New(Shader);
 		shader->SetSource(file.GetPath());
 		
 		ITER(shaderTypes, it)

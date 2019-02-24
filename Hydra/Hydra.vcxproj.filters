@@ -135,6 +135,15 @@
     <ClInclude Include="Hydra\Core\Log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Hydra\Render\Graphics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Core\Polygonise.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Core\FastNoise.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Hydra.rc">
@@ -209,6 +218,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Import\TextureImporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Render\Graphics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Core\Polygonise.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Core\FastNoise.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

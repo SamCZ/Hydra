@@ -61,5 +61,9 @@ namespace Hydra
 		return false;
 	}
 	
-#define ToWString(str, var_name) wchar_t var_name[256]; MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, var_name, 256)
+	#define ToWString(str, var_name) wchar_t var_name[256]; MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, var_name, 256)
+
+	#define TEXT(str) String(str)
+
+
 }

@@ -9,11 +9,15 @@
 
 namespace Hydra
 {
+	class Spatial;
+
+	DEFINE_PTR(Spatial)
+
 	class Spatial : public Transformable
 	{
 	private:
-		List<Spatial*> _Childs;
-		List<Component*> _Components;
+		List<SpatialPtr> _Childs;
+		List<ComponentPtr> _Components;
 	public:
 		String Name;
 		Spatial* Parent;
@@ -22,47 +26,65 @@ namespace Hydra
 		Spatial();
 		Spatial(const String& name);
 
-		void AddChild(Spatial* spatial);
-		void RemoveChild(Spatial* spatial);
-		List<Spatial*>& GetChilds();
+		void AddChild(SpatialPtr spatial);
+		void RemoveChild(SpatialPtr spatial);
+		List<SpatialPtr>& GetChilds();
 		size_t GetChildCount();
 
-		Spatial* GetChild(int index);
+		SpatialPtr GetChild(int index);
 
 		void PrintHiearchy(int depth = 0) const;
 
 		String GetHiearchy() const;
 
-		template<class T> inline T* GetComponent()
+		template<class T> inline SharedPtr<T> GetComponent()
 		{
 			static_assert(std::is_base_of<Component, T>::value, "T must derive from Component");
-			for (Component* cmp : _Components)
+			for (ComponentPtr cmp : _Components)
 			{
-				if (dynamic_cast<T*>(cmp))
+				if (cmp)
 				{
-					return (T*)cmp;
+					auto castedCmp = std::dynamic_pointer_cast<T, Component>(cmp);
+
+					if (castedCmp)
+					{
+						return castedCmp;
+					}
 				}
 			}
-			return nullptr;
+
+			return SharedPtr<T>();
 		}
 
-		template<class T> inline T* AddComponent()
+		template<class T> inline SharedPtr<T> AddComponent()
 		{
 			static_assert(std::is_base_of<Component, T>::value, "T must derive from Component");
-			Component* component = GetComponent<T>();
+			SharedPtr<T> component = GetComponent<T>();
 			if (component == nullptr)
 			{
-				component = new T();
+				component = New(T);
 				component->Parent = this;
 				_Components.push_back(component);
 			}
-			return (T*)component;
+
+			return component;
 		}
 
-		template<class T> inline T* RemoveComponent(bool autoDelete = true)
+		template<class T> inline void RemoveComponent()
 		{
 			static_assert(std::is_base_of<Component, T>::value, "T must derive from Component");
+
 			for (int i = 0; i < _Components.size(); i++)
+			{
+				ComponentPtr component = _Components[i];
+
+				if (std::dynamic_pointer_cast<T, Component>(component))
+				{
+					_Components.erase(_Components.begin() + i);
+				}
+			}
+
+			/*for (int i = 0; i < _Components.size(); i++)
 			{
 				Component* component = _Components[i];
 				if (dynamic_cast<T*>(component))
@@ -78,8 +100,7 @@ namespace Hydra
 
 					return (T*)component;
 				}
-			}
-			return nullptr;
+			}*/
 		}
 
 		virtual Matrix4 GetModelMatrix() override;

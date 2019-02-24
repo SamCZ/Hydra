@@ -19,7 +19,7 @@ namespace Hydra
 		Scale = Vector3(1.0, 1.0, 1.0);
 	}
 
-	void Spatial::AddChild(Spatial* spatial)
+	void Spatial::AddChild(SpatialPtr spatial)
 	{
 		if (spatial != nullptr)
 		{
@@ -28,7 +28,7 @@ namespace Hydra
 		}
 	}
 
-	void Spatial::RemoveChild(Spatial* spatial)
+	void Spatial::RemoveChild(SpatialPtr spatial)
 	{
 		if (spatial != nullptr)
 		{
@@ -37,7 +37,7 @@ namespace Hydra
 		}
 	}
 
-	List<Spatial*>& Spatial::GetChilds()
+	List<SpatialPtr>& Spatial::GetChilds()
 	{
 		return _Childs;
 	}
@@ -47,9 +47,9 @@ namespace Hydra
 		return _Childs.size();
 	}
 
-	Spatial* Spatial::GetChild(int index)
+	SpatialPtr Spatial::GetChild(int index)
 	{
-		if (index < 0 | index >= _Childs.size())
+		if (index < 0 || index >= _Childs.size())
 		{
 			return nullptr;
 		}
@@ -83,11 +83,12 @@ namespace Hydra
 
 		std::cout << " " << Name << std::endl;
 
-		for (Spatial* child : _Childs)
+		for (SpatialPtr child : _Childs)
 		{
 			child->PrintHiearchy(depth + 1);
 		}
 	}
+
 	String Spatial::GetHiearchy() const
 	{
 		String hiearchy;

@@ -5,6 +5,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include "Hydra/Scene/Spatial.h"
 #include "Hydra/Core/File.h"
 #include "Hydra/Core/Container.h"
 #include "Hydra/Core/String.h"
@@ -16,20 +17,19 @@ namespace Hydra
 		bool CombineMeshes;
 	};
 
-	class Spatial;
 	class Mesh;
 
 	class Meshimporter
 	{
 	public:
 
-		static Spatial* Import(const File& file, MeshImportOptions& importoptions);
+		static SpatialPtr Import(const File& file, MeshImportOptions& importoptions);
 
 	private:
-		static void ProcessNode(const aiScene* aScene, aiNode* aNode, Spatial* rootScene, Spatial* scene, String material);
+		static void ProcessNode(const aiScene* aScene, aiNode* aNode, SpatialPtr rootScene, SpatialPtr scene, String material);
 
-		static void ProcessAnimations(const aiScene* scene, Spatial* m);
+		static void ProcessAnimations(const aiScene* scene, SpatialPtr m);
 
-		static Mesh* ProcessMesh(aiMesh *mesh, const aiScene *scene, Spatial* rootAnimScene);
+		static Mesh* ProcessMesh(aiMesh *mesh, const aiScene *scene, SpatialPtr rootAnimScene);
 	};
 }

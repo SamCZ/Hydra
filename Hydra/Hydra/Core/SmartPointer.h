@@ -15,4 +15,9 @@ namespace Hydra
 	{
 		return std::make_shared<T>(_Args...);
 	}
+
+	//#define New(classname) MakeShared<classname>()
+	#define New(classname, ...) MakeShared<classname>(__VA_ARGS__)
+
+	#define DEFINE_PTR(className) typedef SharedPtr<className> className ## Ptr; typedef WeakPtr<className> className ## WeakPtr;
 }

@@ -1,13 +1,14 @@
 #pragma once
 
+#include "Hydra/Render/Shader.h"
+
 namespace Hydra
 {
-	class Shader;
 	class File;
 
 	class ShaderImporter
 	{
 	public:
-		static Shader* Import(const File& file);
+		static ShaderPtr Import(const File& file);
 	};
 }

@@ -2,6 +2,7 @@
 
 #include <d3dcommon.h>
 
+#include "Hydra/Core/SmartPointer.h"
 #include "Hydra/Core/Resource.h"
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
 
@@ -27,10 +28,15 @@ namespace Hydra
 		NVRHI::DrawCallState state;
 
 	public:
+		Shader();
+		~Shader();
+
 		NVRHI::ShaderHandle GetShader(const NVRHI::ShaderType::Enum& type);
 
 		ID3DBlob* GetShaderBlob(const NVRHI::ShaderType::Enum& type);
 
 		void SetShader(const NVRHI::ShaderType::Enum& type, NVRHI::ShaderHandle shaderHandle, ID3DBlob* blob);
 	};
+
+	typedef SharedPtr<Shader> ShaderPtr;
 }

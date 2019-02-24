@@ -56,4 +56,7 @@ namespace Hydra
 
 		NVRHI::DrawArguments& GetDrawArguments();
 	};
+
+	typedef SharedPtr<Renderer> RendererPtr;
+	typedef WeakPtr<Renderer> RendererWeakPtr;
 }
