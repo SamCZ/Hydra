@@ -37,6 +37,7 @@ cbuffer RuntimeConstants : register(b1)
 #define RADIUS g_Settings.x
 #define BIAS g_Settings.y
 #define PREVIEW g_Settings.z
+#define INTENSITY g_Settings.w
 
 Texture2D t_SceneTexture : register(t0);
 Texture2D t_NormalTexture : register(t1);
@@ -98,6 +99,8 @@ float4 MainPS(FullScreenQuadOutput IN) : SV_Target
 
 		float rangeCheck = smoothstep(0.0, 1.0, RADIUS / abs(fragPos.z - sampleDepth));
 		occlusion += (sampleDepth >= samplePos.z + BIAS ? 1.0 : 0.0) * rangeCheck;
+
+		occlusion *= INTENSITY;
 	}
 	occlusion = 1.0 - (occlusion / kernelSize);
 

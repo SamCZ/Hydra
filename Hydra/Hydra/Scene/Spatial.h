@@ -1,5 +1,6 @@
 #pragma once
-
+ 
+#include "Hydra/Core/Common.h"
 #include "Hydra/Core/SmartPointer.h"
 #include "Hydra/Core/String.h"
 #include "Hydra/Core/Container.h"
@@ -37,7 +38,7 @@ namespace Hydra
 
 		String GetHiearchy() const;
 
-		template<class T> inline SharedPtr<T> GetComponent()
+		template<class T> FORCEINLINE SharedPtr<T> GetComponent()
 		{
 			static_assert(std::is_base_of<Component, T>::value, "T must derive from Component");
 			for (ComponentPtr cmp : _Components)
@@ -56,7 +57,7 @@ namespace Hydra
 			return SharedPtr<T>();
 		}
 
-		template<class T> inline SharedPtr<T> AddComponent()
+		template<class T> FORCEINLINE SharedPtr<T> AddComponent()
 		{
 			static_assert(std::is_base_of<Component, T>::value, "T must derive from Component");
 			SharedPtr<T> component = GetComponent<T>();
@@ -70,7 +71,7 @@ namespace Hydra
 			return component;
 		}
 
-		template<class T> inline void RemoveComponent()
+		template<class T> FORCEINLINE void RemoveComponent()
 		{
 			static_assert(std::is_base_of<Component, T>::value, "T must derive from Component");
 

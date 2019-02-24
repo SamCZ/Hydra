@@ -33,6 +33,9 @@
 #include "Hydra/Core/FastNoise.h"
 #include "Hydra/Core/Polygonise.h"
 
+#include "Hydra/Input/Windows/WindowsPlatformInput.h"
+#include "Hydra/Input/InputManager.h"
+
 void signalError(const char* file, int line, const char* errorDesc)
 {
 	char buffer[4096];
@@ -68,6 +71,7 @@ RendererErrorCallback g_ErrorCallback;
 
 static float AO_Radius = 0.085f;
 static float AO_Bias = 0.025f;
+static float AO_Intensity = 1.0f;
 static bool AO_Preview = false;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -99,6 +103,7 @@ public:
 
 		ImGui::DragFloat("Radius", &AO_Radius, 0.001f);
 		ImGui::DragFloat("Bias", &AO_Bias, 0.001f);
+		ImGui::DragFloat("Intensity", &AO_Intensity, 0.001f);
 
 		ImGui::Checkbox("Preview", &AO_Preview);
 
@@ -268,6 +273,10 @@ public:
 		}
 	}
 
+	uint32 KeyCodes[512];
+	String KeyNames[512];
+	uint32 MaxKeys = 0;
+
 	inline LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		if (uMsg == WM_MOUSEWHEEL)
@@ -286,11 +295,32 @@ public:
 			}
 		}
 
+		if (wParam == VK_SHIFT)
+		{
+			std::cout << "yo" << std::endl;
+		}
+
 		if (uMsg == WM_KEYDOWN || uMsg == WM_KEYUP)
 		{
-			UINT c = (UINT)wParam;
+			
+			/*for (uint32 i = 0; i < MaxKeys; i++)
+			{
+				SHORT ks = GetKeyState(KeyCodes[i]);
 
-			std::cout << (char)c << std::endl;
+				Log("WM_KEYDOWN", KeyNames[i], ToString(ks));
+			}*/
+			
+			
+			for (uint32 i = 0; i < MaxKeys; i++)
+			{
+				if (KeyCodes[i] == wParam)
+				{
+					Log("WM_KEYDOWN", KeyNames[i]);
+
+
+					break;
+				}
+			}
 		}
 
 		return S_OK;
@@ -416,6 +446,12 @@ public:
 
 	inline HRESULT DeviceCreated()
 	{
+		PlatformInput input;
+		MaxKeys = input.GetKeyMap(KeyCodes, KeyNames, 512);
+		Log("Max input keys", ToString(MaxKeys));
+
+		Keys::Initialize();
+
 		_renderInterface = MakeShared<NVRHI::RendererInterfaceD3D11>(&g_ErrorCallback, _deviceManager->GetImmediateContext());
 
 		Engine::SetRenderInterface(_renderInterface);
@@ -428,6 +464,8 @@ public:
 
 		quadModel->Position.y = 2;
 		quadModel->Position.z = 5;
+
+		//quadModel->Rotation.x = -90;
 
 		camera->Update();
 
@@ -456,7 +494,6 @@ public:
 		_ssaoShader = ShaderImporter::Import("Assets/Shaders/ssao.hlsl");
 
 		textur = TextureImporter::Import("Assets/Textures/Grassblock_02.dds");
-
 		testModel = Meshimporter::Import("IndustryEmpire/Models/BrickFactory.fbx", MeshImportOptions());
 		testModel->Scale = Vector3(0.01f, 0.01f, 0.01f);
 
@@ -526,7 +563,7 @@ public:
 		_renderInterface->writeConstantBuffer(_ssaoCB, &cb, sizeof(SSAO_CB));
 
 		SSAO_CB_RT cb_rt = {};
-		cb_rt.RadiusBias = Vector4(AO_Radius, AO_Bias, 0.0, 1.0);
+		cb_rt.RadiusBias = Vector4(AO_Radius, AO_Bias, 0, AO_Intensity);
 
 		_ssaoCB_RB = _renderInterface->createConstantBuffer(NVRHI::ConstantBufferDesc(sizeof(SSAO_CB_RT), nullptr), nullptr);
 		_renderInterface->writeConstantBuffer(_ssaoCB_RB, &cb_rt, sizeof(SSAO_CB_RT));
@@ -671,7 +708,7 @@ public:
 		NVRHI::BindTexture(state.PS, 2, positionTarget);
 
 		SSAO_CB_RT cb_rt = {};
-		cb_rt.RadiusBias = Vector4(AO_Radius, AO_Bias, AO_Preview ? 1.0 : 0.0, 0.0f);
+		cb_rt.RadiusBias = Vector4(AO_Radius, AO_Bias, AO_Preview ? 1.0 : 0.0, AO_Intensity);
 		_renderInterface->writeConstantBuffer(_ssaoCB_RB, &cb_rt, sizeof(SSAO_CB_RT));
 
 		NVRHI::BindConstantBuffer(state.PS, 0, _ssaoCB);

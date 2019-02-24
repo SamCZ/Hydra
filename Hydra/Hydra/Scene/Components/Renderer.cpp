@@ -30,6 +30,11 @@ namespace Hydra
 		{
 			_RenderInterface->destroyBuffer(_InstBuffer);
 		}
+
+		if (_Mesh != nullptr)
+		{
+			delete _Mesh;
+		}
 	}
 
 	void Renderer::Start()

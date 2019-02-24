@@ -1,16 +1,14 @@
 #include "Hydra/Scene/Transformable.h"
 
-#include <glm/basic.hpp>
-
 namespace Hydra
 {
 	Matrix4 Transformable::GetModelMatrix()
 	{
-		glm::mat4 rotation = glm::mat4();
+		Matrix4 rotation = Matrix4();
 
-		glm::vec3 axisX = glm::vec3(1, 0, 0);
-		glm::vec3 axisY = glm::vec3(0, 1, 0);
-		glm::vec3 axisZ = glm::vec3(0, 0, 1);
+		static Vector3 axisX = Vector3(1, 0, 0);
+		static Vector3 axisY = Vector3(0, 1, 0);
+		static Vector3 axisZ = Vector3(0, 0, 1);
 
 		rotation *= glm::rotate(glm::radians(Rotation.z), axisZ);
 		rotation *= glm::rotate(glm::radians(Rotation.y), axisY);

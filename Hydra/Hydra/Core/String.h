@@ -11,6 +11,7 @@ namespace Hydra
 	typedef std::wstring WString;
 
 	#define ToString(obj) std::to_string(obj)
+	#define Chr(charInt) String(1, (char)charInt)
 
 	template<typename Out> static inline void SplitString(const String &s, char delim, Out result)
 	{
@@ -62,8 +63,6 @@ namespace Hydra
 	}
 	
 	#define ToWString(str, var_name) wchar_t var_name[256]; MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, var_name, 256)
-
-	#define TEXT(str) String(str)
 
 
 }

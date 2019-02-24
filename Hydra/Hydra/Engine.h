@@ -8,7 +8,6 @@
 namespace Hydra
 {
 	typedef SharedPtr<NVRHI::IRendererInterface> IRendererInterface;
-	//class DeviceManager;
 
 	class Engine
 	{

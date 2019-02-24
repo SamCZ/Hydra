@@ -126,12 +126,17 @@
   <ItemGroup>
     <ClInclude Include="Hydra\Core\FastNoise.h" />
     <ClInclude Include="Hydra\Core\Log.h" />
+    <ClInclude Include="Hydra\Core\Platform.h" />
     <ClInclude Include="Hydra\Core\Polygonise.h" />
     <ClInclude Include="Hydra\Core\Resource.h" />
     <ClInclude Include="Hydra\Engine.h" />
     <ClInclude Include="Hydra\Import\MeshImporter.h" />
     <ClInclude Include="Hydra\Import\ShaderImporter.h" />
     <ClInclude Include="Hydra\Import\TextureImporter.h" />
+    <ClInclude Include="Hydra\Input\GenericPlatformInput.h" />
+    <ClInclude Include="Hydra\Input\InputCoreTypes.h" />
+    <ClInclude Include="Hydra\Input\InputManager.h" />
+    <ClInclude Include="Hydra\Input\Windows\WindowsPlatformInput.h" />
     <ClInclude Include="Hydra\Render\Graphics.h" />
     <ClInclude Include="Hydra\Render\Mesh.h" />
     <ClInclude Include="Hydra\Render\Pipeline\BindingHelpers.h" />
@@ -179,6 +184,10 @@
     <ClCompile Include="Hydra\Import\MeshImporter.cpp" />
     <ClCompile Include="Hydra\Import\ShaderImporter.cpp" />
     <ClCompile Include="Hydra\Import\TextureImporter.cpp" />
+    <ClCompile Include="Hydra\Input\GenericPlatformInput.cpp" />
+    <ClCompile Include="Hydra\Input\InputCoreTypes.cpp" />
+    <ClCompile Include="Hydra\Input\InputManager.cpp" />
+    <ClCompile Include="Hydra\Input\Windows\WindowsPlatformInput.cpp" />
     <ClCompile Include="Hydra\Render\Graphics.cpp" />
     <ClCompile Include="Hydra\Render\Mesh.cpp" />
     <ClCompile Include="Hydra\Render\Pipeline\DDS\DDSTextureLoader.cpp" />
