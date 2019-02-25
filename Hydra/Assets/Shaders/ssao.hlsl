@@ -99,9 +99,8 @@ float4 MainPS(FullScreenQuadOutput IN) : SV_Target
 
 		float rangeCheck = smoothstep(0.0, 1.0, RADIUS / abs(fragPos.z - sampleDepth));
 		occlusion += (sampleDepth >= samplePos.z + BIAS ? 1.0 : 0.0) * rangeCheck;
-
-		occlusion *= INTENSITY;
 	}
+	occlusion *= INTENSITY;
 	occlusion = 1.0 - (occlusion / kernelSize);
 
 	float4 color = t_SceneTexture[IN.position.xy];
