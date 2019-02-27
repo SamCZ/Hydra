@@ -33,8 +33,7 @@
 #include "Hydra/Core/FastNoise.h"
 #include "Hydra/Core/Polygonise.h"
 
-#include "Hydra/Input/Windows/WindowsPlatformInput.h"
-#include "Hydra/Input/InputManager.h"
+#include "Hydra/Input/Windows/WindowsInputManager.h"
 
 void signalError(const char* file, int line, const char* errorDesc)
 {
@@ -180,6 +179,8 @@ private:
 	NVRHI::ConstantBufferHandle _ssaoCB;
 	NVRHI::ConstantBufferHandle _ssaoCB_RB;
 
+	WindowsInputManager _InputManager;
+
 	CameraPtr camera;
 
 public:
@@ -279,49 +280,8 @@ public:
 
 	inline LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
-		if (uMsg == WM_MOUSEWHEEL)
-		{
-			WORD fwKeys = GET_KEYSTATE_WPARAM(wParam);
-			short zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+		_InputManager.MsgProc(hWnd, uMsg, wParam, lParam);
 
-			if (zDelta < 0)
-			{
-				quadModel->Position.z += 0.1f;
-			}
-
-			if (zDelta > 0)
-			{
-				quadModel->Position.z -= 0.1f;
-			}
-		}
-
-		if (wParam == VK_SHIFT)
-		{
-			std::cout << "yo" << std::endl;
-		}
-
-		if (uMsg == WM_KEYDOWN || uMsg == WM_KEYUP)
-		{
-			
-			/*for (uint32 i = 0; i < MaxKeys; i++)
-			{
-				SHORT ks = GetKeyState(KeyCodes[i]);
-
-				Log("WM_KEYDOWN", KeyNames[i], ToString(ks));
-			}*/
-			
-			
-			for (uint32 i = 0; i < MaxKeys; i++)
-			{
-				if (KeyCodes[i] == wParam)
-				{
-					Log("WM_KEYDOWN", KeyNames[i]);
-
-
-					break;
-				}
-			}
-		}
 
 		return S_OK;
 	}
@@ -451,15 +411,13 @@ public:
 
 	inline HRESULT DeviceCreated()
 	{
-		PlatformInput input;
-		MaxKeys = input.GetKeyMap(KeyCodes, KeyNames, 512);
-		Log("Max input keys", ToString(MaxKeys));
 
-		Keys::Initialize();
+		_InputManager.AddActionMapping("MouseLeft", Keys::A);
+		_InputManager.BindAction("MouseLeft", IE_Pressed, this, &MainRenderView::Click);
 
-		InputManager im;
-		im.BindAction("Click", IE_Pressed, this, &MainRenderView::Click);
-		im.CallActions();
+		//InputManager im;
+		//im.BindAction("Click", IE_Pressed, this, &MainRenderView::Click);
+		//im.CallActions();
 
 		_renderInterface = MakeShared<NVRHI::RendererInterfaceD3D11>(&g_ErrorCallback, _deviceManager->GetImmediateContext());
 

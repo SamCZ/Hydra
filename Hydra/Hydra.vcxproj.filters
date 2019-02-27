@@ -165,6 +165,12 @@
     <ClInclude Include="Hydra\Core\Delegate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Hydra\Input\InputMapping.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Input\Windows\WindowsInputManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Hydra.rc">
@@ -260,6 +266,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Input\InputManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Input\Windows\WindowsInputManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

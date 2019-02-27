@@ -10,6 +10,8 @@ namespace Hydra
 	typedef std::string String;
 	typedef std::wstring WString;
 
+	#define String_None String()
+
 	#define ToString(obj) std::to_string(obj)
 	#define Chr(charInt) String(1, (char)charInt)
 

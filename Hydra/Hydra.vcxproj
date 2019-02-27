@@ -138,6 +138,8 @@
     <ClInclude Include="Hydra\Input\GenericPlatformInput.h" />
     <ClInclude Include="Hydra\Input\InputCoreTypes.h" />
     <ClInclude Include="Hydra\Input\InputManager.h" />
+    <ClInclude Include="Hydra\Input\InputMapping.h" />
+    <ClInclude Include="Hydra\Input\Windows\WindowsInputManager.h" />
     <ClInclude Include="Hydra\Input\Windows\WindowsPlatformInput.h" />
     <ClInclude Include="Hydra\Render\Graphics.h" />
     <ClInclude Include="Hydra\Render\Mesh.h" />
@@ -189,6 +191,7 @@
     <ClCompile Include="Hydra\Input\GenericPlatformInput.cpp" />
     <ClCompile Include="Hydra\Input\InputCoreTypes.cpp" />
     <ClCompile Include="Hydra\Input\InputManager.cpp" />
+    <ClCompile Include="Hydra\Input\Windows\WindowsInputManager.cpp" />
     <ClCompile Include="Hydra\Input\Windows\WindowsPlatformInput.cpp" />
     <ClCompile Include="Hydra\Render\Graphics.cpp" />
     <ClCompile Include="Hydra\Render\Mesh.cpp" />

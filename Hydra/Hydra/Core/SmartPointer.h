@@ -16,6 +16,12 @@ namespace Hydra
 		return std::make_shared<T>(_Args...);
 	}
 
+	template<typename T>
+	inline static SharedPtr<T> MakeShareable(T* pointer)
+	{
+		return SharedPtr<T> { pointer };
+	}
+
 	#define New(classname, ...) MakeShared<classname>(__VA_ARGS__)
 
 	#define DEFINE_PTR(className) typedef SharedPtr<className> className ## Ptr; typedef WeakPtr<className> className ## WeakPtr;

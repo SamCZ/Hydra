@@ -302,9 +302,34 @@ namespace Hydra
 		static const Key Gravity;
 		static const Key Acceleration;
 
+		static const Key Invalid;
+
 		static void Initialize();
 		static void AddKey(const KeyDetails& KeyDetails);
 		static void GetAllKeys(List<Key>& OutKeys);
 		static KeyDetailsPtr GetKeyDetails(const Key& key);
+	};
+
+	class InputKeyManager
+	{
+		public:
+			static InputKeyManager& Get();
+
+			void GetCodesFromKey(const Key Key, const uint32*& KeyCode, const uint32*& CharCode) const;
+
+			/**
+			 * Retrieves the key mapped to the specified character code.
+			 * @param KeyCode	The key code to get the name for.
+			 */
+			Key GetKeyFromCodes(uint32 KeyCode, uint32 CharCode);
+			void InitKeyMappings();
+		private:
+			InputKeyManager()
+			{
+				InitKeyMappings();
+			}
+
+			static SharedPtr< InputKeyManager > Instance;
+			Map<uint32, Key> KeyMapVirtualToEnum;
 	};
 }

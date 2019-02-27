@@ -1,5 +1,8 @@
 #include "Hydra/Input/InputCoreTypes.h"
 
+//TODO: Ifdef for other platforms
+#include "Hydra/Input/Windows/WindowsPlatformInput.h"
+
 namespace Hydra
 {
 	const Key Keys::AnyKey("AnyKey");
@@ -199,6 +202,7 @@ namespace Hydra
 	const Key Keys::Gravity("Gravity");
 	const Key Keys::Acceleration("Acceleration");
 
+	const Key Keys::Invalid("");
 
 	String Key::GetName() const
 	{
@@ -501,5 +505,64 @@ namespace Hydra
 		{
 			AxisType = InputAxisType::None;
 		}
+	}
+
+	SharedPtr<InputKeyManager> InputKeyManager::Instance;
+
+	InputKeyManager& InputKeyManager::Get()
+	{
+		if (!Instance)
+		{
+			Instance = MakeShareable(new InputKeyManager());
+		}
+		return *Instance;
+	}
+
+	void InputKeyManager::InitKeyMappings()
+	{
+		static const uint32 MAX_KEY_MAPPINGS(512);
+		uint32 KeyCodes[MAX_KEY_MAPPINGS];
+		String KeyNames[MAX_KEY_MAPPINGS];
+
+		Keys::Initialize();
+
+		List<Key> keys;
+		Keys::GetAllKeys(keys);
+
+		PlatformInput input;
+		uint32 const KeyMapSize(input.GetKeyMap(KeyCodes, KeyNames, MAX_KEY_MAPPINGS));
+
+		for (uint32 Idx = 0; Idx < KeyMapSize; ++Idx)
+		{
+			for (Key& key : keys)
+			{
+				if (key.GetName() == KeyNames[Idx])
+				{
+					KeyMapVirtualToEnum[KeyCodes[Idx]] = key;
+					break;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Retrieves the key mapped to the specified key or character code.
+	 *
+	 * @param	KeyCode	the key code to get the name for
+	 */
+	Key InputKeyManager::GetKeyFromCodes(uint32 KeyCode, uint32 CharCode)
+	{
+		if (KeyMapVirtualToEnum.find(KeyCode) != KeyMapVirtualToEnum.end())
+		{
+			return KeyMapVirtualToEnum[KeyCode];
+		}
+
+		return Keys::Invalid;
+	}
+
+	void InputKeyManager::GetCodesFromKey(const Key Key, const uint32*& KeyCode, const uint32*& CharCode) const
+	{
+		//CharCode = KeyMapCharToEnum.FindKey(Key);
+		//KeyCode = KeyMapVirtualToEnum.FindKey(Key);
 	}
 }
