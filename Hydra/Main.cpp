@@ -352,7 +352,7 @@ public:
 				{
 					for (int k = 0; k < NZ; k++)
 					{
-						int val = 1;
+						float val = 1;
 
 						if (i == 0 || i <= NX - 1) val = 0;
 						if (j == 0 || j <= NY - 1) val = 0;
@@ -379,37 +379,37 @@ public:
 			{
 				for (k = 0; k < NZ - 1; k++)
 				{
-					grid.p[0].x = i;
-					grid.p[0].y = j;
-					grid.p[0].z = k;
+					grid.p[0].x = (float)i;
+					grid.p[0].y = (float)j;
+					grid.p[0].z = (float)k;
 					grid.val[0] = data[i][j][k];
-					grid.p[1].x = i + 1;
-					grid.p[1].y = j;
-					grid.p[1].z = k;
+					grid.p[1].x = (float)i + 1;
+					grid.p[1].y = (float)j;
+					grid.p[1].z = (float)k;
 					grid.val[1] = data[i + 1][j][k];
-					grid.p[2].x = i + 1;
-					grid.p[2].y = j + 1;
-					grid.p[2].z = k;
+					grid.p[2].x = (float)i + 1;
+					grid.p[2].y = (float)j + 1;
+					grid.p[2].z = (float)k;
 					grid.val[2] = data[i + 1][j + 1][k];
-					grid.p[3].x = i;
-					grid.p[3].y = j + 1;
-					grid.p[3].z = k;
+					grid.p[3].x = (float)i;
+					grid.p[3].y = (float)j + 1;
+					grid.p[3].z = (float)k;
 					grid.val[3] = data[i][j + 1][k];
-					grid.p[4].x = i;
-					grid.p[4].y = j;
-					grid.p[4].z = k + 1;
+					grid.p[4].x = (float)i;
+					grid.p[4].y = (float)j;
+					grid.p[4].z = (float)k + 1;
 					grid.val[4] = data[i][j][k + 1];
-					grid.p[5].x = i + 1;
-					grid.p[5].y = j;
-					grid.p[5].z = k + 1;
+					grid.p[5].x = (float)i + 1;
+					grid.p[5].y = (float)j;
+					grid.p[5].z = (float)k + 1;
 					grid.val[5] = data[i + 1][j][k + 1];
-					grid.p[6].x = i + 1;
-					grid.p[6].y = j + 1;
-					grid.p[6].z = k + 1;
+					grid.p[6].x = (float)i + 1;
+					grid.p[6].y = (float)j + 1;
+					grid.p[6].z = (float)k + 1;
 					grid.val[6] = data[i + 1][j + 1][k + 1];
-					grid.p[7].x = i;
-					grid.p[7].y = j + 1;
-					grid.p[7].z = k + 1;
+					grid.p[7].x = (float)i;
+					grid.p[7].y = (float)j + 1;
+					grid.p[7].z = (float)k + 1;
 					grid.val[7] = data[i][j + 1][k + 1];
 
 
@@ -444,6 +444,11 @@ public:
 		return mesh;
 	}
 
+	inline void Click()
+	{
+		Log("Click", "Maaa gahaaaaad!");
+	}
+
 	inline HRESULT DeviceCreated()
 	{
 		PlatformInput input;
@@ -451,6 +456,10 @@ public:
 		Log("Max input keys", ToString(MaxKeys));
 
 		Keys::Initialize();
+
+		InputManager im;
+		im.BindAction("Click", IE_Pressed, this, &MainRenderView::Click);
+		im.CallActions();
 
 		_renderInterface = MakeShared<NVRHI::RendererInterfaceD3D11>(&g_ErrorCallback, _deviceManager->GetImmediateContext());
 
