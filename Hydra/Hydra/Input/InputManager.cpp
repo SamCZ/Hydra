@@ -41,6 +41,33 @@ namespace Hydra
 	{
 	}
 
+	void InputManager::Update()
+	{
+		ITER(_KeyStates, it)
+		{
+			if (it->second)
+			{
+				const Key& key = it->first;
+
+				for (InputAxisKeyMapping& mapping : _AxisMappings)
+				{
+					if (mapping.KeyType != key)
+					{
+						continue;
+					}
+
+					for (InputEventAction<void, float>& action : _InputAxisListeners)
+					{
+						if (mapping.AxisName == action.ActionName)
+						{
+							action.Delegate->Invoke(1.0f * mapping.Scale);
+						}
+					}
+				}
+			}
+		}
+	}
+
 	bool InputManager::OnKeyChar(const char Character, const bool IsRepeat)
 	{
 		for (InputEventAction<void, char>& action : _InputTypeListeners)
@@ -53,9 +80,11 @@ namespace Hydra
 
 	bool InputManager::OnKeyDown(const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat)
 	{
-		if (IsRepeat) return false; // this disables modifier keys
+		//if (IsRepeat) return false; // this disables modifier keys
 
 		Key key = InputKeyManager::Get().GetKeyFromCodes(KeyCode, CharacterCode);
+
+		_KeyStates[key] = true;
 
 		for (InputActionKeyMapping& mapping : _ActionMappings)
 		{
@@ -78,6 +107,8 @@ namespace Hydra
 	bool InputManager::OnKeyUp(const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat)
 	{
 		Key key = InputKeyManager::Get().GetKeyFromCodes(KeyCode, CharacterCode);
+
+		_KeyStates[key] = false;
 
 		for (InputActionKeyMapping& mapping : _ActionMappings)
 		{
@@ -183,14 +214,16 @@ namespace Hydra
 	{
 		for (InputAxisKeyMapping& mapping : _AxisMappings)
 		{
+			if (mapping.KeyType != Keys::MouseWheelAxis)
+			{
+				continue;
+			}
+
 			for (InputEventAction<void, float>& action : _InputAxisListeners)
 			{
 				if (mapping.AxisName == action.ActionName)
 				{
-					if (mapping.KeyType == Keys::MouseWheelAxis)
-					{
-						action.Delegate->Invoke(Delta * mapping.Scale);
-					}
+					action.Delegate->Invoke(Delta * mapping.Scale);
 				}
 			}
 		}

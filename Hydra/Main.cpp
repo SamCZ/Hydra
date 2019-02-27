@@ -404,33 +404,17 @@ public:
 		return mesh;
 	}
 
-	inline void Click()
+	inline void OnMoveForward(float Val)
 	{
-		Log("Click", "Maaa gahaaaaad!");
-	}
-
-	inline void OnKey(char c)
-	{
-		//std::cout << "->" << c << std::endl;
-	}
-
-	inline void OnMouseX(float Val)
-	{
-		std::cout << "x->" << Val << std::endl;
+		std::cout << Val << std::endl;
 	}
 
 	inline HRESULT DeviceCreated()
 	{
+		_InputManager.AddAxisMapping("MoveForward", Keys::W, 1.0f);
+		_InputManager.AddAxisMapping("MoveForward", Keys::S, -1.0f);
 
-		_InputManager.AddActionMapping("MouseLeft", Keys::LeftMouseButton);
-		_InputManager.BindAction("MouseLeft", IE_Pressed, this, &MainRenderView::Click);
-
-
-		_InputManager.BindKeyTypeAction(this, &MainRenderView::OnKey);
-
-		_InputManager.AddAxisMapping("MouseX", Keys::MouseX, 1.0f);
-		_InputManager.BindAxis("MouseX", this, &MainRenderView::OnMouseX);
-
+		_InputManager.BindAxis("MoveForward", this, &MainRenderView::OnMoveForward);
 
 		_renderInterface = MakeShared<NVRHI::RendererInterfaceD3D11>(&g_ErrorCallback, _deviceManager->GetImmediateContext());
 
@@ -704,6 +688,7 @@ public:
 
 	void Animate(double fElapsedTimeSeconds)
 	{
+		_InputManager.Update();
 		//std::cout << fElapsedTimeSeconds << std::endl;
 		//std::cout << _deviceManager->GetAverageFrameTime() << std::endl;
 	}
