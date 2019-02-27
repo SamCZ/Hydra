@@ -41,7 +41,7 @@ namespace Hydra
 		InputEvent EventType;
 		SharedPtr<IDelegate<ReturnType, ArgsType...>> Delegate;
 
-		InputEventAction(String actionName, InputEvent eventType, SharedPtr<IDelegate<ReturnType, ArgsType...>> func) : ActionName(actionName), EventType(eventType), Delegate(func) {}
+		//InputEventAction(String actionName, InputEvent eventType, SharedPtr<IDelegate<ReturnType, ArgsType...>> func) : ActionName(actionName), EventType(eventType), Delegate(func) {}
 	};
 
 	class InputManager;
@@ -54,7 +54,11 @@ namespace Hydra
 		List<InputAxisKeyMapping> _AxisMappings;
 
 		List<InputEventAction<void>> _InputActionsListeners;
+		List<InputEventAction<void, char>> _InputTypeListeners;
 
+		List<InputEventAction<void, float>> _InputAxisListeners;
+
+		Vector2i _LastMousePos = Vector2i(-1, -1);
 	public:
 		void AddActionMapping(const InputActionKeyMapping& mapping);
 		void AddActionMapping(const String InActionName, const Key InKey, const bool bInShift = false, const bool bInCtrl = false, const bool bInAlt = false, const bool bInCmd = false);
@@ -78,13 +82,39 @@ namespace Hydra
 
 			_InputActionsListeners.push_back(action);
 		}
-		//void BindAxis();
+
+		template<class UserClass>
+		inline void BindKeyTypeAction(UserClass* object, typename Delegate<UserClass, void, char>::MethodPtr fnc)
+		{
+			Delegate<UserClass, void, char>* del = new Delegate<UserClass, void, char>(object, fnc);
+			SharedPtr<IDelegate<void, char>> baseDelegate = MakeShareable(del);
+
+			InputEventAction<void, char> action;
+			action.Delegate = baseDelegate;
+
+			_InputTypeListeners.push_back(action);
+		}
+		
+		template<class UserClass>
+		inline void BindAxis(String actionName, UserClass* object, typename Delegate<UserClass, void, float>::MethodPtr fnc)
+		{
+			Delegate<UserClass, void, float>* del = new Delegate<UserClass, void, float>(object, fnc);
+			SharedPtr<IDelegate<void, float>> baseDelegate = MakeShareable(del);
+
+			InputEventAction<void, float> action = {
+				actionName, InputEvent::IE_Axis, baseDelegate
+			};
+
+			_InputAxisListeners.push_back(action);
+		}
 
 
 
 		bool OnKeyChar(const char Character, const bool IsRepeat);
 		bool OnKeyDown(const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat);
 		bool OnKeyUp(const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat);
+
+		Key MouseButtonToKey(const EMouseButtons::Type btn);
 
 		//bool OnMouseDown(const EMouseButtons::Type Button);
 		bool OnMouseDown(const EMouseButtons::Type Button, const Vector2i CursorPos);
@@ -96,5 +126,7 @@ namespace Hydra
 		bool OnMouseWheel(const float Delta, const Vector2i CursorPos);
 		bool OnMouseMove();
 		bool OnRawMouseMove(const Vector2i CursorPos);
+
+		Vector2i GetCursorPos() const;
 	;};
 }

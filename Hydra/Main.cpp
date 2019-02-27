@@ -409,15 +409,28 @@ public:
 		Log("Click", "Maaa gahaaaaad!");
 	}
 
+	inline void OnKey(char c)
+	{
+		//std::cout << "->" << c << std::endl;
+	}
+
+	inline void OnMouseX(float Val)
+	{
+		std::cout << "x->" << Val << std::endl;
+	}
+
 	inline HRESULT DeviceCreated()
 	{
 
-		_InputManager.AddActionMapping("MouseLeft", Keys::A);
+		_InputManager.AddActionMapping("MouseLeft", Keys::LeftMouseButton);
 		_InputManager.BindAction("MouseLeft", IE_Pressed, this, &MainRenderView::Click);
 
-		//InputManager im;
-		//im.BindAction("Click", IE_Pressed, this, &MainRenderView::Click);
-		//im.CallActions();
+
+		_InputManager.BindKeyTypeAction(this, &MainRenderView::OnKey);
+
+		_InputManager.AddAxisMapping("MouseX", Keys::MouseX, 1.0f);
+		_InputManager.BindAxis("MouseX", this, &MainRenderView::OnMouseX);
+
 
 		_renderInterface = MakeShared<NVRHI::RendererInterfaceD3D11>(&g_ErrorCallback, _deviceManager->GetImmediateContext());
 
