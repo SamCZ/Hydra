@@ -1,8 +1,10 @@
 #pragma once
 
+#include "Hydra/Scene/Transformable.h"
 #include "Hydra/Scene/Component.h"
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
 #include "Hydra/Core/Vector.h"
+#include "Hydra/Core/Container.h"
 
 namespace Hydra
 {
@@ -25,6 +27,9 @@ namespace Hydra
 		NVRHI::BufferHandle _VertexBuffer;
 		NVRHI::BufferHandle _InstBuffer;
 
+		List<Transformable> _InstanceObjects;
+		List<Matrix4> _InstanceData;
+
 		NVRHI::DrawArguments _DrawArguments;
 
 		Mesh* _Mesh;
@@ -44,6 +49,10 @@ namespace Hydra
 
 		void SetMesh(Mesh* mesh);
 		Mesh* GetMesh();
+
+		void AddInstance(float x, float y, float z, float rx = 0.0f, float ry = 0.0f, float rz = 0.0, float sx = 1.0f, float sy = 1.0, float sz = 1.0);
+		void AddInstance(const Vector3& pos, const Vector3& rotation = Vector3(), const Vector3& scale = Vector3(1.0f));
+		void RemoveAllInstances();
 
 		//TODO: Instancing
 

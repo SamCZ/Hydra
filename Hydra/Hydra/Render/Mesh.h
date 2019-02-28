@@ -28,6 +28,9 @@ namespace Hydra
 		void UpdateBounds();
 
 		void GenerateNormals();
+
+	private:
+		Vector3 ComputeTriangleNormal(const Vector3& p1, const Vector3& p2, const Vector3& p3);
 	};
 
 	DEFINE_PTR(Mesh)

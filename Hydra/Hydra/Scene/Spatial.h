@@ -40,6 +40,7 @@ namespace Hydra
 
 		String GetHiearchy() const;
 
+
 		template<class T> FORCEINLINE SharedPtr<T> GetComponent()
 		{
 			static_assert(std::is_base_of<Component, T>::value, "T must derive from Component");
@@ -86,24 +87,28 @@ namespace Hydra
 					_Components.erase(_Components.begin() + i);
 				}
 			}
+		}
 
-			/*for (int i = 0; i < _Components.size(); i++)
+
+		template<class T>
+		FORCEINLINE List<SharedPtr<T>> FindComponents()
+		{
+			List<SharedPtr<T>> components;
+
+			SharedPtr<T> cmp = GetComponent<T>();
+			
+			if (cmp)
 			{
-				Component* component = _Components[i];
-				if (dynamic_cast<T*>(component))
-				{
-					_Components.erase(_Components.begin() + i);
-					component->Parent = nullptr;
+				components.push_back(cmp);
+			}
 
-					if (autoDelete)
-					{
-						delete component;
-						return nullptr;
-					}
+			for (SpatialPtr child : _Childs)
+			{
+				auto ccmp = child->FindComponents<T>();
+				components.insert(components.end(), ccmp.begin(), ccmp.end());
+			}
 
-					return (T*)component;
-				}
-			}*/
+			return components;
 		}
 
 		virtual Matrix4 GetModelMatrix() override;

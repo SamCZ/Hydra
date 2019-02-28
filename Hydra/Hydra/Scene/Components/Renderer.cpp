@@ -58,6 +58,35 @@ namespace Hydra
 		return _Mesh;
 	}
 
+	void Renderer::AddInstance(float x, float y, float z, float rx, float ry, float rz, float sx, float sy, float sz)
+	{
+		_IsInstanced = true;
+		Transformable obj;
+		obj.Position = Vector3(x, y, z);
+		obj.Rotation = Vector3(rx, ry, rz);
+		obj.Scale = Vector3(sx, sy, sz);
+		_InstanceObjects.push_back(obj);
+		_InstanceData.push_back(obj.GetModelMatrix());
+	}
+
+	void Renderer::AddInstance(const Vector3 & pos, const Vector3 & rotation, const Vector3 & scale)
+	{
+		_IsInstanced = true;
+		Transformable obj;
+		obj.Position = pos;
+		obj.Rotation = rotation;
+		obj.Scale = scale;
+		_InstanceObjects.push_back(obj);
+		_InstanceData.push_back(obj.GetModelMatrix());
+	}
+
+	void Renderer::RemoveAllInstances()
+	{
+		_IsInstanced = false;
+		_InstanceObjects.clear();
+		_InstanceData.clear();
+	}
+
 	void Renderer::WriteMeshData(NVRHI::IRendererInterface* renderInterface)
 	{
 		if (!_NeedsUpdate) return;
@@ -144,9 +173,9 @@ namespace Hydra
 
 	void Renderer::UpdateInstancing(NVRHI::IRendererInterface* renderInterface, NVRHI::DrawCallState& state)
 	{
-		/*if (_LastInstanceCount != InstanceObjects.size() || _NeedsUpdateInstances)
+		if (_LastInstanceCount != _InstanceData.size() || _NeedsUpdateInstances)
 		{
-			_LastInstanceCount = InstanceObjects.size();
+			_LastInstanceCount = _InstanceData.size();
 			_NeedsUpdateInstances = false;
 
 			if (_InstBuffer != nullptr)
@@ -155,35 +184,27 @@ namespace Hydra
 				_InstBuffer = nullptr;
 			}
 
-			Instances.clear();
-			for (Transformable& obj : InstanceObjects)
-			{
-				Instances.push_back(obj.getModelMatrix());
-			}
-
-			if (_lastInstanceCount > 0)
+			if (_LastInstanceCount > 0)
 			{
 				NVRHI::BufferDesc instBufferDesc;
 				instBufferDesc.isVertexBuffer = true;
-				instBufferDesc.byteSize = uint32_t(Instances.size() * sizeof(glm::mat4));
+				instBufferDesc.byteSize = uint32_t(_InstanceData.size() * sizeof(Matrix4));
 				instBufferDesc.isCPUWritable = true;
-				_instBuffer = renderInterface->createBuffer(instBufferDesc, &Instances[0]);
+				_InstBuffer = renderInterface->createBuffer(instBufferDesc, &_InstanceData[0]);
 
-				for (MeshDataPart& part : _meshParts)
-				{
-					part.setInstanceCount(_lastInstanceCount);
-				}
+				_DrawArguments.instanceCount = _LastInstanceCount;
 			}
 			else
 			{
-				_isInstanced = false;
+				_IsInstanced = false;
+				_DrawArguments.instanceCount = 1;
 			}
 		}
 
-		if (_isInstanced)
+		if (_IsInstanced)
 		{
 			state.vertexBufferCount = 2;
-			state.vertexBuffers[1].buffer = _instBuffer;
+			state.vertexBuffers[1].buffer = _InstBuffer;
 			state.vertexBuffers[1].slot = 1;
 			state.vertexBuffers[1].stride = sizeof(glm::mat4);
 			//state.vertexBuffers[1].stride = sizeof(glm::vec4);
@@ -191,18 +212,17 @@ namespace Hydra
 		else
 		{
 			state.vertexBufferCount = 1;
-		}*/
-		state.vertexBufferCount = 1;
+		}
 	}
 
 	void Renderer::WriteDataToState(NVRHI::IRendererInterface* renderInterface, NVRHI::DrawCallState& state)
 	{
 		WriteMeshData(renderInterface);
-		state.primType = NVRHI::PrimitiveType::TRIANGLE_LIST;
-		/*if (_Mesh != nullptr)
+		//state.primType = NVRHI::PrimitiveType::;
+		if (_Mesh != nullptr)
 		{
 			state.primType = _Mesh->PrimitiveType;
-		}*/
+		}
 
 		state.indexBufferFormat = NVRHI::Format::R32_UINT;
 		state.indexBuffer = _IndexHandle;

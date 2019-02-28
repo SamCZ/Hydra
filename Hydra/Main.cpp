@@ -7,6 +7,7 @@
 #include "Hydra/Render/Pipeline/DeviceManager11.h"
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI_D3D11.h"
 #include "Hydra/Render/Pipeline/BindingHelpers.h"
+#include "Hydra/Render/Graphics.h"
 
 #include "ImGui/imgui.h"
 #include "ImGui/ImGuizmo.h"
@@ -33,6 +34,8 @@
 
 #include "Hydra/Core/FastNoise.h"
 #include "Hydra/Core/Polygonise.h"
+#include "Hydra/Core/Random.h"
+#include "Hydra/Terrain/Erosion.h"
 
 #include "Hydra/Input/Windows/WindowsInputManager.h"
 
@@ -81,6 +84,7 @@ static float AO_Radius = 0.085f;
 static float AO_Bias = 0.025f;
 static float AO_Intensity = 1.0f;
 static bool AO_Preview = false;
+static float tessellationAmount = 1.0;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 class GuiVisualController : public IVisualController
@@ -116,7 +120,12 @@ public:
 		ImGui::Checkbox("Preview", &AO_Preview);
 
 		ImGui::Separator();
+		ImGui::Text("Tesselation");
+		ImGui::DragFloat("TessellationAmount", &tessellationAmount, 0.01f);
 
+		ImGui::Separator();
+
+		ImGui::Text("Timing");
 		ImGui::Text(ToString(Engine::GetDeviceManager()->GetAverageFrameTime()).c_str());
 
 		//ImGui::Image()
@@ -162,9 +171,11 @@ struct alignas(16) SSAO_CB_RT
 	alignas(16) Vector4 RadiusBias;
 };
 
-#define NX 100
-#define NY 100
-#define NZ 100
+struct alignas(16) TessellationBuffer
+{
+	float tessellationAmount;
+	Vector3 padding;
+};
 
 class MainRenderView : public IVisualController
 {
@@ -174,6 +185,8 @@ private:
 	ShaderPtr _mainSahder;
 	ShaderPtr _blitShader;
 	ShaderPtr _ssaoShader;
+
+	ShaderPtr _tesselationShader;
 
 	NVRHI::InputLayoutHandle _mainInputLayout;
 	NVRHI::SamplerHandle m_pDefaultSamplerState;
@@ -192,6 +205,8 @@ private:
 	NVRHI::ConstantBufferHandle _ssaoCB;
 	NVRHI::ConstantBufferHandle _ssaoCB_RB;
 
+	NVRHI::ConstantBufferHandle _tessCB;
+
 	WindowsInputManagerPtr _InputManager;
 
 	CameraPtr camera;
@@ -202,95 +217,6 @@ public:
 		return a + f * (b - a);
 	}
 
-	Vector3 ComputeTriangleNormal(const Vector3& p1, const Vector3& p2, const Vector3& p3)
-	{
-		Vector3 U = p2 - p1;
-		Vector3 V = p3 - p1;
-		float x = (U.y * V.z) - (U.z * V.y);
-		float y = (U.z * V.x) - (U.x * V.z);
-		float z = (U.x * V.y) - (U.y * V.x);
-		return glm::normalize(Vector3(x, y, z));
-	}
-
-	int mix(uint32_t a, uint32_t b, uint32_t c)
-	{
-		a = a - b;  a = a - c;  a = a ^ (c >> 13);
-		b = b - c;  b = b - a;  b = b ^ (a << 8);
-		c = c - a;  c = c - b;  c = c ^ (b >> 13);
-		a = a - b;  a = a - c;  a = a ^ (c >> 12);
-		b = b - c;  b = b - a;  b = b ^ (a << 16);
-		c = c - a;  c = c - b;  c = c ^ (b >> 5);
-		a = a - b;  a = a - c;  a = a ^ (c >> 3);
-		b = b - c;  b = b - a;  b = b ^ (a << 10);
-		c = c - a;  c = c - b;  c = c ^ (b >> 15);
-		return c;
-	}
-
-	inline long hash_ivec2(int x, int y)
-	{
-		long A = (unsigned long)(x >= 0 ? 2 * (long)x : -2 * (long)x - 1);
-		long B = (unsigned long)(y >= 0 ? 2 * (long)y : -2 * (long)y - 1);
-		long C = (long)((A >= B ? A * A + A + B : A + B * B) / 2);
-		return x < 0 && y < 0 || x >= 0 && y >= 0 ? C : -C - 1;
-	}
-
-	struct Edge
-	{
-		int EdgeIndex;
-		List<Vector3[3]> Triangles;
-		List<int> TriangleIndices;
-	};
-
-	void GenerateRustTexture(SpatialPtr spatial)
-	{
-		RendererWeakPtr rendererWeak = spatial->GetComponent<Renderer>();
-
-		if (auto renderer = rendererWeak.lock())
-		{
-			Mesh* mesh = renderer->GetMesh();
-
-			bool hasSmoothNormals = true;
-			bool smoothNormalsIndetified = false;
-
-			List<long> alreadyComputedLines;
-
-			for (int i = 0; i < mesh->Indices.size() / 3; i++)
-			{
-				int index0 = mesh->Indices[i * 3 + 0];
-				int index1 = mesh->Indices[i * 3 + 1];
-				int index2 = mesh->Indices[i * 3 + 2];
-
-				Vector3& v1 = mesh->Vertices[index0];
-				Vector3& v2 = mesh->Vertices[index1];
-				Vector3& v3 = mesh->Vertices[index2];
-
-				Vector3 normal = mesh->Normals[index0];
-
-				if (!hasSmoothNormals)
-				{
-					hasSmoothNormals = true;
-					hasSmoothNormals = normal == mesh->Normals[index1] && normal == mesh->Normals[index2];
-				}
-
-				if (hasSmoothNormals)
-				{
-					normal = ComputeTriangleNormal(v1, v2, v3);
-				}
-
-
-			}
-		}
-
-		for (SpatialPtr child : spatial->GetChilds())
-		{
-			GenerateRustTexture(child);
-		}
-	}
-
-	uint32 KeyCodes[512];
-	String KeyNames[512];
-	uint32 MaxKeys = 0;
-
 	inline LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		_InputManager->MsgProc(hWnd, uMsg, wParam, lParam);
@@ -299,127 +225,128 @@ public:
 		return S_OK;
 	}
 
-
-
-	inline Mesh* CreateVoxelTerrain()
-	{
-		FastNoise noise;
-		noise.SetNoiseType(FastNoise::PerlinFractal);
-		float*** data = new float**[NX];
-		{
-			for (int i = 0; i < NX; i++)
-			{
-				data[i] = new float*[NY];
-				for (int j = 0; j < NY; j++)
-				{
-					data[i][j] = new float[NZ];
-				}
-			}
-		}
-
-		float v = 0;
-		{
-			for (int i = 0; i < NX; i++)
-			{
-				for (int j = 0; j < NY; j++)
-				{
-					for (int k = 0; k < NZ; k++)
-					{
-						float val = 1;
-
-						if (i == 0 || i <= NX - 1) val = 0;
-						if (j == 0 || j <= NY - 1) val = 0;
-						if (k == 0 || k <= NZ - 1) val = 0;
-
-						data[i][j][k] = val;
-						//data[i][j][k] = (noise.GetNoise(i * 5.0f, j * 5.0f, k * 5.f) + 0.5f) * 100.0f;
-						//std::cout << data[i][j][k] << std::endl;
-					}
-				}
-			}
-		}
-
-		int i = 0;
-		int j = 0;
-		int k = 0;
-		int trc = 0;
-		List<TRIANGLE> tris;
-		TRIANGLE* triangles = new TRIANGLE[10];
-		GRIDCELL grid;
-		for (i = 0; i < NX - 1; i++)
-		{
-			for (j = 0; j < NY - 1; j++)
-			{
-				for (k = 0; k < NZ - 1; k++)
-				{
-					grid.p[0].x = (float)i;
-					grid.p[0].y = (float)j;
-					grid.p[0].z = (float)k;
-					grid.val[0] = data[i][j][k];
-					grid.p[1].x = (float)i + 1;
-					grid.p[1].y = (float)j;
-					grid.p[1].z = (float)k;
-					grid.val[1] = data[i + 1][j][k];
-					grid.p[2].x = (float)i + 1;
-					grid.p[2].y = (float)j + 1;
-					grid.p[2].z = (float)k;
-					grid.val[2] = data[i + 1][j + 1][k];
-					grid.p[3].x = (float)i;
-					grid.p[3].y = (float)j + 1;
-					grid.p[3].z = (float)k;
-					grid.val[3] = data[i][j + 1][k];
-					grid.p[4].x = (float)i;
-					grid.p[4].y = (float)j;
-					grid.p[4].z = (float)k + 1;
-					grid.val[4] = data[i][j][k + 1];
-					grid.p[5].x = (float)i + 1;
-					grid.p[5].y = (float)j;
-					grid.p[5].z = (float)k + 1;
-					grid.val[5] = data[i + 1][j][k + 1];
-					grid.p[6].x = (float)i + 1;
-					grid.p[6].y = (float)j + 1;
-					grid.p[6].z = (float)k + 1;
-					grid.val[6] = data[i + 1][j + 1][k + 1];
-					grid.p[7].x = (float)i;
-					grid.p[7].y = (float)j + 1;
-					grid.p[7].z = (float)k + 1;
-					grid.val[7] = data[i][j + 1][k + 1];
-
-
-					int triCount = Polygonise(grid, 1, triangles);
-					trc += triCount;
-					for (int n = 0; n < triCount; n++)
-					{
-						tris.push_back(triangles[n]);
-					}
-				}
-			}
-		}
-		delete[] triangles;
-		unsigned int vertNextId = 0;
-
-		Mesh* mesh = new Mesh();
-
-		for (int i = 0; i < tris.size(); i++)
-		{
-			TRIANGLE& tri = tris[i];
-
-			Vector3 normal = ComputeTriangleNormal(tri.p[0], tri.p[1], tri.p[2]);
-
-			for (int j = 0; j < 3; j++)
-			{
-				mesh->Vertices.push_back(tri.p[j]);
-				mesh->Normals.push_back(normal);
-				mesh->Indices.push_back(vertNextId++);
-			}
-		}
-
-		return mesh;
-	}
-
 	inline void Escape()
 	{
 		_InputManager->ToggleMouseCapture();
+	}
+
+	inline float* GenerateNoiseMap(int mapSize)
+	{
+		int seed = 0;
+		bool randomizeSeed = true;
+
+		int numOctaves = 7;
+		float persistence = .5f;
+		float lacunarity = 2;
+		float initialScale = 100.0f;
+
+		auto map = new float[mapSize * mapSize];
+		auto prng = Random(seed);
+
+		Vector2* offsets = new Vector2[numOctaves];
+		for (int i = 0; i < numOctaves; i++)
+		{
+			offsets[i] = Vector2(prng.GetFloat(-1000, 1000), prng.GetFloat(-1000, 1000));
+		}
+
+		float minValue = 999999.999f;
+		float maxValue = -999999.999f;
+
+		FastNoise noise;
+		noise.SetNoiseType(FastNoise::NoiseType::Perlin);
+
+		for (int y = 0; y < mapSize; y++)
+		{
+			for (int x = 0; x < mapSize; x++)
+			{
+				float noiseValue = 0;
+				float scale = initialScale;
+				float weight = 1;
+				for (int i = 0; i < numOctaves; i++)
+				{
+					Vector2 p = offsets[i] + Vector2(x / (float)mapSize, y / (float)mapSize) * scale;
+					noiseValue += noise.GetNoise(p.x, p.y) * weight;
+					weight *= persistence;
+					scale *= lacunarity;
+				}
+				map[y * mapSize + x] = noiseValue;
+				minValue = std::min(noiseValue, minValue);
+				maxValue = std::max(noiseValue, maxValue);
+			}
+		}
+
+		delete[] offsets;
+
+		// Normalize
+		if (maxValue != minValue)
+		{
+			for (int i = 0; i < mapSize * mapSize; i++)
+			{
+				map[i] = (map[i] - minValue) / (maxValue - minValue);
+			}
+		}
+
+		return map;
+	}
+
+	inline Mesh* GenerateTerrain()
+	{
+		int mapSize = 512;
+		float scale = 20;
+		float elevationScale = 10;
+		int numErosionIterations = 50000 * 3;
+
+		float* noise = GenerateNoiseMap(mapSize);
+
+		Erosion erosion;
+		erosion.Erode(noise, mapSize, numErosionIterations);
+
+		List<Vector3> vertices;
+		vertices.reserve(mapSize * mapSize);
+		List<unsigned int> indices;
+		indices.reserve((mapSize - 1) * (mapSize - 1) * 6);
+
+		Log("GenerateTerrain", "Generating...");
+
+		int t = 0;
+		for (int y = 0; y < mapSize; y++)
+		{
+			for (int x = 0; x < mapSize; x++)
+			{
+				int i = y * mapSize + x;
+
+				Vector2 percent = Vector2(x / (mapSize - 1.0f), y / (mapSize - 1.0f));
+				Vector3 pos = Vector3(percent.x * 2 - 1, 0, percent.y * 2 - 1) * scale;
+				pos += Vector3(0, 1, 0) * noise[i] * elevationScale;
+				vertices.insert(vertices.begin() + i, pos);
+
+				// Construct triangles
+				if (x != mapSize - 1 && y != mapSize - 1)
+				{
+					indices.insert(indices.begin() + t + 0, i + mapSize);
+					indices.insert(indices.begin() + t + 1, i + mapSize + 1);
+					indices.insert(indices.begin() + t + 2, i);
+
+					indices.insert(indices.begin() + t + 3, i + mapSize + 1);
+					indices.insert(indices.begin() + t + 4, i + 1);
+					indices.insert(indices.begin() + t + 5, i);
+
+					t += 6;
+				}
+			}
+		}
+
+		Log("GenerateTerrain", "Done...");
+
+		Mesh* mesh = new Mesh();
+		mesh->Vertices = vertices;
+		mesh->Indices = indices;
+		
+		mesh->GenerateNormals();
+
+		Log("GenerateTerrain", "yo...");
+
+		return mesh;
 	}
 
 	inline HRESULT DeviceCreated()
@@ -465,13 +392,27 @@ public:
 		_blitShader = ShaderImporter::Import("Assets/Shaders/blit.hlsl");
 		_ssaoShader = ShaderImporter::Import("Assets/Shaders/ssao.hlsl");
 
+		_tesselationShader = ShaderImporter::Import("Assets/Shaders/tesseleation.hlsl");
+
 		textur = TextureImporter::Import("Assets/Textures/Grassblock_02.dds");
 		testModel = Meshimporter::Import("IndustryEmpire/Models/BrickFactory.fbx", MeshImportOptions());
 		testModel->Scale = Vector3(0.01f, 0.01f, 0.01f);
 
+		for (RendererPtr& r : testModel->FindComponents<Renderer>())
+		{
+			for (int i = 0; i < 20; i++)
+			{
+				for (int j = 0; j < 20; j++)
+				{
+					r->AddInstance(5 * i, 0, 5 * j);
+				}
+			}
+		}
+
 		/*testModel = New(Spatial);
 		RendererPtr voxelRender = testModel->AddComponent<Renderer>();
-		Mesh* mesh2 = CreateVoxelTerrain();
+		voxelRender->TestColor = MakeRGB(200, 200, 200).toVec3();
+		Mesh* mesh2 = GenerateTerrain();
 		voxelRender->SetMesh(mesh2);*/
 
 		//GenerateRustTexture(testModel);
@@ -540,7 +481,7 @@ public:
 		_ssaoCB_RB = _renderInterface->createConstantBuffer(NVRHI::ConstantBufferDesc(sizeof(SSAO_CB_RT), nullptr), nullptr);
 		_renderInterface->writeConstantBuffer(_ssaoCB_RB, &cb_rt, sizeof(SSAO_CB_RT));
 
-		
+		_tessCB = _renderInterface->createConstantBuffer(NVRHI::ConstantBufferDesc(sizeof(TessellationBuffer), nullptr), nullptr);
 
 		return S_OK;
 	}
@@ -625,9 +566,7 @@ public:
 			_renderInterface->beginRenderingPass();
 
 			NVRHI::DrawCallState state;
-			state.renderState.clearColor = NVRHI::Color(0.2f, 0.2f, 0.2f, 1.0f);
-			state.renderState.clearColorTarget = true;
-			state.renderState.clearDepthTarget = true;
+			Graphics::SetClearFlags(state, MakeRGBf(0.2f, 0.2f, 0.2f));
 
 			state.renderState.viewportCount = 1;
 			state.renderState.viewports[0] = NVRHI::Viewport(float(1280), float(720));
@@ -639,15 +578,20 @@ public:
 			state.renderState.depthTarget = depthTarget;
 
 			state.inputLayout = _mainInputLayout;
-			state.VS.shader = _mainSahder->GetShader(NVRHI::ShaderType::SHADER_VERTEX);
-			state.PS.shader = _mainSahder->GetShader(NVRHI::ShaderType::SHADER_PIXEL);
+			Graphics::SetShader(state, _mainSahder);
 
+			TessellationBuffer tb = {};
+			tb.tessellationAmount = tessellationAmount;
+
+			_renderInterface->writeConstantBuffer(_tessCB, &tb, sizeof(TessellationBuffer));
+			NVRHI::BindConstantBuffer(state.HS, 0, _tessCB);
 
 			NVRHI::BindTexture(state.PS, 0, textur);
 			NVRHI::BindSampler(state.PS, 0, m_pDefaultSamplerState);
 
 			state.renderState.depthStencilState.depthEnable = true;
 			state.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_NONE;
+			//state.renderState.rasterState.fillMode = NVRHI::RasterState::FillMode::FILL_LINE;
 
 			RenderSpatial(testModel, state);
 
@@ -750,7 +694,7 @@ int main()
 	_deviceManager->AddControllerToFront(&guiView);
 
 
-	std::string title = "Hydra";
+	std::string title = "Hydra | DX11";
 
 	wchar_t wchTitle[256];
 	MultiByteToWideChar(CP_ACP, 0, title.c_str(), -1, wchTitle, 256);

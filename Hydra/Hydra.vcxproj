@@ -130,6 +130,7 @@
     <ClInclude Include="Hydra\Core\Log.h" />
     <ClInclude Include="Hydra\Core\Platform.h" />
     <ClInclude Include="Hydra\Core\Polygonise.h" />
+    <ClInclude Include="Hydra\Core\Random.h" />
     <ClInclude Include="Hydra\Core\Resource.h" />
     <ClInclude Include="Hydra\Engine.h" />
     <ClInclude Include="Hydra\Import\MeshImporter.h" />
@@ -166,6 +167,7 @@
     <ClInclude Include="Hydra\Core\SmartPointer.h" />
     <ClInclude Include="Hydra\Core\String.h" />
     <ClInclude Include="Hydra\Core\Vector.h" />
+    <ClInclude Include="Hydra\Terrain\Erosion.h" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
     <ClInclude Include="ImGui\ImGuizmo.h" />
@@ -184,6 +186,7 @@
   <ItemGroup>
     <ClCompile Include="Hydra\Core\FastNoise.cpp" />
     <ClCompile Include="Hydra\Core\Polygonise.cpp" />
+    <ClCompile Include="Hydra\Core\Random.cpp" />
     <ClCompile Include="Hydra\Core\Resource.cpp" />
     <ClCompile Include="Hydra\Engine.cpp" />
     <ClCompile Include="Hydra\Import\MeshImporter.cpp" />
@@ -208,6 +211,7 @@
     <ClCompile Include="Hydra\Scene\Transformable.cpp" />
     <ClCompile Include="Hydra\Core\ColorRGBA.cpp" />
     <ClCompile Include="Hydra\Core\File.cpp" />
+    <ClCompile Include="Hydra\Terrain\Erosion.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\ImGuizmo.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />

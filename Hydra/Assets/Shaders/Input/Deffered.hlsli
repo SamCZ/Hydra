@@ -1,7 +1,5 @@
 #pragma pack_matrix( column_major )
 
-#pragma hydra vert:MainVS pixel:MainPS
-
 struct VS_Input
 {
 	float3 position : POSITION;

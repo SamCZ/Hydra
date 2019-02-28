@@ -62,7 +62,18 @@ namespace Hydra
 
 		if (auto camera = _Camera.lock())
 		{
-			camera->Parent->Rotation.x += val;
+			float& RotX = camera->Parent->Rotation.x;
+
+			RotX += val;
+
+			if (RotX <= -90.0f)
+			{
+				RotX = -90.0f;
+			}
+			else if (RotX >= 90.0f)
+			{
+				RotX = 90.0f;
+			}
 		}
 	}
 
@@ -72,7 +83,14 @@ namespace Hydra
 
 		if (auto camera = _Camera.lock())
 		{
-			camera->Parent->Rotation.y += val;
+			float& RotY = camera->Parent->Rotation.y;
+
+			RotY += val;
+
+			if (RotY >= 360.0f || RotY <= -360.0f)
+			{
+				RotY = glm::mod(RotY, 360.0f);
+			}
 		}
 	}
 }
