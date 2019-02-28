@@ -387,6 +387,9 @@ public:
 		//quadModel->Rotation.x = -90;
 
 		camera->Update();
+		
+		Graphics::CreateConstantBuffer(sizeof(BasicConstantBuffer), "yo", PSB_PIXEL | PSB_VERTEX);
+		Graphics::CreateConstantBuffer(sizeof(BasicConstantBuffer), "yo", PSB_PIXEL | PSB_VERTEX);
 
 		_mainSahder = ShaderImporter::Import("Assets/Shaders/basic.hlsl");
 		_blitShader = ShaderImporter::Import("Assets/Shaders/blit.hlsl");
@@ -429,8 +432,6 @@ public:
 			{ "WORLD",    2,    NVRHI::Format::RGBA32_FLOAT, 1, 32, true },
 			{ "WORLD",    3,    NVRHI::Format::RGBA32_FLOAT, 1, 48, true }
 		};
-
-		//ShowCursor(FALSE);
 		
 		ID3DBlob* vsShaderBlob = _mainSahder->GetShaderBlob(NVRHI::ShaderType::SHADER_VERTEX);
 		_mainInputLayout = _renderInterface->createInputLayout(SceneLayout, _countof(SceneLayout), vsShaderBlob->GetBufferPointer(), vsShaderBlob->GetBufferSize());
@@ -488,33 +489,16 @@ public:
 
 	inline void BackBufferResized(uint32_t width, uint32_t height, uint32_t sampleCount) override
 	{
-		depthTarget = CreateViewportTarget("DPBR_Depth", NVRHI::Format::D24S8, width, height, NVRHI::Color(1.f, 0.f, 0.f, 0.f), sampleCount);
-		sceneTarget = CreateViewportTarget("DPBR_AlbedoMetallic", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(0.f), sampleCount);
-		normalTarget = CreateViewportTarget("DPBR_Normal", NVRHI::Format::RGBA16_FLOAT, width, height, NVRHI::Color(0.f), sampleCount);
-		positionTarget = CreateViewportTarget("DPBR_Pos", NVRHI::Format::RGBA16_FLOAT, width, height, NVRHI::Color(0.f), sampleCount);
+		depthTarget = Graphics::CreateRenderTarget("DPBR_Depth", NVRHI::Format::D24S8, width, height, NVRHI::Color(1.f, 0.f, 0.f, 0.f), sampleCount);
+		sceneTarget = Graphics::CreateRenderTarget("DPBR_AlbedoMetallic", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(0.f), sampleCount);
+		normalTarget = Graphics::CreateRenderTarget("DPBR_Normal", NVRHI::Format::RGBA16_FLOAT, width, height, NVRHI::Color(0.f), sampleCount);
+		positionTarget = Graphics::CreateRenderTarget("DPBR_Pos", NVRHI::Format::RGBA16_FLOAT, width, height, NVRHI::Color(0.f), sampleCount);
 	}
-
-	NVRHI::TextureHandle CreateViewportTarget(std::string name, const NVRHI::Format::Enum& format, UINT width, UINT height, const NVRHI::Color& clearColor, UINT sampleCount)
-	{
-
-		NVRHI::TextureDesc gbufferDesc;
-		gbufferDesc.width = width;
-		gbufferDesc.height = height;
-		gbufferDesc.isRenderTarget = true;
-		gbufferDesc.useClearValue = true;
-		gbufferDesc.sampleCount = sampleCount;
-		gbufferDesc.disableGPUsSync = true;
-
-		gbufferDesc.format = format;
-		gbufferDesc.clearValue = clearColor;
-		gbufferDesc.debugName = name.c_str();
-		NVRHI::TextureHandle handle = _renderInterface->createTexture(gbufferDesc, NULL);
-		return handle;
-	}
-
 
 	inline void DeviceDestroyed() override
 	{
+		Graphics::Destroy();
+
 		_renderInterface->destroyConstantBuffer(_basicConstantBuffer);
 		_renderInterface->destroyInputLayout(_mainInputLayout);
 	}

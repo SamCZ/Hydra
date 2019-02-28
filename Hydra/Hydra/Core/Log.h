@@ -14,4 +14,14 @@ namespace Hydra
 	{
 		std::cout << funcName << "(" << argument << "): " << message << std::endl;
 	}
+
+	inline static void LogError(const String& funcName, const String& message)
+	{
+		std::cout << funcName << ": " << message << std::endl;
+	}
+
+	inline static void LogError(const String& funcName, const String& argument, const String& message)
+	{
+		std::cout << funcName << "(" << argument << "): " << message << std::endl;
+	}
 }
