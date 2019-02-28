@@ -49,6 +49,10 @@ namespace Hydra
 
 		Matrix4 GetProjectionViewMatrix();
 
+		Vector3 GetForward();
+		Vector3 GetLeft();
+		Vector3 GetUp();
+
 	private:
 		void UpdateProjectionMatrix();
 	};

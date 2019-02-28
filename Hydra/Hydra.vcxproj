@@ -155,6 +155,7 @@
     <ClInclude Include="Hydra\Render\Shader.h" />
     <ClInclude Include="Hydra\Scene\Component.h" />
     <ClInclude Include="Hydra\Scene\Components\Camera.h" />
+    <ClInclude Include="Hydra\Scene\Components\Movement\FirstPersonController.h" />
     <ClInclude Include="Hydra\Scene\Components\Renderer.h" />
     <ClInclude Include="Hydra\Scene\Spatial.h" />
     <ClInclude Include="Hydra\Scene\Transformable.h" />
@@ -201,6 +202,7 @@
     <ClCompile Include="Hydra\Render\Shader.cpp" />
     <ClCompile Include="Hydra\Scene\Components\Camera.cpp" />
     <ClCompile Include="Hydra\Scene\Component.cpp" />
+    <ClCompile Include="Hydra\Scene\Components\Movement\FirstPersonController.cpp" />
     <ClCompile Include="Hydra\Scene\Components\Renderer.cpp" />
     <ClCompile Include="Hydra\Scene\Spatial.cpp" />
     <ClCompile Include="Hydra\Scene\Transformable.cpp" />

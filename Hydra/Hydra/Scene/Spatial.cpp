@@ -57,6 +57,19 @@ namespace Hydra
 		return _Childs[index];
 	}
 
+	void Spatial::Update()
+	{
+		for (ComponentPtr cmp : _Components)
+		{
+			cmp->Update();
+		}
+
+		for (SpatialPtr child : _Childs)
+		{
+			child->Update();
+		}
+	}
+
 	Matrix4 Spatial::GetModelMatrix()
 	{
 		if (GetComponent<Camera>())

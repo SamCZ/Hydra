@@ -34,6 +34,8 @@ namespace Hydra
 
 		SpatialPtr GetChild(int index);
 
+		void Update();
+
 		void PrintHiearchy(int depth = 0) const;
 
 		String GetHiearchy() const;

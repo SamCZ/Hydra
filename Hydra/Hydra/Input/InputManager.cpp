@@ -66,6 +66,47 @@ namespace Hydra
 				}
 			}
 		}
+
+		if (_MousePos != _LastMousePos)
+		{
+			Vector2i mouseDelta = _MousePos - _LastMousePos;
+
+			for (InputAxisKeyMapping& mapping : _AxisMappings)
+			{
+				for (InputEventAction<void, float>& action : _InputAxisListeners)
+				{
+					if (mapping.AxisName == action.ActionName)
+					{
+						if (mapping.KeyType == Keys::MouseX)
+						{
+							action.Delegate->Invoke(mouseDelta.x * mapping.Scale);
+						}
+
+						if (mapping.KeyType == Keys::MouseY)
+						{
+							action.Delegate->Invoke(mouseDelta.y * mapping.Scale);
+						}
+					}
+				}
+			}
+
+			_LastMousePos = _MousePos;
+		}
+	}
+
+	void Hydra::InputManager::SetMouseCapture(bool state)
+	{
+		_MouseCaptured = state;
+	}
+
+	void Hydra::InputManager::ToggleMouseCapture()
+	{
+		_MouseCaptured = !_MouseCaptured;
+	}
+
+	bool Hydra::InputManager::IsMouseCaptured() const
+	{
+		return _MouseCaptured;
 	}
 
 	bool InputManager::OnKeyChar(const char Character, const bool IsRepeat)
@@ -262,33 +303,7 @@ namespace Hydra
 
 	bool InputManager::OnRawMouseMove(const Vector2i CursorPos)
 	{
-		if (_LastMousePos == Vector2i(-1, -1))
-		{
-			_LastMousePos = CursorPos;
-		}
-
-		Vector2i mouseDelta = CursorPos - _LastMousePos;
-
-		for (InputAxisKeyMapping& mapping : _AxisMappings)
-		{
-			for (InputEventAction<void, float>& action : _InputAxisListeners)
-			{
-				if (mapping.AxisName == action.ActionName)
-				{
-					if (mapping.KeyType == Keys::MouseX)
-					{
-						action.Delegate->Invoke(mouseDelta.x * mapping.Scale);
-					}
-
-					if (mapping.KeyType == Keys::MouseY)
-					{
-						action.Delegate->Invoke(mouseDelta.y * mapping.Scale);
-					}
-				}
-			}
-		}
-
-		_LastMousePos = CursorPos;
+		_MousePos = CursorPos;
 
 		return false;
 	}

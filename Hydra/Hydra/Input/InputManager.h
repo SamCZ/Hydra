@@ -49,7 +49,7 @@ namespace Hydra
 
 	class InputManager
 	{
-	private:
+	protected:
 		List<InputActionKeyMapping> _ActionMappings;
 		List<InputAxisKeyMapping> _AxisMappings;
 
@@ -58,9 +58,14 @@ namespace Hydra
 
 		List<InputEventAction<void, float>> _InputAxisListeners;
 
+		Vector2i _MousePos = Vector2i(-1, -1);
 		Vector2i _LastMousePos = Vector2i(-1, -1);
 
 		Map<Key, bool> _KeyStates;
+
+		bool _MouseCaptured;
+		bool _MouseHiddenState;
+		bool _MouseShowState;
 	public:
 		void AddActionMapping(const InputActionKeyMapping& mapping);
 		void AddActionMapping(const String InActionName, const Key InKey, const bool bInShift = false, const bool bInCtrl = false, const bool bInAlt = false, const bool bInCmd = false);
@@ -110,7 +115,11 @@ namespace Hydra
 			_InputAxisListeners.push_back(action);
 		}
 
-		void Update();
+		void SetMouseCapture(bool state);
+		void ToggleMouseCapture();
+		bool IsMouseCaptured() const;
+
+		virtual void Update();
 
 		bool OnKeyChar(const char Character, const bool IsRepeat);
 		bool OnKeyDown(const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat);

@@ -4,6 +4,7 @@
 #include <windowsx.h>
 
 #include "Hydra/Core/Vector.h"
+#include "Hydra/Engine.h"
 
 namespace Hydra
 {
@@ -316,14 +317,15 @@ namespace Hydra
 		// Mouse Movement
 		case WM_INPUT:
 		{
-			POINT CursorPoint;
+			std::cout << "move" << std::endl;
+			/*POINT CursorPoint;
 			CursorPoint.x = GET_X_LPARAM(lParam);
 			CursorPoint.y = GET_Y_LPARAM(lParam);
 
 			const Vector2i CursorPos(CursorPoint.x, CursorPoint.y);
 
 			OnRawMouseMove(CursorPos);
-
+			*/
 			/*if (DeferredMessage.RawInputFlags == MOUSE_MOVE_RELATIVE)
 			{
 				MessageHandler->OnRawMouseMove(DeferredMessage.X, DeferredMessage.Y);
@@ -345,6 +347,13 @@ namespace Hydra
 			POINT CursorPoint;
 			CursorPoint.x = GET_X_LPARAM(lParam);
 			CursorPoint.y = GET_Y_LPARAM(lParam);
+
+			POINT pos;
+			::GetCursorPos(&pos);
+			::ScreenToClient(hWnd, &pos);
+
+			CursorPoint.x = pos.x;
+			CursorPoint.y = pos.y;
 
 			const Vector2i CursorPos(CursorPoint.x, CursorPoint.y);
 
@@ -717,5 +726,60 @@ namespace Hydra
 		ModifierKeyState[EModifierKey::LeftAlt] = (::GetAsyncKeyState(VK_LMENU) & 0x8000) != 0;
 		ModifierKeyState[EModifierKey::RightAlt] = (::GetAsyncKeyState(VK_RMENU) & 0x8000) != 0;
 		ModifierKeyState[EModifierKey::CapsLock] = (::GetKeyState(VK_CAPITAL) & 0x0001) != 0;
+	}
+
+	void WindowsInputManager::Update()
+	{
+		InputManager::Update();
+
+		if (_MouseCaptured)
+		{
+			_MouseShowState = false;
+
+			if (!_MouseHiddenState)
+			{
+				_MouseHiddenState = true;
+				// Disable the cursor.  Wait until its actually disabled.
+				while (::ShowCursor(false) >= 0);
+			}
+
+			HWND hWnd = Engine::GetDeviceManager()->GetHWND();
+
+			RECT rect;
+			GetWindowRect(hWnd, &rect);
+
+			float centerX = rect.left + (rect.right - rect.left) / 2.0f;
+			float centerY = rect.top + (rect.bottom - rect.top) / 2.0f;
+
+			::SetCursorPos(centerX, centerY);
+
+			POINT pos;
+			::GetCursorPos(&pos);
+			::ScreenToClient(hWnd, &pos);
+
+			_LastMousePos.x = pos.x;
+			_LastMousePos.y = pos.y;
+
+			::SetCapture(hWnd);
+		}
+		else
+		{
+			_MouseHiddenState = false;
+
+			if (!_MouseShowState)
+			{
+				_MouseShowState = true;
+				// Show mouse cursor. Each time ShowCursor(true) is called an internal value is incremented so we 
+				// call ShowCursor until the cursor is actually shown (>= 0 value returned by showcursor)
+				while (::ShowCursor(true) < 0);
+
+				::ReleaseCapture();
+			}
+		}
+
+		//::SetCapture(_deviceManager->GetHWND());
+
+
+		//::ClipCursor(&rect);
 	}
 }

@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <algorithm>
 #include <random>
 
@@ -20,6 +20,7 @@
 #include "Hydra/Scene/Spatial.h"
 #include "Hydra/Scene/Components/Camera.h"
 #include "Hydra/Scene/Components/Renderer.h"
+#include "Hydra/Scene/Components/Movement/FirstPersonController.h"
 
 #include "Hydra/Import/ShaderImporter.h"
 #include "Hydra/Render/Shader.h"
@@ -34,6 +35,14 @@
 #include "Hydra/Core/Polygonise.h"
 
 #include "Hydra/Input/Windows/WindowsInputManager.h"
+
+/* Set the better graphic card for notebooks ( ͡° ͜ʖ ͡°)
+*  http://developer.download.nvidia.com/devzone/devcenter/gamegraphics/files/OptimusRenderingPolicies.pdf
+*  http://stevendebock.blogspot.com/2013/07/nvidia-optimus.html
+*/
+extern "C" {
+	_declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+}
 
 void signalError(const char* file, int line, const char* errorDesc)
 {
@@ -105,6 +114,10 @@ public:
 		ImGui::DragFloat("Intensity", &AO_Intensity, 0.001f);
 
 		ImGui::Checkbox("Preview", &AO_Preview);
+
+		ImGui::Separator();
+
+		ImGui::Text(ToString(Engine::GetDeviceManager()->GetAverageFrameTime()).c_str());
 
 		//ImGui::Image()
 
@@ -179,7 +192,7 @@ private:
 	NVRHI::ConstantBufferHandle _ssaoCB;
 	NVRHI::ConstantBufferHandle _ssaoCB_RB;
 
-	WindowsInputManager _InputManager;
+	WindowsInputManagerPtr _InputManager;
 
 	CameraPtr camera;
 
@@ -280,7 +293,7 @@ public:
 
 	inline LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
-		_InputManager.MsgProc(hWnd, uMsg, wParam, lParam);
+		_InputManager->MsgProc(hWnd, uMsg, wParam, lParam);
 
 
 		return S_OK;
@@ -404,17 +417,30 @@ public:
 		return mesh;
 	}
 
-	inline void OnMoveForward(float Val)
+	inline void Escape()
 	{
-		std::cout << Val << std::endl;
+		_InputManager->ToggleMouseCapture();
 	}
 
 	inline HRESULT DeviceCreated()
 	{
-		_InputManager.AddAxisMapping("MoveForward", Keys::W, 1.0f);
-		_InputManager.AddAxisMapping("MoveForward", Keys::S, -1.0f);
+		_InputManager = MakeShared<WindowsInputManager>();
 
-		_InputManager.BindAxis("MoveForward", this, &MainRenderView::OnMoveForward);
+		_InputManager->AddAxisMapping("MoveForwardBackward", Keys::W, 1.0f);
+		_InputManager->AddAxisMapping("MoveForwardBackward", Keys::S, -1.0f);
+
+		_InputManager->AddAxisMapping("MoveLeftRight", Keys::A, 1.0f);
+		_InputManager->AddAxisMapping("MoveLeftRight", Keys::D, -1.0f);
+
+		_InputManager->AddAxisMapping("LookUpDown", Keys::MouseY, -0.1f);
+		_InputManager->AddAxisMapping("LookLeftRight", Keys::MouseX, -0.1f);
+
+		_InputManager->AddActionMapping("Esc", Keys::Escape);
+		_InputManager->BindAction("Esc", IE_Pressed, this, &MainRenderView::Escape);
+
+		Engine::SetInputManager(_InputManager);
+
+		_InputManager->SetMouseCapture(true);
 
 		_renderInterface = MakeShared<NVRHI::RendererInterfaceD3D11>(&g_ErrorCallback, _deviceManager->GetImmediateContext());
 
@@ -425,6 +451,8 @@ public:
 
 		camera = quadModel->AddComponent<Camera>();
 		camera->Start();
+
+		quadModel->AddComponent<FirstPersonController>()->Start();
 
 		quadModel->Position.y = 2;
 		quadModel->Position.z = 5;
@@ -461,7 +489,7 @@ public:
 			{ "WORLD",    3,    NVRHI::Format::RGBA32_FLOAT, 1, 48, true }
 		};
 
-		
+		//ShowCursor(FALSE);
 		
 		ID3DBlob* vsShaderBlob = _mainSahder->GetShaderBlob(NVRHI::ShaderType::SHADER_VERTEX);
 		_mainInputLayout = _renderInterface->createInputLayout(SceneLayout, _countof(SceneLayout), vsShaderBlob->GetBufferPointer(), vsShaderBlob->GetBufferSize());
@@ -511,6 +539,8 @@ public:
 
 		_ssaoCB_RB = _renderInterface->createConstantBuffer(NVRHI::ConstantBufferDesc(sizeof(SSAO_CB_RT), nullptr), nullptr);
 		_renderInterface->writeConstantBuffer(_ssaoCB_RB, &cb_rt, sizeof(SSAO_CB_RT));
+
+		
 
 		return S_OK;
 	}
@@ -587,7 +617,7 @@ public:
 		NVRHI::TextureHandle mainRenderTarget = _renderInterface->getHandleForTexture(pMainResource);
 		pMainResource->Release();
 
-		testModel->Rotation.y += 0.1f;
+		//testModel->Rotation.y += 0.1f;
 		//camera->Parent->Rotation.y += 0.1f;
 		camera->Update();
 
@@ -688,7 +718,11 @@ public:
 
 	void Animate(double fElapsedTimeSeconds)
 	{
-		_InputManager.Update();
+		_InputManager->Update();
+
+
+		testModel->Update();
+		camera->Parent->Update();
 		//std::cout << fElapsedTimeSeconds << std::endl;
 		//std::cout << _deviceManager->GetAverageFrameTime() << std::endl;
 	}

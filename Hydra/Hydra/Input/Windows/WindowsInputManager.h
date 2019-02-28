@@ -36,5 +36,10 @@ namespace Hydra
 
 		void UpdateAllModifierKeyStates();
 
+	public:
+		virtual void Update() override;
+
 	};
+
+	DEFINE_PTR(WindowsInputManager)
 }

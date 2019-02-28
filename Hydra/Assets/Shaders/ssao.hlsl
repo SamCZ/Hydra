@@ -71,6 +71,8 @@ SamplerState MeshTextureSampler
 
 float4 MainPS(FullScreenQuadOutput IN) : SV_Target
 {
+	//return t_SceneTexture[IN.position.xy]; //TODO: Disabled ssao for a moment, enable afterwards.
+
 	float3 fragPos = t_PositionTexture[IN.position.xy].xyz;
 	float3 normal = (t_NormalTexture[IN.position.xy].xyz);
 	//int index = (int)(IN.position.x * 1000.0) % 15;

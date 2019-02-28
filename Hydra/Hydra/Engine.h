@@ -4,6 +4,7 @@
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
 #include "Hydra/Render/Pipeline/DeviceManager11.h"
 #include "Hydra/Core/SmartPointer.h"
+#include "Hydra/Input/InputManager.h"
 
 namespace Hydra
 {
@@ -14,6 +15,7 @@ namespace Hydra
 	private:
 		static IRendererInterface _RenderInterface;
 		static SharedPtr<DeviceManager> _DeviceManager;
+		static InputManagerPtr _InputManager;
 
 	public:
 		static void SetRenderInterface(IRendererInterface renderInterface);
@@ -21,5 +23,8 @@ namespace Hydra
 
 		static void SetDeviceManager(SharedPtr<DeviceManager> deviceManager);
 		static SharedPtr<DeviceManager> GetDeviceManager();
+
+		static void SetInputManager(InputManagerPtr inputManager);
+		static InputManagerPtr GetInputManager();
 	};
 }

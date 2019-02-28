@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <assert.h>
 
+#include "Hydra/Core/Log.h"
 #include "Hydra/Core/String.h"
 #include "Hydra/Core/Container.h"
 #include "Hydra/Core/SmartPointer.h"

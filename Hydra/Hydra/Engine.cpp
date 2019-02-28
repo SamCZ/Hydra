@@ -4,6 +4,7 @@ namespace Hydra
 {
 	IRendererInterface Engine::_RenderInterface;
 	SharedPtr<DeviceManager> Engine::_DeviceManager;
+	InputManagerPtr Engine::_InputManager;
 
 	void Engine::SetRenderInterface(IRendererInterface renderInterface)
 	{
@@ -23,5 +24,15 @@ namespace Hydra
 	SharedPtr<DeviceManager> Engine::GetDeviceManager()
 	{
 		return _DeviceManager;
+	}
+
+	void Engine::SetInputManager(InputManagerPtr inputManager)
+	{
+		_InputManager = inputManager;
+	}
+
+	InputManagerPtr Engine::GetInputManager()
+	{
+		return _InputManager;
 	}
 }
