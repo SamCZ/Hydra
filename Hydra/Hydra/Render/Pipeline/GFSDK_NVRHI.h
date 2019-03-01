@@ -281,7 +281,7 @@ namespace NVRHI
 
     struct ShaderType
     {
-        enum Enum : unsigned int
+        enum Enum
         {
             SHADER_VERTEX,
             SHADER_HULL,

@@ -41,7 +41,7 @@ namespace Hydra
 	{
 		if (_ConstantBuffers.find(mappedName) != _ConstantBuffers.end())
 		{
-			Log("Graphics::CreateConstantBuffer", ToString(size) + ", " + mappedName + ", " + ToString(specificBinding), "Name is already exist!");
+			LogError("Graphics::CreateConstantBuffer", ToString(size) + ", " + mappedName + ", " + ToString(specificBinding), "Name is already exist!");
 			return nullptr;
 		}
 

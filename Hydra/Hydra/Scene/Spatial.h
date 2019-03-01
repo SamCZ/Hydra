@@ -22,6 +22,7 @@ namespace Hydra
 	public:
 		String Name;
 		Spatial* Parent;
+		bool Enabled;
 
 		virtual ~Spatial();
 		Spatial();
@@ -40,6 +41,9 @@ namespace Hydra
 
 		String GetHiearchy() const;
 
+		SpatialPtr Find(const String& name);
+		SpatialPtr FindApprox(const String& name);
+		List<SpatialPtr> FindAllApprox(const String& name);
 
 		template<class T> FORCEINLINE SharedPtr<T> GetComponent()
 		{

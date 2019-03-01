@@ -16,7 +16,7 @@ namespace Hydra
 		const aiScene *scene = importer.ReadFile(file.GetPath(), aiProcessPreset_TargetRealtime_Quality |
 			aiProcess_FindInstances |
 			aiProcess_ValidateDataStructure |
-			aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph | aiProcess_FlipUVs | aiProcess_GenNormals | aiProcess_CalcTangentSpace); //aiProcess_PreTransformVertices
+			aiProcess_OptimizeMeshes /*| aiProcess_OptimizeGraph*/ | aiProcess_FlipUVs | aiProcess_GenNormals | aiProcess_CalcTangentSpace); //aiProcess_PreTransformVertices
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{

@@ -12,7 +12,7 @@ namespace Hydra
 	{
 	}
 
-	Spatial::Spatial(const String & name) : Name(name), Parent(nullptr)
+	Spatial::Spatial(const String & name) : Name(name), Parent(nullptr), Enabled(true)
 	{
 		Position = Vector3(0, 0, 0);
 		Rotation = Vector3(0, 0, 0);
@@ -114,5 +114,69 @@ namespace Hydra
 		}
 
 		return hiearchy;
+	}
+	SpatialPtr Spatial::Find(const String & name)
+	{
+		for (SpatialPtr child : GetChilds())
+		{
+			if (child->Name == name)
+			{
+				return child;
+			}
+		}
+
+		for (SpatialPtr child : GetChilds())
+		{
+			SpatialPtr finded = child->Find(name);
+			if (finded != nullptr)
+			{
+				return finded;
+			}
+		}
+
+		return nullptr;
+	}
+	SpatialPtr Spatial::FindApprox(const String & name)
+	{
+		for (SpatialPtr child : GetChilds())
+		{
+			if (child->Name == name || StartsWith(child->Name, name))
+			{
+				return child;
+			}
+		}
+
+		for (SpatialPtr child : GetChilds())
+		{
+			SpatialPtr finded = child->FindApprox(name);
+			if (finded != nullptr)
+			{
+				return finded;
+			}
+		}
+
+		return nullptr;
+	}
+
+	List<SpatialPtr> Spatial::FindAllApprox(const String & name)
+	{
+		List<SpatialPtr> list;
+
+		for (SpatialPtr child : GetChilds())
+		{
+			if (child->Name == name || StartsWith(child->Name, name))
+			{
+				list.push_back(child);
+			}
+		}
+
+		for (SpatialPtr child : GetChilds())
+		{
+			auto childFindings = child->FindAllApprox(name);
+
+			list.insert(list.end(), childFindings.begin(), childFindings.end());
+		}
+
+		return list;
 	}
 }

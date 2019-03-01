@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include "Hydra/Core/String.h"
+#include <assert.h>
 
 namespace Hydra
 {
@@ -23,5 +24,6 @@ namespace Hydra
 	inline static void LogError(const String& funcName, const String& argument, const String& message)
 	{
 		std::cout << funcName << "(" << argument << "): " << message << std::endl;
+		assert(0);
 	}
 }

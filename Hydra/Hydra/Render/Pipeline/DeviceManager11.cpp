@@ -16,6 +16,8 @@
 #include <sstream>
 #include <algorithm>
 
+#include "Hydra/Core/Timing.h"
+
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3d11.lib")
 
@@ -309,6 +311,12 @@ DeviceManager::MessageLoop()
     QueryPerformanceFrequency(&perfFreq);
     QueryPerformanceCounter(&previousTime);
     
+	Hydra::uint32 fps = 0;
+	double lastTime = Hydra::Time::getTime();
+	double fpsTimeCounter = 0.0;
+	double updateTimer = 1.0;
+	float frameTime = 1.0 / 120.0;
+
     while (WM_QUIT != msg.message)
     {
 #if ENABLE_XINPUT
@@ -352,10 +360,61 @@ DeviceManager::MessageLoop()
 
             if(m_SwapChain && GetWindowState() != kWindowMinimized)
             {
-                Animate(elapsedSeconds);
-                Render(); 
-                m_SwapChain->Present(m_SyncInterval, 0);
-                Sleep(0);
+				if (false)
+				{
+					double currentTime = Hydra::Time::getTime();
+					double passedTime = currentTime - lastTime;
+					lastTime = currentTime;
+
+					fpsTimeCounter += passedTime;
+					updateTimer += passedTime;
+
+					if (fpsTimeCounter >= 2.0)
+					{
+						double msPerFrame = 1000.0 / (double)fps;
+						//DEBUG_LOG("FPS", "NONE", "%f ms (%d fps)", msPerFrame, fps);
+
+						M_MsPerFrame = msPerFrame;
+						m_Fps = fps;
+
+						fpsTimeCounter = 0;
+						fps = 0;
+					}
+
+					bool shouldRender = false;
+					while (updateTimer >= frameTime)
+					{
+						//Update game
+						Animate(elapsedSeconds);
+
+						updateTimer -= frameTime;
+						shouldRender = true;
+					}
+
+					if (shouldRender)
+					{
+						//Render game
+
+						Render();
+						m_SwapChain->Present(m_SyncInterval, 0);
+						Sleep(0);
+
+						fps++;
+					}
+					else
+					{
+						Hydra::Time::sleep(1);
+					}
+				}
+				else
+				{
+					Animate(elapsedSeconds);
+					Render();
+					m_SwapChain->Present(m_SyncInterval, 0);
+					Sleep(0);
+				}
+				
+                
             }
             else
             {

@@ -132,7 +132,9 @@
     <ClInclude Include="Hydra\Core\Polygonise.h" />
     <ClInclude Include="Hydra\Core\Random.h" />
     <ClInclude Include="Hydra\Core\Resource.h" />
+    <ClInclude Include="Hydra\Core\Timing.h" />
     <ClInclude Include="Hydra\Engine.h" />
+    <ClInclude Include="Hydra\HydraEngine.h" />
     <ClInclude Include="Hydra\Import\MeshImporter.h" />
     <ClInclude Include="Hydra\Import\ShaderImporter.h" />
     <ClInclude Include="Hydra\Import\TextureImporter.h" />
@@ -156,6 +158,7 @@
     <ClInclude Include="Hydra\Render\Shader.h" />
     <ClInclude Include="Hydra\Scene\Component.h" />
     <ClInclude Include="Hydra\Scene\Components\Camera.h" />
+    <ClInclude Include="Hydra\Scene\Components\LodGroup.h" />
     <ClInclude Include="Hydra\Scene\Components\Movement\FirstPersonController.h" />
     <ClInclude Include="Hydra\Scene\Components\Renderer.h" />
     <ClInclude Include="Hydra\Scene\Spatial.h" />
@@ -178,6 +181,7 @@
     <ClInclude Include="ImGui\stb_rect_pack.h" />
     <ClInclude Include="ImGui\stb_textedit.h" />
     <ClInclude Include="ImGui\stb_truetype.h" />
+    <ClInclude Include="IndustryEmpire\IndustryEmpire.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -185,9 +189,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Hydra\Core\FastNoise.cpp" />
+    <ClCompile Include="Hydra\HydraEngine.cpp" />
+    <ClCompile Include="Hydra\Scene\Components\LodGroup.cpp" />
+    <ClCompile Include="IndustryEmpire\IndustryEmpire.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="Hydra\Core\Polygonise.cpp" />
     <ClCompile Include="Hydra\Core\Random.cpp" />
     <ClCompile Include="Hydra\Core\Resource.cpp" />
+    <ClCompile Include="Hydra\Core\Timing.cpp" />
     <ClCompile Include="Hydra\Engine.cpp" />
     <ClCompile Include="Hydra\Import\MeshImporter.cpp" />
     <ClCompile Include="Hydra\Import\ShaderImporter.cpp" />
@@ -217,7 +226,7 @@
     <ClCompile Include="ImGui\imgui_demo.cpp" />
     <ClCompile Include="ImGui\imgui_draw.cpp" />
     <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />
-    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MainOld.cpp" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>
