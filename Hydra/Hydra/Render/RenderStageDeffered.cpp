@@ -32,6 +32,16 @@ namespace Hydra
 		_ModelConstantBuffer = Graphics::CreateConstantBuffer(sizeof(ModelConstants), "ModelConstants", PSB_VERTEX, 1);
 
 		_DefaultShader = ShaderImporter::Import("Assets/Shaders/DefaultDeffered.hlsl");
+		_CompositeShader = ShaderImporter::Import("Assets/Shaders/DefferedComposite.hlsl");
+
+		
+		_BrdfLutTexture = Graphics::CreateRenderTarget("DPBR_BrdfLut", NVRHI::Format::RG16_FLOAT, 512, 512, NVRHI::Color(0.f), 1);
+		_BrdfLutSampler = Graphics::CreateSampler("DPBR_BrdfLut", WrapMode::WRAP_MODE_CLAMP, WrapMode::WRAP_MODE_CLAMP, WrapMode::WRAP_MODE_CLAMP);
+
+		ShaderPtr brdfLutShader = ShaderImporter::Import("Assets/Shaders/Utils/BrdfLUT.hlsl");
+
+		Graphics::Composite(brdfLutShader, NULL, "DPBR_BrdfLut");
+
 	}
 
 	RenderStageDeffered::~RenderStageDeffered()
@@ -72,6 +82,8 @@ namespace Hydra
 
 		for (RendererPtr r : activeRenderers)
 		{
+			if (r->Enabled == false || r->Parent->IsEnabled() == false) continue;
+
 			r->WriteDataToState(Engine::GetRenderInterface().get(), state);
 			
 			ModelConstants modelData = {};
@@ -86,6 +98,19 @@ namespace Hydra
 		}
 
 		Engine::GetRenderInterface()->endRenderingPass();
+
+		//Composite data
+
+		Graphics::Composite(_CompositeShader, [](NVRHI::DrawCallState& state)
+		{
+			Graphics::BindRenderTarget(state, "DPBR_AlbedoMetallic", 0);
+			Graphics::BindRenderTarget(state, "DPBR_NormalRoughness", 1);
+			Graphics::BindRenderTarget(state, "DPBR_AO_Emission", 2);
+			Graphics::BindRenderTarget(state, "DPBR_Depth", 3);
+			Graphics::BindRenderTarget(state, "DPBR_WorldPos", 4);
+
+
+		}, "DPBR_Output");
 	}
 
 	void RenderStageDeffered::AllocateViewDependentResources(uint32 width, uint32 height, uint32 sampleCount)
@@ -109,7 +134,7 @@ namespace Hydra
 
 	String RenderStageDeffered::GetOutputName()
 	{
-		return "DPBR_WorldPos";
+		return "DPBR_Output";
 	}
 
 	String RenderStageDeffered::GetDepthOutputName()

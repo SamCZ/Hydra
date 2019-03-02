@@ -27,5 +27,5 @@ namespace Hydra
 
 	#define DEFINE_PTR(className) typedef SharedPtr<className> className ## Ptr; typedef WeakPtr<className> className ## WeakPtr;
 
-#define T_IS(tName, type) std::is_same<tName, type>::value
+	#define T_IS(tName, type) std::is_same<tName, type>::value
 }

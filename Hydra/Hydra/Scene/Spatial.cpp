@@ -12,7 +12,7 @@ namespace Hydra
 	{
 	}
 
-	Spatial::Spatial(const String & name) : Name(name), Parent(nullptr), Enabled(true)
+	Spatial::Spatial(const String & name) : Name(name), Parent(nullptr), _Enabled(true)
 	{
 		Position = Vector3(0, 0, 0);
 		Rotation = Vector3(0, 0, 0);
@@ -203,5 +203,19 @@ namespace Hydra
 		}
 
 		return list;
+	}
+
+	void Spatial::SetEnabled(bool enabled)
+	{
+		_Enabled = enabled;
+	}
+
+	bool Spatial::IsEnabled()
+	{
+		if (Parent)
+		{
+			return Parent->IsEnabled() && _Enabled;
+		}
+		return _Enabled;
 	}
 }

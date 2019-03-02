@@ -20,10 +20,10 @@ namespace Hydra
 	private:
 		List<SpatialPtr> _Childs;
 		List<ComponentPtr> _Components;
+		bool _Enabled;
 	public:
 		String Name;
 		Spatial* Parent;
-		bool Enabled;
 
 		virtual ~Spatial();
 		Spatial();
@@ -46,6 +46,9 @@ namespace Hydra
 		SpatialPtr Find(const String& name);
 		SpatialPtr FindApprox(const String& name);
 		List<SpatialPtr> FindAllApprox(const String& name);
+
+		void SetEnabled(bool enabled);
+		bool IsEnabled();
 
 		template<class T> FORCEINLINE SharedPtr<T> GetComponent()
 		{

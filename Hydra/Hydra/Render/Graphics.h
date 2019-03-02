@@ -3,6 +3,7 @@
 #include "Hydra/Core/ColorRGBA.h"
 #include "Hydra/Core/Container.h"
 #include "Hydra/Core/String.h"
+#include "Hydra/Core/Function.h"
 
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
 #include "Hydra/Render/Shader.h"
@@ -55,6 +56,9 @@ namespace Hydra
 		static void Blit(TexturePtr pSource, TexturePtr pDest);
 		static void Blit(const String& name, TexturePtr pDest);
 
+		static void Composite(ShaderPtr shader, Function<void(NVRHI::DrawCallState&)> preRenderFunction, TexturePtr pDest);
+		static void Composite(ShaderPtr shader, Function<void(NVRHI::DrawCallState&)> preRenderFunction, const String& outputName);
+
 		static void SetShader(NVRHI::DrawCallState& state, ShaderPtr shader);
 
 		static void SetClearFlags(NVRHI::DrawCallState& state, const ColorRGBA& color);
@@ -71,6 +75,7 @@ namespace Hydra
 		static TexturePtr CreateRenderTarget(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, const NVRHI::Color& clearColor, UINT sampleCount);
 		static TexturePtr GetRenderTarget(const String& name);
 		static void ReleaseRenderTarget(const String& name);
+		static void BindRenderTarget(NVRHI::DrawCallState& state, const String& name, int index);
 
 		static InputLayoutPtr CreateInputLayout(const String& name, const NVRHI::VertexAttributeDesc* d, uint32_t attributeCount, ShaderPtr shader);
 		static InputLayoutPtr GetInputLayout(const String& name);

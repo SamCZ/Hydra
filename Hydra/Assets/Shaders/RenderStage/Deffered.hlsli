@@ -51,7 +51,7 @@ PS_Input MainVS(VS_Input input, unsigned int InstanceID : SV_InstanceID)
 	output.positionWS = mul(modelMatrix, float4(input.position.xyz, 1.0)).xyz;
 
 	output.texCoord = input.texCoord;
-	output.normal = mul(modelMatrix, float4(input.normal, 0.0)).xyz;
+	output.normal = input.normal;
 	output.tangent = mul(modelMatrix, float4(input.tangent, 0.0)).xyz;
 	output.binormal = mul(modelMatrix, float4(input.binormal, 0.0)).xyz;
 
@@ -66,15 +66,28 @@ struct PS_Attributes
 	float4 WorldPos        : SV_Target3;
 };
 
-PS_Attributes OnMainPS(in PS_Input input, in PS_Attributes output);
+struct PBROutput
+{
+	float3 Albedo;
+	float3 Normal;
+	float Metallic;
+	float Roughness;
+	float AO;
+	float3 Emission;
+};
+
+PBROutput OnMainPS(in PS_Input input);
 
 PS_Attributes MainPS(PS_Input input) : SV_Target {
 	PS_Attributes output;
 
 	output.WorldPos = float4(input.positionWS, 1.0);
-	output.NormalRoughness = float4(input.normal, 0.0);
 
-	output = OnMainPS(input, output);
+	PBROutput pbrData = OnMainPS(input);
+
+	output.AlbedoMetallic = float4(pbrData.Albedo, pbrData.Metallic);
+	output.NormalRoughness = float4(pbrData.Normal, pbrData.Roughness);
+	output.AOEmission = float4(pbrData.AO, pbrData.Emission.r, pbrData.Emission.g, pbrData.Emission.b);
 
 	return output;
 }

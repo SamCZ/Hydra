@@ -63,6 +63,34 @@ namespace Hydra
 		Blit(GetRenderTarget(name), pDest);
 	}
 
+	void Graphics::Composite(ShaderPtr shader, Function<void(NVRHI::DrawCallState&)> preRenderFunction, TexturePtr pDest)
+	{
+		NVRHI::DrawCallState state;
+
+		state.primType = NVRHI::PrimitiveType::TRIANGLE_STRIP;
+		state.VS.shader = shader->GetShader(NVRHI::ShaderType::SHADER_VERTEX);
+		state.PS.shader = shader->GetShader(NVRHI::ShaderType::SHADER_PIXEL);
+
+		state.renderState.targetCount = 1;
+		state.renderState.targets[0] = pDest;
+		state.renderState.viewportCount = 1;
+		state.renderState.viewports[0] = NVRHI::Viewport(float(Engine::ScreenSize.x), float(Engine::ScreenSize.y));
+		state.renderState.depthStencilState.depthEnable = false;
+		state.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_NONE;
+
+		if(preRenderFunction)
+			preRenderFunction(state);
+
+		NVRHI::DrawArguments args;
+		args.vertexCount = 4;
+		Engine::GetRenderInterface()->draw(state, &args, 1);
+	}
+
+	void Graphics::Composite(ShaderPtr shader, Function<void(NVRHI::DrawCallState&)> preRenderFunction, const String& outputName)
+	{
+		Composite(shader, preRenderFunction, GetRenderTarget(outputName));
+	}
+
 	void Graphics::SetShader(NVRHI::DrawCallState& state, ShaderPtr shader)
 	{
 		state.VS.shader = shader->GetShader(NVRHI::ShaderType::SHADER_VERTEX);
@@ -206,7 +234,7 @@ namespace Hydra
 		return nullptr;
 	}
 
-	void Hydra::Graphics::ReleaseRenderTarget(const String & name)
+	void Graphics::ReleaseRenderTarget(const String & name)
 	{
 		if (_RenderViewTargets.find(name) != _RenderViewTargets.end())
 		{
@@ -218,7 +246,17 @@ namespace Hydra
 		}
 	}
 
-	InputLayoutPtr Hydra::Graphics::CreateInputLayout(const String & name, const NVRHI::VertexAttributeDesc * d, uint32_t attributeCount, ShaderPtr shader)
+	void Graphics::BindRenderTarget(NVRHI::DrawCallState & state, const String & name, int index)
+	{
+		if (_RenderViewTargets.find(name) != _RenderViewTargets.end())
+		{
+			TexturePtr rt = _RenderViewTargets[name];
+
+			NVRHI::BindTexture(state.PS, index, rt);
+		}
+	}
+
+	InputLayoutPtr Graphics::CreateInputLayout(const String & name, const NVRHI::VertexAttributeDesc * d, uint32_t attributeCount, ShaderPtr shader)
 	{
 		if (_InputLayouts.find(name) != _InputLayouts.end())
 		{
@@ -233,7 +271,7 @@ namespace Hydra
 		return layout;
 	}
 
-	InputLayoutPtr Hydra::Graphics::GetInputLayout(const String & name)
+	InputLayoutPtr Graphics::GetInputLayout(const String & name)
 	{
 		if (_InputLayouts.find(name) != _InputLayouts.end())
 		{
@@ -243,7 +281,7 @@ namespace Hydra
 		return nullptr;
 	}
 
-	SamplerPtr Hydra::Graphics::CreateSampler(const String & name, const WrapMode & wrapX, const WrapMode & wrapY, const WrapMode & wrapZ, bool minFilter, bool magFilter, bool mipFilter, int anisotropy)
+	SamplerPtr Graphics::CreateSampler(const String & name, const WrapMode & wrapX, const WrapMode & wrapY, const WrapMode & wrapZ, bool minFilter, bool magFilter, bool mipFilter, int anisotropy)
 	{
 		if (_Samplers.find(name) != _Samplers.end())
 		{
@@ -266,7 +304,7 @@ namespace Hydra
 		return sampler;
 	}
 
-	SamplerPtr Hydra::Graphics::GetSampler(const String & name)
+	SamplerPtr Graphics::GetSampler(const String & name)
 	{
 		if (_Samplers.find(name) != _Samplers.end())
 		{

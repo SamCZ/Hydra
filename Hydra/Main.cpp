@@ -13,6 +13,10 @@
 
 #include "Hydra/Import/MeshImporter.h"
 #include "Hydra/Scene/Components/Camera.h"
+#include "Hydra/Scene/Components/Movement/FirstPersonController.h"
+#include "Hydra/Scene/Components/LodGroup.h"
+
+#include "Hydra/Input/Windows/WindowsInputManager.h"
 
 void signalError(const char* file, int line, const char* errorDesc)
 {
@@ -52,12 +56,44 @@ class MainRenderView : public IVisualController
 private:
 	SharedPtr<NVRHI::RendererInterfaceD3D11> _renderInterface;
 public:
+	WindowsInputManagerPtr _InputManager;
+
 	RenderManagerPtr rm;
 	RenderStageDefferedPtr rsd;
+
+	inline LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+	{
+		_InputManager->MsgProc(hWnd, uMsg, wParam, lParam);
+
+		return S_OK;
+	}
+
+	inline void Escape()
+	{
+		_InputManager->ToggleMouseCapture();
+	}
 
 	inline HRESULT DeviceCreated() override
 	{
 		Log("MainRenderView::DeviceCreated");
+
+		_InputManager = MakeShared<WindowsInputManager>();
+
+		_InputManager->AddAxisMapping("MoveForwardBackward", Keys::W, 1.0f);
+		_InputManager->AddAxisMapping("MoveForwardBackward", Keys::S, -1.0f);
+
+		_InputManager->AddAxisMapping("MoveLeftRight", Keys::A, 1.0f);
+		_InputManager->AddAxisMapping("MoveLeftRight", Keys::D, -1.0f);
+
+		_InputManager->AddAxisMapping("LookUpDown", Keys::MouseY, -0.1f);
+		_InputManager->AddAxisMapping("LookLeftRight", Keys::MouseX, -0.1f);
+
+		_InputManager->AddActionMapping("Esc", Keys::Escape);
+		_InputManager->BindAction("Esc", IE_Pressed, this, &MainRenderView::Escape);
+
+		Engine::SetInputManager(_InputManager);
+
+		_InputManager->SetMouseCapture(true);
 
 		_renderInterface = MakeShared<NVRHI::RendererInterfaceD3D11>(&g_ErrorCallback, _deviceManager->GetImmediateContext());
 
@@ -72,11 +108,13 @@ public:
 		SpatialPtr cameraObj = MakeShared<Spatial>("Camera");
 		cameraObj->Position.y = 2;
 		cameraObj->Position.z = 5;
-		CameraPtr cam = cameraObj->AddComponent<Camera>();
+		cameraObj->AddComponent<Camera>();
+		cameraObj->AddComponent<FirstPersonController>();
 		rm->MainScene->AddChild(cameraObj);
 
-		SpatialPtr testModel = Meshimporter::Import("Assets/IndustryEmpire/Models/BrickFactory.fbx", MeshImportOptions());
+		SpatialPtr testModel = Meshimporter::Import("Assets/IndustryEmpire/Models/Pine_002_L.FBX", MeshImportOptions());
 		testModel->Scale = Vector3(0.01f, 0.01f, 0.01f);
+		testModel->AddComponent<LodGroup>();
 		rm->MainScene->AddChild(testModel);
 
 		rsd = MakeShared<RenderStageDeffered>();
@@ -123,6 +161,7 @@ public:
 
 	void Animate(double fElapsedTimeSeconds) override
 	{
+		_InputManager->Update();
 		rm->MainScene->Update();
 	}
 };

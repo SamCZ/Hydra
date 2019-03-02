@@ -54,11 +54,11 @@ namespace Hydra
 		{
 			if (lod == i)
 			{
-				_Lods[i]->Enabled = true;
+				_Lods[i]->SetEnabled(true);
 			}
 			else
 			{
-				_Lods[i]->Enabled = false;
+				_Lods[i]->SetEnabled(false);
 			}
 		}
 	}

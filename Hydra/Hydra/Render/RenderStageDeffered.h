@@ -17,14 +17,20 @@ namespace Hydra
 		alignas(16) Matrix4 g_ModelMatrix;
 	};
 
+
+
 	class RenderStageDeffered : public RenderStage
 	{
 	private:
 		InputLayoutPtr _InputLayout;
 		ShaderPtr _DefaultShader;
+		ShaderPtr _CompositeShader;
 
 		ConstantBufferPtr _GlobalConstantBuffer;
 		ConstantBufferPtr _ModelConstantBuffer;
+
+		TexturePtr _BrdfLutTexture;
+		SamplerPtr _BrdfLutSampler;
 	public:
 		RenderStageDeffered();
 		~RenderStageDeffered();

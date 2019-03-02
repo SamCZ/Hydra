@@ -127,6 +127,7 @@
     <ClInclude Include="Hydra\Core\Delegate.h" />
     <ClInclude Include="Hydra\Core\EObject.h" />
     <ClInclude Include="Hydra\Core\FastNoise.h" />
+    <ClInclude Include="Hydra\Core\Function.h" />
     <ClInclude Include="Hydra\Core\Log.h" />
     <ClInclude Include="Hydra\Core\Math\Box.h" />
     <ClInclude Include="Hydra\Core\Platform.h" />
