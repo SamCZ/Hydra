@@ -6,6 +6,11 @@
 
 namespace Hydra
 {
+	inline static void Log(const String& message)
+	{
+		std::cout << message << std::endl;
+	}
+
 	inline static void Log(const String& funcName, const String& message)
 	{
 		std::cout << funcName << ": " << message << std::endl;

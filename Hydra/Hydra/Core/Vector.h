@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <limits>
 #include "glm/basic.hpp"
 
 namespace Hydra
@@ -17,6 +18,12 @@ namespace Hydra
 	typedef glm::mat3 Matrix3;
 
 	typedef glm::quat Quaternion;
+
+	#define FloatMax std::numeric_limits<float>::max()
+	#define FloatMin std::numeric_limits<float>::min()
+
+	#define IntMax std::numeric_limits<int>::max()
+	#define IntMin std::numeric_limits<int>::min()
 
 	static inline void PrintMatrix(const Matrix4& mat)
 	{

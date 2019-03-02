@@ -7,15 +7,18 @@
 
 namespace Hydra
 {
+	CameraPtr Camera::MainCamera;
+	List<CameraPtr> Camera::AllCameras;
+
 	Camera::Camera() : _FovY(75.0f), _Znear(0.1f), _Zfar(1000.0f)
 	{
-		
+
 	}
 
 	void Camera::Start()
 	{
-		_Width = 1280;
-		_Height = 720;
+		_Width = Engine::ScreenSize.x;
+		_Height = Engine::ScreenSize.y;
 		SetCameraMode(CameraMode::Perspective);
 	}
 
@@ -46,6 +49,18 @@ namespace Hydra
 	void Camera::SetCameraMode(const CameraMode & mode)
 	{
 		_CameraMode = mode;
+		UpdateProjectionMatrix();
+	}
+
+	CameraMode Camera::GetCameraMode()
+	{
+		return _CameraMode;
+	}
+
+	void Camera::Resize(int width, int height)
+	{
+		_Width = width;
+		_Height = height;
 		UpdateProjectionMatrix();
 	}
 
@@ -100,6 +115,26 @@ namespace Hydra
 	Vector3 Camera::GetUp()
 	{
 		return GetRotationColumn(GetViewMatrix(), 1);
+	}
+
+	float Camera::GetZNear()
+	{
+		return _Znear;
+	}
+
+	float Camera::GetZFar()
+	{
+		return _Zfar;
+	}
+
+	int Camera::GetWidth()
+	{
+		return _Width;
+	}
+
+	int Camera::GetHeight()
+	{
+		return _Height;
 	}
 
 	void Camera::UpdateProjectionMatrix()

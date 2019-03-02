@@ -1,4 +1,4 @@
-#include "Assets/Shaders/Input/Deffered.hlsli"
+#include "Assets/Shaders/Input/Default.hlsli"
 
 #pragma hydra vert:ColorVertexShader hull:ColorHullShader dom:ColorDomainShader pixel:ColorPixelShader
 

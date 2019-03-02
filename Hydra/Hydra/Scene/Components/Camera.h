@@ -2,6 +2,7 @@
 
 #include "Hydra/Scene/Component.h"
 #include "Hydra/Core/Vector.h"
+#include "Hydra/Core/Container.h"
 
 namespace Hydra
 {
@@ -10,6 +11,10 @@ namespace Hydra
 		Perspective,
 		Orthographic
 	};
+
+	class Camera;
+
+	DEFINE_PTR(Camera)
 
 	class Camera : public Component
 	{
@@ -35,11 +40,16 @@ namespace Hydra
 	public:
 		Camera();
 
+		static CameraPtr MainCamera;
+		static List<CameraPtr> AllCameras;
+
 		virtual void Start();
 		virtual void Update();
 
 		void SetCameraMode(const CameraMode& mode);
-		CameraMode GetCameraMode;
+		CameraMode GetCameraMode();
+
+		void Resize(int width, int height);
 
 		void SetFov(float fov);
 		void SetZ(float zNear, float zFar);
@@ -53,9 +63,13 @@ namespace Hydra
 		Vector3 GetLeft();
 		Vector3 GetUp();
 
+		float GetZNear();
+		float GetZFar();
+
+		int GetWidth();
+		int GetHeight();
+
 	private:
 		void UpdateProjectionMatrix();
 	};
-
-	DEFINE_PTR(Camera)
 }

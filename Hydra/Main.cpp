@@ -1,10 +1,18 @@
-/*#include <iostream>
+#include <iostream>
 
 #include "Hydra/Render/Pipeline/DeviceManager11.h"
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI_D3D11.h"
 #include "Hydra/Render/Pipeline/BindingHelpers.h"
 #include "Hydra/Render/Graphics.h"
 #include "Hydra/Engine.h"
+
+#include "Hydra/Scene/Spatial.h"
+
+#include "Hydra/Render/RenderManager.h"
+#include "Hydra/Render/RenderStageDeffered.h"
+
+#include "Hydra/Import/MeshImporter.h"
+#include "Hydra/Scene/Components/Camera.h"
 
 void signalError(const char* file, int line, const char* errorDesc)
 {
@@ -44,23 +52,58 @@ class MainRenderView : public IVisualController
 private:
 	SharedPtr<NVRHI::RendererInterfaceD3D11> _renderInterface;
 public:
+	RenderManagerPtr rm;
+	RenderStageDefferedPtr rsd;
+
 	inline HRESULT DeviceCreated() override
 	{
+		Log("MainRenderView::DeviceCreated");
+
 		_renderInterface = MakeShared<NVRHI::RendererInterfaceD3D11>(&g_ErrorCallback, _deviceManager->GetImmediateContext());
 
 		Engine::SetRenderInterface(_renderInterface);
 		Engine::SetDeviceManager(_deviceManager);
+
+		Graphics::Create();
+
+		rm = MakeShared<RenderManager>();
+		rm->MainScene = MakeShared<Spatial>("Main");
+
+		SpatialPtr cameraObj = MakeShared<Spatial>("Camera");
+		cameraObj->Position.y = 2;
+		cameraObj->Position.z = 5;
+		CameraPtr cam = cameraObj->AddComponent<Camera>();
+		rm->MainScene->AddChild(cameraObj);
+
+		SpatialPtr testModel = Meshimporter::Import("Assets/IndustryEmpire/Models/BrickFactory.fbx", MeshImportOptions());
+		testModel->Scale = Vector3(0.01f, 0.01f, 0.01f);
+		rm->MainScene->AddChild(testModel);
+
+		rsd = MakeShared<RenderStageDeffered>();
+
+		rm->MainScene->Start();
 
 		return S_OK;
 	}
 
 	inline void BackBufferResized(uint32_t width, uint32_t height, uint32_t sampleCount) override
 	{
+		Log("MainRenderView::BackBufferResized", ToString(width) + ", " + ToString(height) + ", " + ToString(sampleCount), "DeviceCreated");
 
+		Engine::ScreenSize = Vector2(width, height);
+
+		for (CameraPtr camera : Camera::AllCameras)
+		{
+			camera->Resize(width, height);
+		}
+
+		rsd->AllocateViewDependentResources(width, height, sampleCount);
 	}
 
 	inline void DeviceDestroyed() override
 	{
+		Log("MainRenderView::DeviceDestroyed");
+
 		Graphics::Destroy();
 	}
 
@@ -71,14 +114,16 @@ public:
 		NVRHI::TextureHandle mainRenderTarget = _renderInterface->getHandleForTexture(pMainResource);
 		pMainResource->Release();
 
+		rsd->Render(rm);
 
+		Graphics::Blit(rsd->GetOutputName(), mainRenderTarget);
 
 		_renderInterface->forgetAboutTexture(pMainResource);
 	}
 
 	void Animate(double fElapsedTimeSeconds) override
 	{
-		
+		rm->MainScene->Update();
 	}
 };
 
@@ -96,6 +141,8 @@ int main()
 	deviceParams.startMaximized = false;
 	deviceParams.enableDebugRuntime = false;
 	deviceParams.refreshRate = 120;
+
+	Engine::ScreenSize = Vector2(deviceParams.backBufferWidth, deviceParams.backBufferHeight);
 
 	MainRenderView mainRenderView;
 	_deviceManager->AddControllerToFront(&mainRenderView);
@@ -119,4 +166,4 @@ int main()
 	_deviceManager->Shutdown();
 
 	return 0;
-}*/
+}

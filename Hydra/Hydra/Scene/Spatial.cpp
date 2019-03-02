@@ -57,6 +57,19 @@ namespace Hydra
 		return _Childs[index];
 	}
 
+	void Spatial::Start()
+	{
+		for (ComponentPtr cmp : _Components)
+		{
+			cmp->Start();
+		}
+
+		for (SpatialPtr child : _Childs)
+		{
+			child->Start();
+		}
+	}
+
 	void Spatial::Update()
 	{
 		for (ComponentPtr cmp : _Components)
@@ -87,6 +100,16 @@ namespace Hydra
 		}
 	}
 
+	void Spatial::SetMainCamera(SharedPtr<Component> camera)
+	{
+		if (!Camera::MainCamera)
+		{
+			Camera::MainCamera = std::dynamic_pointer_cast<Camera, Component>(camera);
+		}
+
+		Camera::AllCameras.push_back(std::dynamic_pointer_cast<Camera, Component>(camera));
+	}
+
 	void Spatial::PrintHiearchy(int depth) const
 	{
 		for (int i = 0; i < depth; i++)
@@ -102,10 +125,10 @@ namespace Hydra
 		}
 	}
 
-	String Spatial::GetHiearchy() const
+	String Spatial::GetHiearchy()
 	{
 		String hiearchy;
-		const Spatial* spatial = this;
+		Spatial* spatial = this;
 
 		while (spatial != nullptr)
 		{
@@ -115,6 +138,7 @@ namespace Hydra
 
 		return hiearchy;
 	}
+
 	SpatialPtr Spatial::Find(const String & name)
 	{
 		for (SpatialPtr child : GetChilds())
@@ -136,6 +160,7 @@ namespace Hydra
 
 		return nullptr;
 	}
+
 	SpatialPtr Spatial::FindApprox(const String & name)
 	{
 		for (SpatialPtr child : GetChilds())

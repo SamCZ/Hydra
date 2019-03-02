@@ -3,10 +3,15 @@
 
 #include "Hydra/Render/Pipeline/BindingHelpers.h"
 
+#include "Hydra/Import/ShaderImporter.h"
+
 namespace Hydra
 {
 	Map<String, ConstantBufferInfo> Graphics::_ConstantBuffers;
 	Map<String, NVRHI::TextureHandle> Graphics::_RenderViewTargets;
+	Map<String, InputLayoutPtr> Graphics::_InputLayouts;
+	Map<String, SamplerPtr> Graphics::_Samplers;
+	ShaderPtr Graphics::_BlitShader;
 
 	void Graphics::Destroy()
 	{
@@ -17,8 +22,45 @@ namespace Hydra
 
 		ITER(_RenderViewTargets, it)
 		{
-			Engine::GetRenderInterface()->describeTexture(it->second);
+			Engine::GetRenderInterface()->destroyTexture(it->second);
 		}
+
+		ITER(_InputLayouts, it)
+		{
+			Engine::GetRenderInterface()->destroyInputLayout(it->second);
+		}
+	}
+
+	void Graphics::Create()
+	{
+		_BlitShader = ShaderImporter::Import("Assets/Shaders/blit.hlsl");
+	}
+
+	void Graphics::Blit(TexturePtr pSource, TexturePtr pDest)
+	{
+		NVRHI::DrawCallState state;
+
+		state.primType = NVRHI::PrimitiveType::TRIANGLE_STRIP;
+		state.VS.shader = _BlitShader->GetShader(NVRHI::ShaderType::SHADER_VERTEX);
+		state.PS.shader = _BlitShader->GetShader(NVRHI::ShaderType::SHADER_PIXEL);
+
+		state.renderState.targetCount = 1;
+		state.renderState.targets[0] = pDest;
+		state.renderState.viewportCount = 1;
+		state.renderState.viewports[0] = NVRHI::Viewport(float(Engine::ScreenSize.x), float(Engine::ScreenSize.y));
+		state.renderState.depthStencilState.depthEnable = false;
+		state.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_NONE;
+
+		NVRHI::BindTexture(state.PS, 0, pSource);
+
+		NVRHI::DrawArguments args;
+		args.vertexCount = 4;
+		Engine::GetRenderInterface()->draw(state, &args, 1);
+	}
+
+	void Graphics::Blit(const String & name, TexturePtr pDest)
+	{
+		Blit(GetRenderTarget(name), pDest);
 	}
 
 	void Graphics::SetShader(NVRHI::DrawCallState& state, ShaderPtr shader)
@@ -37,7 +79,7 @@ namespace Hydra
 		state.renderState.clearDepthTarget = true;
 	}
 
-	NVRHI::ConstantBufferHandle Graphics::CreateConstantBuffer(uint32_t size, const String & mappedName, const unsigned int specificBinding, uint32_t slot)
+	NVRHI::ConstantBufferHandle Graphics::CreateConstantBuffer(uint32_t size, const String & mappedName, const unsigned int specificBinding, int slot)
 	{
 		if (_ConstantBuffers.find(mappedName) != _ConstantBuffers.end())
 		{
@@ -49,6 +91,7 @@ namespace Hydra
 		info.Name = mappedName;
 		info.DataSize = size;
 		info.Slot = slot;
+		info.SpecificBinding = specificBinding;
 		info.Handle = Engine::GetRenderInterface()->createConstantBuffer(NVRHI::ConstantBufferDesc(size, nullptr), nullptr);
 
 		_ConstantBuffers[mappedName] = info;
@@ -131,7 +174,7 @@ namespace Hydra
 		}
 	}
 
-	NVRHI::TextureHandle Graphics::CreateRenderTarget(const String & name, const NVRHI::Format::Enum & format, UINT width, UINT height, const NVRHI::Color & clearColor, UINT sampleCount)
+	TexturePtr Graphics::CreateRenderTarget(const String & name, const NVRHI::Format::Enum & format, UINT width, UINT height, const NVRHI::Color & clearColor, UINT sampleCount)
 	{
 		if (_RenderViewTargets.find(name) != _RenderViewTargets.end())
 		{
@@ -154,12 +197,82 @@ namespace Hydra
 		return handle;
 	}
 
-	NVRHI::TextureHandle Graphics::GetRenderTarget(const String & name)
+	TexturePtr Graphics::GetRenderTarget(const String & name)
 	{
 		if (_RenderViewTargets.find(name) != _RenderViewTargets.end())
 		{
 			return _RenderViewTargets[name];
 		}
+		return nullptr;
+	}
+
+	void Hydra::Graphics::ReleaseRenderTarget(const String & name)
+	{
+		if (_RenderViewTargets.find(name) != _RenderViewTargets.end())
+		{
+			TexturePtr rt = _RenderViewTargets[name];
+
+			Engine::GetRenderInterface()->destroyTexture(rt);
+
+			_RenderViewTargets.erase(name);
+		}
+	}
+
+	InputLayoutPtr Hydra::Graphics::CreateInputLayout(const String & name, const NVRHI::VertexAttributeDesc * d, uint32_t attributeCount, ShaderPtr shader)
+	{
+		if (_InputLayouts.find(name) != _InputLayouts.end())
+		{
+			return _InputLayouts[name];
+		}
+
+		ID3DBlob* blob = shader->GetShaderBlob(NVRHI::ShaderType::SHADER_VERTEX);
+		InputLayoutPtr layout = Engine::GetRenderInterface()->createInputLayout(d, attributeCount, blob->GetBufferPointer(), blob->GetBufferSize());
+
+		_InputLayouts[name] = layout;
+
+		return layout;
+	}
+
+	InputLayoutPtr Hydra::Graphics::GetInputLayout(const String & name)
+	{
+		if (_InputLayouts.find(name) != _InputLayouts.end())
+		{
+			return _InputLayouts[name];
+		}
+
+		return nullptr;
+	}
+
+	SamplerPtr Hydra::Graphics::CreateSampler(const String & name, const WrapMode & wrapX, const WrapMode & wrapY, const WrapMode & wrapZ, bool minFilter, bool magFilter, bool mipFilter, int anisotropy)
+	{
+		if (_Samplers.find(name) != _Samplers.end())
+		{
+			return _Samplers[name];
+		}
+
+		NVRHI::SamplerDesc samplerDesc;
+		samplerDesc.wrapMode[0] = wrapX;
+		samplerDesc.wrapMode[1] = wrapY;
+		samplerDesc.wrapMode[2] = wrapZ;
+		samplerDesc.minFilter = minFilter;
+		samplerDesc.magFilter = magFilter;
+		samplerDesc.mipFilter = mipFilter;
+		samplerDesc.anisotropy = 16;
+
+		SamplerPtr sampler = Engine::GetRenderInterface()->createSampler(samplerDesc);
+
+		_Samplers[name] = sampler;
+
+		return sampler;
+	}
+
+	SamplerPtr Hydra::Graphics::GetSampler(const String & name)
+	{
+		if (_Samplers.find(name) != _Samplers.end())
+		{
+			return _Samplers[name];
+		}
+
 		return nullptr;
 	}
 }

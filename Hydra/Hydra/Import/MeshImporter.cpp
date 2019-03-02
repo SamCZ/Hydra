@@ -283,6 +283,8 @@ namespace Hydra
 			//nMesh->recalculateNormals();
 		}
 
+		nMesh->UpdateBounds();
+
 		return nMesh;
 	}
 }

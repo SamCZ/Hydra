@@ -173,4 +173,14 @@ namespace Hydra
 			break;
 		}
 	}
+
+	void Shader::SetRenderStage(const String & stage)
+	{
+		_RenderStage = stage;
+	}
+
+	String Shader::GetRenderStage()
+	{
+		return _RenderStage;
+	}
 }

@@ -20,33 +20,46 @@ namespace Hydra
 		PSB_COMPUTE     = 1 << 7
 	};
 
+	typedef NVRHI::InputLayoutHandle InputLayoutPtr;
+	typedef NVRHI::TextureHandle TexturePtr;
+	typedef NVRHI::ConstantBufferHandle ConstantBufferPtr;
+	typedef NVRHI::SamplerHandle SamplerPtr;
+
+	typedef NVRHI::SamplerDesc::WrapMode WrapMode;
+
 	struct ConstantBufferInfo
 	{
 		String Name;
 		uint32_t DataSize;
 		unsigned int SpecificBinding;
-		uint32_t Slot;
-		NVRHI::ConstantBufferHandle Handle;
+		int Slot;
+		ConstantBufferPtr Handle;
 	};
 
 	class Graphics
 	{
 	private:
 		static Map<String, ConstantBufferInfo> _ConstantBuffers;
-		static Map<String, NVRHI::TextureHandle> _RenderViewTargets;
+		static Map<String, TexturePtr> _RenderViewTargets;
+		static Map<String, InputLayoutPtr> _InputLayouts;
+		static Map<String, SamplerPtr> _Samplers;
+
+		static ShaderPtr _BlitShader;
 	public:
 		//Graphics();
 		//~Graphics();
 
-		//void Blit(NVRHI::TextureHandle pSource, NVRHI::TextureHandle pDest);
-
+		static void Create();
 		static void Destroy();
+
+		static void Blit(TexturePtr pSource, TexturePtr pDest);
+		static void Blit(const String& name, TexturePtr pDest);
 
 		static void SetShader(NVRHI::DrawCallState& state, ShaderPtr shader);
 
 		static void SetClearFlags(NVRHI::DrawCallState& state, const ColorRGBA& color);
 
-		static NVRHI::ConstantBufferHandle CreateConstantBuffer(uint32_t size, const String& mappedName = String_None, const unsigned int specificBinding = 0, uint32_t slot = -1);
+		static NVRHI::ConstantBufferHandle CreateConstantBuffer(uint32_t size, const String& mappedName = String_None, const unsigned int specificBinding = 0, int slot = -1);
 
 		static void WriteConstantBufferData(NVRHI::ConstantBufferHandle handle, const void* data, uint32_t size);
 		static void WriteConstantBufferData(          const String& mappedName, const void* data);
@@ -55,7 +68,14 @@ namespace Hydra
 		static void BindConstantBuffer(NVRHI::PipelineStageBindings& ds, uint32_t slot, NVRHI::ConstantBufferHandle handle);
 		static void BindConstantBuffer(NVRHI::DrawCallState& state, const String& mappedName, uint32_t slot = 0, bool slotOverride = false);
 
-		static NVRHI::TextureHandle CreateRenderTarget(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, const NVRHI::Color& clearColor, UINT sampleCount);
-		static NVRHI::TextureHandle GetRenderTarget(const String& name);
+		static TexturePtr CreateRenderTarget(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, const NVRHI::Color& clearColor, UINT sampleCount);
+		static TexturePtr GetRenderTarget(const String& name);
+		static void ReleaseRenderTarget(const String& name);
+
+		static InputLayoutPtr CreateInputLayout(const String& name, const NVRHI::VertexAttributeDesc* d, uint32_t attributeCount, ShaderPtr shader);
+		static InputLayoutPtr GetInputLayout(const String& name);
+
+		static SamplerPtr CreateSampler(const String& name, const WrapMode& wrapX = WrapMode::WRAP_MODE_WRAP, const WrapMode& wrapY = WrapMode::WRAP_MODE_WRAP, const WrapMode& wrapZ = WrapMode::WRAP_MODE_WRAP, bool minFilter = true, bool magFilter = true, bool mipFilter = true, int anisotropy = 16);
+		static SamplerPtr GetSampler(const String& name);
 	};
 }

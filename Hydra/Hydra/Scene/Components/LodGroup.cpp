@@ -1,4 +1,5 @@
 #include "LodGroup.h"
+#include "Hydra/Scene/Components/Camera.h"
 
 namespace Hydra
 {
@@ -17,26 +18,34 @@ namespace Hydra
 			}
 		}
 
+		_LodMax = _Lods.size();
+
 		SelectLod(0);
 	}
 
 	void LodGroup::Update()
 	{
-		static int slod = 0;
-		static float f = 0;
+		const Vector3& objPos = Parent->Position;
+		CameraPtr camera = Camera::MainCamera;
 
-		f += 0.001f;
-
-		if (f > 1.0)
+		if (camera)
 		{
-			f = 0;
-			slod++;
+			const Vector3& cameraPos = camera->Parent->Position;
+			float frustumSizeZ = camera->GetZFar() - camera->GetZNear();
+
+			float distanceToObj = glm::abs(glm::distance(cameraPos, objPos));
+
+			float disPercent = distanceToObj / frustumSizeZ;
+
+			if (disPercent < 0.05)
+			{
+				SelectLod(0);
+			}
+			else
+			{
+				SelectLod(_LodMax);
+			}
 		}
-
-
-		if (slod >= 3) slod = 0;
-
-		SelectLod(slod);
 	}
 
 	void LodGroup::SelectLod(int lod)

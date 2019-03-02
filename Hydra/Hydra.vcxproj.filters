@@ -192,6 +192,18 @@
     <ClInclude Include="Hydra\Scene\Components\LodGroup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Hydra\Core\Math\Box.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Render\RenderStage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Render\RenderStageDeffered.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Render\RenderManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Hydra.rc">
@@ -316,5 +328,14 @@
     <ClCompile Include="Hydra\Scene\Components\LodGroup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Hydra\Render\RenderStageDeffered.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Render\RenderManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

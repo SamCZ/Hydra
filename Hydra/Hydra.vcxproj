@@ -128,6 +128,7 @@
     <ClInclude Include="Hydra\Core\EObject.h" />
     <ClInclude Include="Hydra\Core\FastNoise.h" />
     <ClInclude Include="Hydra\Core\Log.h" />
+    <ClInclude Include="Hydra\Core\Math\Box.h" />
     <ClInclude Include="Hydra\Core\Platform.h" />
     <ClInclude Include="Hydra\Core\Polygonise.h" />
     <ClInclude Include="Hydra\Core\Random.h" />
@@ -155,6 +156,9 @@
     <ClInclude Include="Hydra\Render\Pipeline\DeviceManager11.h" />
     <ClInclude Include="Hydra\Render\Pipeline\GFSDK_NVRHI.h" />
     <ClInclude Include="Hydra\Render\Pipeline\GFSDK_NVRHI_D3D11.h" />
+    <ClInclude Include="Hydra\Render\RenderManager.h" />
+    <ClInclude Include="Hydra\Render\RenderStage.h" />
+    <ClInclude Include="Hydra\Render\RenderStageDeffered.h" />
     <ClInclude Include="Hydra\Render\Shader.h" />
     <ClInclude Include="Hydra\Scene\Component.h" />
     <ClInclude Include="Hydra\Scene\Components\Camera.h" />
@@ -190,6 +194,8 @@
   <ItemGroup>
     <ClCompile Include="Hydra\Core\FastNoise.cpp" />
     <ClCompile Include="Hydra\HydraEngine.cpp" />
+    <ClCompile Include="Hydra\Render\RenderManager.cpp" />
+    <ClCompile Include="Hydra\Render\RenderStageDeffered.cpp" />
     <ClCompile Include="Hydra\Scene\Components\LodGroup.cpp" />
     <ClCompile Include="IndustryEmpire\IndustryEmpire.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -229,6 +235,7 @@
     <ClCompile Include="MainOld.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

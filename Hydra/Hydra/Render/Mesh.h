@@ -4,6 +4,7 @@
 #include "Hydra/Core/Resource.h"
 #include "Hydra/Core/Vector.h"
 #include "Hydra/Core/Container.h"
+#include "Hydra/Core/Math/Box.h"
 
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
 
@@ -22,6 +23,7 @@ namespace Hydra
 		List<Vector3> Tangents;
 		List<Vector3> BiNormals;
 		List<unsigned int> Indices;
+		Box Bounds;
 
 		NVRHI::PrimitiveType::Enum PrimitiveType;
 

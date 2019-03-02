@@ -130,6 +130,7 @@ namespace Hydra
 
 		String shaderSource;
 		Map<NVRHI::ShaderType::Enum, String> shaderTypes;
+		String renderStage;
 
 		List<String> shaderLines = file.ReadLines();
 		for (String& line : shaderLines)
@@ -186,6 +187,13 @@ namespace Hydra
 								{
 									shaderTypes[NVRHI::ShaderType::SHADER_COMPUTE] = paramValue;
 								}
+
+								if (paramName == "rs")
+								{
+									renderStage = paramValue;
+
+									Log("ShaderImporter::Import", file.GetPath(), "Found render stage: " + renderStage);
+								}
 							}
 						}
 						else
@@ -212,6 +220,7 @@ namespace Hydra
 
 		ShaderPtr shader = New(Shader);
 		shader->SetSource(file.GetPath());
+		shader->SetRenderStage(renderStage);
 		
 		ITER(shaderTypes, it)
 		{

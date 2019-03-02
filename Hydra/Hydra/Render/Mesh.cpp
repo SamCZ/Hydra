@@ -8,14 +8,27 @@ namespace Hydra
 
 	void Mesh::UpdateBounds()
 	{
+		float floatMax = FloatMax;
+		float floatMin = FloatMin;
+
+		Vector3 maxBounds = Vector3(floatMin, floatMin, floatMin);
+		Vector3 minBounds = Vector3(floatMax, floatMax, floatMax);
+
+		for (Vector3& pos : Vertices)
+		{
+			minBounds = glm::min(minBounds, pos);
+			maxBounds = glm::max(maxBounds, pos);
+		}
+
+		Bounds = {};
+		Bounds.Origin = (minBounds + maxBounds) * 0.5f;
+		Bounds.Extent = maxBounds - Bounds.Origin;
 	}
 
 	void Mesh::GenerateNormals()
 	{
 		List<Vector3> normals;
 		normals.resize(Vertices.size());
-
-		std::cout << (Indices.size() / 3) << std::endl;
 
 		for (int i = 0; i < Indices.size() / 3; i++)
 		{

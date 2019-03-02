@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <type_traits>
 
 namespace Hydra
 {
@@ -25,4 +26,6 @@ namespace Hydra
 	#define New(classname, ...) MakeShared<classname>(__VA_ARGS__)
 
 	#define DEFINE_PTR(className) typedef SharedPtr<className> className ## Ptr; typedef WeakPtr<className> className ## WeakPtr;
+
+#define T_IS(tName, type) std::is_same<tName, type>::value
 }

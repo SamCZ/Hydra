@@ -11,6 +11,7 @@
 namespace Hydra
 {
 	class Spatial;
+	class Camera;
 
 	DEFINE_PTR(Spatial)
 
@@ -35,11 +36,12 @@ namespace Hydra
 
 		SpatialPtr GetChild(int index);
 
+		void Start();
 		void Update();
 
 		void PrintHiearchy(int depth = 0) const;
 
-		String GetHiearchy() const;
+		String GetHiearchy();
 
 		SpatialPtr Find(const String& name);
 		SpatialPtr FindApprox(const String& name);
@@ -73,6 +75,11 @@ namespace Hydra
 				component = New(T);
 				component->Parent = this;
 				_Components.push_back(component);
+
+				if (T_IS(T, Camera))
+				{
+					SetMainCamera(component);
+				}
 			}
 
 			return component;
@@ -116,5 +123,8 @@ namespace Hydra
 		}
 
 		virtual Matrix4 GetModelMatrix() override;
+
+		private:
+			void SetMainCamera(SharedPtr<Component> camera);
 	};
 }

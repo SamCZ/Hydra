@@ -9,6 +9,7 @@ namespace Hydra
 	{
 	private:
 		List<SpatialPtr> _Lods;
+		unsigned int _LodMax;
 	public:
 		virtual void Start() override;
 		virtual void Update() override;

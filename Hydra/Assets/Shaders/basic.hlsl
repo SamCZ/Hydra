@@ -1,6 +1,6 @@
 #pragma hydra vert:MainVS pixel:MainPS
 
-#include "Assets/Shaders/Input/Deffered.hlsli"
+#include "Assets/Shaders/Input/Default.hlsli"
 
 struct PS_Input
 {

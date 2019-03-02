@@ -5,6 +5,7 @@ namespace Hydra
 	IRendererInterface Engine::_RenderInterface;
 	SharedPtr<DeviceManager> Engine::_DeviceManager;
 	InputManagerPtr Engine::_InputManager;
+	Vector2 Engine::ScreenSize;
 
 	void Engine::SetRenderInterface(IRendererInterface renderInterface)
 	{
