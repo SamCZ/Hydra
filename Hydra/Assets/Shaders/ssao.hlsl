@@ -73,6 +73,8 @@ float4 MainPS(FullScreenQuadOutput IN) : SV_Target
 {
 	//return t_SceneTexture[IN.position.xy]; //TODO: Disabled ssao for a moment, enable afterwards.
 
+	//return float4(t_PositionTexture[IN.position.xy].xyz, 1.0);
+
 	float3 fragPos = t_PositionTexture[IN.position.xy].xyz;
 	float3 normal = (t_NormalTexture[IN.position.xy].xyz);
 	//int index = (int)(IN.position.x * 1000.0) % 15;
@@ -89,12 +91,14 @@ float4 MainPS(FullScreenQuadOutput IN) : SV_Target
 		//float3 samplePos = mul(TBN, g_Samples[i].xyz);
 		float3 samplePos = g_Samples[i].xyz;
 		samplePos = fragPos + samplePos * RADIUS;
-		//samplePos = fragPos;
+		samplePos = fragPos;
 
 		float4 offset = float4(samplePos, 1.0);
 		offset = mul(g_Projection, offset);
 		offset.xyz /= offset.w;
 		offset.xyz = offset.xyz * 0.5 + 0.5;
+
+		return t_PositionTexture.Sample(MeshTextureSampler, float2(offset.x, 1.0 - offset.y));
 
 		float sampleDepth = t_PositionTexture.Sample(MeshTextureSampler, float2(offset.x, 1.0 - offset.y)).z;
 		//float sampleDepth = t_PositionTexture[float2(offset.x, 1.0 - offset.y)].z;

@@ -21,6 +21,10 @@ namespace Hydra
 		List<SpatialPtr> _Childs;
 		List<ComponentPtr> _Components;
 		bool _Enabled;
+		bool _Static;
+
+		bool _StaticMatrixGenrated;
+		Matrix4 _StaticModelMatrix;
 	public:
 		String Name;
 		Spatial* Parent;
@@ -49,6 +53,11 @@ namespace Hydra
 
 		void SetEnabled(bool enabled);
 		bool IsEnabled();
+
+		void SetStatic(bool s);
+		bool IsStatic();
+
+		Matrix4& GetStaticModelMatrix();
 
 		template<class T> FORCEINLINE SharedPtr<T> GetComponent()
 		{

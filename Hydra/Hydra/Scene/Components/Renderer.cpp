@@ -9,7 +9,11 @@ namespace Hydra
 
 	Renderer::Renderer() : _RenderInterface(nullptr), _IndexHandle(nullptr), _VertexBuffer(nullptr), _InstBuffer(nullptr), _Mesh(nullptr), _IsInstanced(false), _LastInstanceCount(0), _NeedsUpdate(true), _NeedsUpdateInstances(true)
 	{
-		
+		Mat.Albedo = nullptr;
+		Mat.Normal = nullptr;
+		Mat.Roughness = nullptr;
+		Mat.Metallic = nullptr;
+		Mat.Opacity = nullptr;
 	}
 
 	Renderer::~Renderer()
@@ -34,6 +38,31 @@ namespace Hydra
 		if (_Mesh != nullptr)
 		{
 			delete _Mesh;
+		}
+
+		if (Mat.Albedo)
+		{
+			_RenderInterface->destroyTexture(Mat.Albedo);
+		}
+
+		if (Mat.Normal)
+		{
+			_RenderInterface->destroyTexture(Mat.Normal);
+		}
+
+		if (Mat.Metallic)
+		{
+			_RenderInterface->destroyTexture(Mat.Metallic);
+		}
+
+		if (Mat.Roughness)
+		{
+			_RenderInterface->destroyTexture(Mat.Roughness);
+		}
+
+		if (Mat.Opacity)
+		{
+			_RenderInterface->destroyTexture(Mat.Opacity);
 		}
 	}
 
@@ -122,6 +151,8 @@ namespace Hydra
 		{
 			Log("Renderer::WriteMeshData", "Mesh(" + _Mesh->GetSource() + ") has zero UVs that can broke lighting because UVs are needed for tange space callculation !");
 		}
+
+		//Log("Renderer::WriteMeshData", "Mesh(" + _Mesh->GetSource() + ") UV: " + ToString(useUvs) + ", N: " + ToString(useNormals) + ", TA: " + ToString(useTangents) + ", BITA: " + ToString(useBiNormals));
 
 		NVRHI::BufferDesc indexBufferDesc;
 		indexBufferDesc.isIndexBuffer = true;

@@ -10,8 +10,32 @@
 #include "Hydra/Import/TextureImporter.h"
 #include "Hydra/Render/Pipeline/BindingHelpers.h"
 
-namespace Hydra
-{
+#include <algorithm>
+#include <random>
+
+namespace Hydra {
+
+	static float AO_Radius = 0.085f;
+	static float AO_Bias = 0.025f;
+	static float AO_Intensity = 1.0f;
+	static bool AO_Preview = true;
+
+	struct alignas(16) SSAO_CB
+	{
+		alignas(16) Matrix4 Projection;
+		alignas(16) Vector4 Samples[64];
+	};
+
+	struct alignas(16) SSAO_CB_RT
+	{
+		alignas(16) Vector4 RadiusBias;
+	};
+
+	float lerp(float a, float b, float f)
+	{
+		return a + f * (b - a);
+	}
+
 	RenderStageDeffered::RenderStageDeffered()
 	{
 		ShaderPtr basicInputShader = ShaderImporter::Import("Assets/Shaders/Input/DefferedInput.hlsl");
@@ -67,8 +91,8 @@ namespace Hydra
 		};
 
 
-		TexturePtr envMap = TextureImporter::Import("Assets/Textures/skybox1.dds");
-		_IrrConv = TextureImporter::Import("Assets/Textures/skybox1IR.dds");
+		TexturePtr envMap = TextureImporter::Import("Assets/Textures/skybox3.dds");
+		_IrrConv = TextureImporter::Import("Assets/Textures/skybox3IR.dds");
 
 		Renderer* cubeRenderer = new Renderer();
 		cubeRenderer->SetMesh(Mesh::CreatePrimitive(PrimitiveType::Box));
@@ -163,6 +187,7 @@ namespace Hydra
 		_Roughness = TextureImporter::Import("Assets/Textures/Metal/copper-rock1-height.dds");
 		_Metallic = TextureImporter::Import("Assets/Textures/Metal/copper-rock1-height.dds");
 		_AO = TextureImporter::Import("Assets/Textures/Metal/copper-rock1-ao.dds");
+
 	}
 
 	RenderStageDeffered::~RenderStageDeffered()
@@ -204,11 +229,7 @@ namespace Hydra
 
 
 		Graphics::BindSampler(state, "DefaultSampler", 0);
-		NVRHI::BindTexture(state.PS, 0, _Albedo);
-		NVRHI::BindTexture(state.PS, 1, _Normal);
-		NVRHI::BindTexture(state.PS, 2, _Roughness);
-		NVRHI::BindTexture(state.PS, 3, _Metallic);
-		NVRHI::BindTexture(state.PS, 4, _AO);
+		
 
 
 		ModelConstants modelData = {};
@@ -223,7 +244,17 @@ namespace Hydra
 			}
 
 			RendererPtr& r = activeRenderers[i];
-			modelData.g_ModelMatrix = r->Parent->GetModelMatrix();
+			if (r->Parent->IsStatic())
+			{
+				modelData.g_ModelMatrix = r->Parent->GetStaticModelMatrix();
+			}
+			else
+			{
+				modelData.g_ModelMatrix = r->Parent->GetModelMatrix();
+			}
+
+			modelData.g_Opacity = r->Mat.Opacity == nullptr ? 0 : 1;
+
 			Engine::GetRenderInterface()->writeConstantBuffer(CBuffers[i], &modelData, sizeof(ModelConstants));
 		}
 
@@ -232,6 +263,24 @@ namespace Hydra
 			RendererPtr& r = activeRenderers[i];
 
 			if (r->Enabled == false || r->Parent->IsEnabled() == false) continue;
+
+			NVRHI::BindTexture(state.PS, 0, r->Mat.Albedo);
+			if (r->Mat.Normal)
+			{
+				NVRHI::BindTexture(state.PS, 1, r->Mat.Normal);
+			}
+			if (r->Mat.Roughness)
+			{
+				NVRHI::BindTexture(state.PS, 2, r->Mat.Roughness);
+			}
+			if (r->Mat.Metallic)
+			{
+				NVRHI::BindTexture(state.PS, 3, r->Mat.Metallic);
+			}
+			if (r->Mat.Opacity)
+			{
+				NVRHI::BindTexture(state.PS, 4, r->Mat.Opacity);
+			}
 
 			r->WriteDataToState(state);
 			

@@ -26,7 +26,7 @@ namespace Hydra
 		static SpatialPtr Import(const File& file, MeshImportOptions& importoptions);
 
 	private:
-		static void ProcessNode(const aiScene* aScene, aiNode* aNode, SpatialPtr rootScene, SpatialPtr scene, String material);
+		static void ProcessNode(const aiScene* aScene, aiNode* aNode, SpatialPtr rootScene, SpatialPtr scene, String material, const File& rootFolder);
 
 		static void ProcessAnimations(const aiScene* scene, SpatialPtr m);
 

@@ -73,7 +73,7 @@ float4 MainPS(FullScreenQuadOutput IN) : SV_Target
 
 	DirectionalLight DirLight;
 	DirLight.Color = (1.0).xxxx;
-	DirLight.Direction = -float3(-0.5, -0.5, -0.5);
+	DirLight.Direction = normalize(float3(0.25, 0.8, 0.3));
 	DirLight.Intensity = 1.0;
 
 	AmbientLight Ambient;

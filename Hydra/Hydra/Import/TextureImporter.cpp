@@ -59,6 +59,8 @@ namespace Hydra
 		ComPtr<ID3D11Resource> resources[1];
 		int success = SUCCEEDED(DirectX::CreateDDSTextureFromFile(Engine::GetDeviceManager()->GetDevice(), wchTitle, &resources[0], NULL));
 
+		Log("TextureImporter::Import(" + file.GetPath() + ")", "Loaded.");
+
 		return renderInterface->getHandleForTexture(resources[0].Get());
 	}
 }

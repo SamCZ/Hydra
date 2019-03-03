@@ -15,6 +15,7 @@ namespace Hydra
 	struct alignas(16) ModelConstants
 	{
 		alignas(16) Matrix4 g_ModelMatrix;
+		alignas(16) float g_Opacity;
 	};
 
 	struct alignas(16) SingleFloatConstant

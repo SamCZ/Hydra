@@ -4,9 +4,25 @@
 #include "Hydra/Core/Log.h"
 #include "Hydra/Render/Mesh.h"
 #include "Hydra/Scene/Components/Renderer.h"
+#include "Hydra/Import/TextureImporter.h"
 
 namespace Hydra
 {
+	static Map<String, NVRHI::TextureHandle> TexCache;
+
+	static inline NVRHI::TextureHandle LoadTex(const File& file)
+	{
+		if (TexCache.find(file.GetPath()) != TexCache.end())
+		{
+			return TexCache[file.GetPath()];
+		}
+
+		NVRHI::TextureHandle tex = TextureImporter::Import(file);
+		TexCache[file.GetPath()] = tex;
+
+		return tex;
+	}
+
 	SpatialPtr Meshimporter::Import(const File& file, MeshImportOptions& importoptions)
 	{
 		std::cout << "Loading model: " << file << std::endl;
@@ -27,7 +43,7 @@ namespace Hydra
 		SpatialPtr node = New(Spatial, file.GetName());
 
 		ProcessAnimations(scene, node);
-		ProcessNode(scene, scene->mRootNode, node, node, "");
+		ProcessNode(scene, scene->mRootNode, node, node, "", file.GetParentFile());
 
 		Log("Meshimporter::Import(" + file.GetPath() + ")", "Loaded.");
 
@@ -39,7 +55,7 @@ namespace Hydra
 		return glm::vec3(vec.x, vec.y, vec.z);
 	}
 
-	void Meshimporter::ProcessNode(const aiScene* aScene, aiNode* aNode, SpatialPtr rootScene, SpatialPtr scene, String material)
+	void Meshimporter::ProcessNode(const aiScene* aScene, aiNode* aNode, SpatialPtr rootScene, SpatialPtr scene, String material, const File& rootFolder)
 	{
 		SpatialPtr childScene = New(Spatial, String(aNode->mName.C_Str()));
 		scene->AddChild(childScene);
@@ -84,6 +100,57 @@ namespace Hydra
 					renderer->TestColor = Vector3(diffuseColor[0], diffuseColor[1], diffuseColor[2]);
 				}
 
+				static std::vector<std::string> enumToString = {
+				"aiTextureType_NONE", "aiTextureType_DIFFUSE", "aiTextureType_SPECULAR",
+				"aiTextureType_AMBIENT", "aiTextureType_EMISSIVE", "aiTextureType_HEIGHT",
+				"aiTextureType_NORMALS", "aiTextureType_SHININESS", "aiTextureType_OPACITY",
+				"aiTextureType_DISPLACEMENT", "aiTextureType_LIGHTMAP", "aiTextureType_REFLECTION",
+				"aiTextureType_UNKNOWN", "_aiTextureType_Force32Bit" };
+
+				for (uint32 texType = 0; texType < (uint32)aiTextureType::aiTextureType_UNKNOWN; texType++)
+				{
+					int textureCount = souceMaterial->GetTextureCount((aiTextureType)texType);
+
+					if (textureCount > 0)
+					{
+						aiString str;
+						souceMaterial->GetTexture((aiTextureType)texType, 0, &str);
+
+						String stdStr = str.C_Str();
+						File file = File(rootFolder, stdStr);
+
+						if ((aiTextureType)texType == aiTextureType::aiTextureType_DIFFUSE)
+						{
+							// Albedo
+							renderer->Mat.Albedo = LoadTex(file);
+						}
+
+						if ((aiTextureType)texType == aiTextureType::aiTextureType_AMBIENT)
+						{
+							// Metallic
+							renderer->Mat.Metallic = LoadTex(file);
+						}
+
+						if ((aiTextureType)texType == aiTextureType::aiTextureType_HEIGHT)
+						{
+							// Normal
+							renderer->Mat.Normal = LoadTex(file);
+						}
+
+						if ((aiTextureType)texType == aiTextureType::aiTextureType_SHININESS)
+						{
+							// Roughness
+							renderer->Mat.Roughness = LoadTex(file);
+						}
+
+						if ((aiTextureType)texType == aiTextureType::aiTextureType_OPACITY)
+						{
+							// Roughness
+							renderer->Mat.Roughness = LoadTex(file);
+						}
+					}
+				}
+
 				//TODO: Materials
 			}
 
@@ -92,7 +159,7 @@ namespace Hydra
 
 		for (unsigned int i = 0; i < aNode->mNumChildren; i++)
 		{
-			ProcessNode(aScene, aNode->mChildren[i], rootScene, childScene, material);
+			ProcessNode(aScene, aNode->mChildren[i], rootScene, childScene, material, rootFolder);
 		}
 	}
 

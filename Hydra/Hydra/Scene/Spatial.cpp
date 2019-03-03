@@ -12,7 +12,7 @@ namespace Hydra
 	{
 	}
 
-	Spatial::Spatial(const String & name) : Name(name), Parent(nullptr), _Enabled(true)
+	Spatial::Spatial(const String & name) : Name(name), Parent(nullptr), _Enabled(true), _Static(false), _StaticMatrixGenrated(false)
 	{
 		Position = Vector3(0, 0, 0);
 		Rotation = Vector3(0, 0, 0);
@@ -87,7 +87,7 @@ namespace Hydra
 	{
 		if (Parent)
 		{
-			return Parent->GetModelMatrix() * Transformable::GetModelMatrix(); //TODO: Steling fps! -60
+			return Parent->GetModelMatrix() * Transformable::GetModelMatrix(); //TODO: this is slow !
 		}
 		else
 		{
@@ -209,8 +209,42 @@ namespace Hydra
 	{
 		if (Parent)
 		{
-			return Parent->IsEnabled() && _Enabled;
+			if (!Parent->IsEnabled())
+			{
+				return false;
+			}
+
+			return _Enabled;
 		}
 		return _Enabled;
+	}
+
+	void Spatial::SetStatic(bool s)
+	{
+		_Static = s;
+
+		GetStaticModelMatrix();
+
+		for (SpatialPtr child : _Childs)
+		{
+			child->SetStatic(s);
+		}
+	}
+
+	bool Spatial::IsStatic()
+	{
+		return _Static;
+	}
+
+	Matrix4& Spatial::GetStaticModelMatrix()
+	{
+		if (!_StaticMatrixGenrated)
+		{
+			_StaticMatrixGenrated = true;
+
+			_StaticModelMatrix = GetModelMatrix();
+		}
+
+		return _StaticModelMatrix;
 	}
 }

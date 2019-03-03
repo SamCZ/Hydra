@@ -18,6 +18,15 @@ namespace Hydra
 		glm::vec3 binormal;
 	};
 
+	struct Material
+	{
+		NVRHI::TextureHandle Albedo;
+		NVRHI::TextureHandle Normal;
+		NVRHI::TextureHandle Roughness;
+		NVRHI::TextureHandle Metallic;
+		NVRHI::TextureHandle Opacity;
+	};
+
 	class Mesh;
 
 	class Renderer : public Component
@@ -44,6 +53,7 @@ namespace Hydra
 		~Renderer();
 
 		glm::vec3 TestColor;
+		Material Mat;
 
 		virtual void Start();
 		virtual void Update();

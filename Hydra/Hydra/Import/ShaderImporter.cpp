@@ -19,7 +19,7 @@ namespace Hydra
 		*blob = nullptr;
 
 		UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
-#if defined( DEBUG ) || defined( _DEBUG ) || true
+#if defined( DEBUG ) || defined( _DEBUG )
 		flags |= D3DCOMPILE_DEBUG;
 #endif
 
@@ -237,6 +237,38 @@ namespace Hydra
 				printf("Failed compiling vertex shader (%s) %08X\n", file.GetPath().c_str(), hr);
 				continue;
 			}
+
+			ID3D11ShaderReflection* refl;
+			D3DReflect(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&refl);
+
+			D3D11_SHADER_DESC shaderDesc;
+			refl->GetDesc(&shaderDesc);
+
+			for (int d = 0; d < shaderDesc.DefCount; d++)
+			{
+				
+			}
+
+			for (UINT i = 0; i < shaderDesc.ConstantBuffers; i++)
+			{
+				D3D11_SHADER_BUFFER_DESC Description;
+				ID3D11ShaderReflectionConstantBuffer* pConstBuffer = refl->GetConstantBufferByIndex(i);
+				pConstBuffer->GetDesc(&Description);
+
+				for (UINT j = 0; j < Description.Variables; j++)
+				{
+					ID3D11ShaderReflectionVariable* pVariable = pConstBuffer->GetVariableByIndex(j);
+					D3D11_SHADER_VARIABLE_DESC var_desc;
+					pVariable->GetDesc(&var_desc);
+					std::cout << " Name: " << var_desc.Name;
+					std::cout << " Size: " << var_desc.Size;
+					std::cout << " Offset: " << var_desc.StartOffset << "\n";
+				}
+			}
+
+			Log("ShaderImporter::Import", file.GetPath(), ToString(shaderDesc.ConstantBuffers) + " cbuffers.");
+
+			refl->Release();
 
 			NVRHI::ShaderHandle shaderHandle = renderer->createShader(NVRHI::ShaderDesc(type), shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize());
 

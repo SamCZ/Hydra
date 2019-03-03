@@ -117,6 +117,7 @@ public:
 		SpatialPtr testModel = Meshimporter::Import("Assets/Sponza/SponzaNoFlag.obj", MeshImportOptions());
 		testModel->Scale = Vector3(0.01f, 0.01f, 0.01f);
 		testModel->AddComponent<LodGroup>();
+		testModel->SetStatic(true);
 		rm->MainScene->AddChild(testModel);
 
 
