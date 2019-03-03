@@ -10,6 +10,14 @@
 
 namespace Hydra
 {
+	struct PrimitiveType
+	{
+		enum Enum
+		{
+			Box, BoxNDC, Plane, Quad
+		};
+	};
+
 	class Mesh : public Resource
 	{
 	private:
@@ -30,6 +38,8 @@ namespace Hydra
 		void UpdateBounds();
 
 		void GenerateNormals();
+
+		static Mesh* CreatePrimitive(const PrimitiveType::Enum& type, const Vector3& scale = Vector3(1.0f, 1.0f, 1.0f));
 
 	private:
 		Vector3 ComputeTriangleNormal(const Vector3& p1, const Vector3& p2, const Vector3& p3);

@@ -1,7 +1,10 @@
 #include "Hydra/Import/TextureImporter.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+
 #include "Hydra/Engine.h"
 #include "Hydra/Render/Pipeline/DDS/DDSTextureLoader.h"
+#include "NanoVG/stb_image.h"
 
 namespace Hydra
 {
@@ -11,6 +14,39 @@ namespace Hydra
 	{
 		IRendererInterface renderInterface = Engine::GetRenderInterface();
 		
+		if (file.GetExtension() == "png")
+		{
+			int x, y, bytesPerPixel;
+			unsigned char* pixels = nullptr;
+
+			pixels = stbi_load(file.GetPath().c_str(), &x, &y, &bytesPerPixel, 4);
+
+			if (pixels == NULL)
+			{
+				std::cerr << "Unable to load texture(" << stbi_failure_reason() << "): " << file.GetPath() << std::endl;
+				return nullptr;
+			}
+
+			NVRHI::TextureDesc gbufferDesc;
+			gbufferDesc.width = x;
+			gbufferDesc.height = y;
+			gbufferDesc.isRenderTarget = false;
+			gbufferDesc.useClearValue = false;
+			gbufferDesc.sampleCount = 1;
+			gbufferDesc.disableGPUsSync = true;
+
+			gbufferDesc.mipLevels = 1;
+
+			gbufferDesc.format = NVRHI::Format::RGBA8_UNORM;
+			gbufferDesc.debugName = file.GetPath().c_str();
+
+			NVRHI::TextureHandle handle = Engine::GetRenderInterface()->createTexture(gbufferDesc, NULL);
+
+			Engine::GetRenderInterface()->writeTexture(handle, 0, pixels, x * 4, 0);
+
+			return handle;
+		}
+
 		if (file.GetExtension() != "dds")
 		{
 			Log("TextureImporter::Import(" + file.GetPath() + ")", "Cannot load other texture type then dds !");

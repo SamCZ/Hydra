@@ -91,6 +91,51 @@ namespace Hydra
 		Composite(shader, preRenderFunction, GetRenderTarget(outputName));
 	}
 
+	void Graphics::RenderCubeMap(ShaderPtr shader, InputLayoutPtr inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, TexturePtr pDest)
+	{
+		Engine::GetRenderInterface()->beginRenderingPass();
+
+		NVRHI::DrawCallState state;
+		Graphics::SetClearFlags(state, MakeRGBf(0.2f, 0.2f, 0.2f));
+
+		state.renderState.viewportCount = 1;
+		state.renderState.viewports[0] = NVRHI::Viewport(viewPort.x, viewPort.y);
+
+		state.renderState.targetCount = 1;
+		state.renderState.targets[0] = pDest;
+
+		state.inputLayout = inputLayout;
+		SetShader(state, shader);
+
+		state.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_NONE;
+		state.renderState.depthStencilState.depthEnable = true;
+
+		for (int mipLevel = 0; mipLevel < pDest->GetDesc().mipLevels; mipLevel++)
+		{
+			state.renderState.clearColorTarget = true;
+			state.renderState.clearDepthTarget = true;
+
+			for (int i = 0; i < 6; i++)
+			{
+				state.renderState.targetMipSlices[0] = mipLevel;
+				state.renderState.targetIndicies[0] = i;
+
+				if (preRenderFunction)
+					preRenderFunction(state, mipLevel, i);
+
+				state.renderState.clearColorTarget = false;
+				state.renderState.clearDepthTarget = false;
+			}
+		}
+
+		Engine::GetRenderInterface()->endRenderingPass();
+	}
+
+	void Graphics::RenderCubeMap(ShaderPtr shader, const String& inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, const String & outputName)
+	{
+		RenderCubeMap(shader, GetInputLayout(inputLayout), viewPort, preRenderFunction, GetRenderTarget(outputName));
+	}
+
 	void Graphics::SetShader(NVRHI::DrawCallState& state, ShaderPtr shader)
 	{
 		state.VS.shader = shader->GetShader(NVRHI::ShaderType::SHADER_VERTEX);
@@ -202,6 +247,19 @@ namespace Hydra
 		}
 	}
 
+	ConstantBufferPtr Hydra::Graphics::GetConstantBuffer(const String & mappedName)
+	{
+		if (_ConstantBuffers.find(mappedName) == _ConstantBuffers.end())
+		{
+			//LogError("Graphics::BindConstantBuffer", "DrawCallState" + mappedName + ", " + ToString(slot), "Constant buffer not found !");
+			return nullptr;
+		}
+
+		ConstantBufferInfo& info = _ConstantBuffers[mappedName];
+
+		return info.Handle;
+	}
+
 	TexturePtr Graphics::CreateRenderTarget(const String & name, const NVRHI::Format::Enum & format, UINT width, UINT height, const NVRHI::Color & clearColor, UINT sampleCount)
 	{
 		if (_RenderViewTargets.find(name) != _RenderViewTargets.end())
@@ -222,6 +280,68 @@ namespace Hydra
 		gbufferDesc.debugName = name.c_str();
 		NVRHI::TextureHandle handle = Engine::GetRenderInterface()->createTexture(gbufferDesc, NULL);
 		_RenderViewTargets[name] = handle;
+		return handle;
+	}
+
+	TexturePtr Graphics::CreateRenderTarget2DArray(const String & name, const NVRHI::Format::Enum & format, UINT width, UINT height, int mipCount, int arrSize)
+	{
+		if (_RenderViewTargets.find(name) != _RenderViewTargets.end())
+		{
+			return _RenderViewTargets[name];
+		}
+
+		NVRHI::TextureDesc gbufferDesc;
+		gbufferDesc.width = width;
+		gbufferDesc.height = width;
+		gbufferDesc.isRenderTarget = true;
+		gbufferDesc.useClearValue = false;
+		gbufferDesc.sampleCount = 1;
+		gbufferDesc.sampleQuality = 0;
+		gbufferDesc.disableGPUsSync = true;
+
+		gbufferDesc.mipLevels = mipCount;
+		gbufferDesc.depthOrArraySize = arrSize;
+		gbufferDesc.isArray = true;
+		
+		gbufferDesc.format = format;
+		gbufferDesc.debugName = name.c_str();
+
+		NVRHI::TextureHandle handle = Engine::GetRenderInterface()->createTexture(gbufferDesc, NULL);
+
+		_RenderViewTargets[name] = handle;
+
+		return handle;
+	}
+
+	TexturePtr Graphics::CreateRenderTargetCubeMap(const String & name, const NVRHI::Format::Enum & format, UINT width, UINT height, const NVRHI::Color& clearColor, int mipLevels)
+	{
+		if (_RenderViewTargets.find(name) != _RenderViewTargets.end())
+		{
+			return _RenderViewTargets[name];
+		}
+
+		NVRHI::TextureDesc gbufferDesc;
+		gbufferDesc.width = width;
+		gbufferDesc.height = width;
+		gbufferDesc.isRenderTarget = true;
+		gbufferDesc.useClearValue = true;
+		gbufferDesc.clearValue = clearColor;
+		gbufferDesc.sampleCount = 1;
+		gbufferDesc.sampleQuality = 0;
+		gbufferDesc.disableGPUsSync = true;
+
+		gbufferDesc.mipLevels = mipLevels;
+		gbufferDesc.depthOrArraySize = 6;
+		gbufferDesc.isArray = false;
+		gbufferDesc.isCubeMap = true;
+
+		gbufferDesc.format = format;
+		gbufferDesc.debugName = name.c_str();
+
+		NVRHI::TextureHandle handle = Engine::GetRenderInterface()->createTexture(gbufferDesc, NULL);
+
+		_RenderViewTargets[name] = handle;
+
 		return handle;
 	}
 
@@ -252,7 +372,7 @@ namespace Hydra
 		{
 			TexturePtr rt = _RenderViewTargets[name];
 
-			NVRHI::BindTexture(state.PS, index, rt);
+			NVRHI::BindTexture(state.PS, index, rt, false, NVRHI::Format::UNKNOWN, rt->GetDesc().mipLevels);
 		}
 	}
 
@@ -312,5 +432,14 @@ namespace Hydra
 		}
 
 		return nullptr;
+	}
+	void Hydra::Graphics::BindSampler(NVRHI::DrawCallState & state, const String & name, int slot)
+	{
+		if (_Samplers.find(name) != _Samplers.end())
+		{
+			SamplerPtr sampler = _Samplers[name];
+
+			NVRHI::BindSampler(state.PS, slot, sampler);
+		}
 	}
 }

@@ -59,6 +59,9 @@ namespace Hydra
 		static void Composite(ShaderPtr shader, Function<void(NVRHI::DrawCallState&)> preRenderFunction, TexturePtr pDest);
 		static void Composite(ShaderPtr shader, Function<void(NVRHI::DrawCallState&)> preRenderFunction, const String& outputName);
 
+		static void RenderCubeMap(ShaderPtr shader, InputLayoutPtr inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, TexturePtr pDest);
+		static void RenderCubeMap(ShaderPtr shader, const String& inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, const String& outputName);
+
 		static void SetShader(NVRHI::DrawCallState& state, ShaderPtr shader);
 
 		static void SetClearFlags(NVRHI::DrawCallState& state, const ColorRGBA& color);
@@ -72,7 +75,12 @@ namespace Hydra
 		static void BindConstantBuffer(NVRHI::PipelineStageBindings& ds, uint32_t slot, NVRHI::ConstantBufferHandle handle);
 		static void BindConstantBuffer(NVRHI::DrawCallState& state, const String& mappedName, uint32_t slot = 0, bool slotOverride = false);
 
+		static ConstantBufferPtr GetConstantBuffer(const String& mappedName);
+
 		static TexturePtr CreateRenderTarget(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, const NVRHI::Color& clearColor, UINT sampleCount);
+		static TexturePtr CreateRenderTarget2DArray(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, int mipCount, int arrSize);
+		static TexturePtr CreateRenderTargetCubeMap(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, const NVRHI::Color& clearColor, int mipLevels = 1);
+
 		static TexturePtr GetRenderTarget(const String& name);
 		static void ReleaseRenderTarget(const String& name);
 		static void BindRenderTarget(NVRHI::DrawCallState& state, const String& name, int index);
@@ -82,5 +90,6 @@ namespace Hydra
 
 		static SamplerPtr CreateSampler(const String& name, const WrapMode& wrapX = WrapMode::WRAP_MODE_WRAP, const WrapMode& wrapY = WrapMode::WRAP_MODE_WRAP, const WrapMode& wrapZ = WrapMode::WRAP_MODE_WRAP, bool minFilter = true, bool magFilter = true, bool mipFilter = true, int anisotropy = 16);
 		static SamplerPtr GetSampler(const String& name);
+		static void BindSampler(NVRHI::DrawCallState& state, const String& name, int slot);
 	};
 }

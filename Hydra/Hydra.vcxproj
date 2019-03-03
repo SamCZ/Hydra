@@ -187,6 +187,7 @@
     <ClInclude Include="ImGui\stb_textedit.h" />
     <ClInclude Include="ImGui\stb_truetype.h" />
     <ClInclude Include="IndustryEmpire\IndustryEmpire.h" />
+    <ClInclude Include="NanoVG\stb_image.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

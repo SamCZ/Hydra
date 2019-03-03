@@ -4,8 +4,15 @@
 
 namespace Hydra
 {
+	List<SharedPtr<Renderer>>* YO = nullptr;
+
 	List<SharedPtr<Renderer>> RenderManager::GetRenderersForStage(const String & stage)
 	{
-		return MainScene->FindComponents<Renderer>();
+		if (YO == nullptr)
+		{
+			YO = new List<SharedPtr<Renderer>>(MainScene->FindComponents<Renderer>());
+		}
+
+		return *YO;
 	}
 }

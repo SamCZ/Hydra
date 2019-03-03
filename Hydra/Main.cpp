@@ -10,8 +10,10 @@
 
 #include "Hydra/Render/RenderManager.h"
 #include "Hydra/Render/RenderStageDeffered.h"
+#include "Hydra/Render/Mesh.h"
 
 #include "Hydra/Import/MeshImporter.h"
+#include "Hydra/Scene/Components/Renderer.h"
 #include "Hydra/Scene/Components/Camera.h"
 #include "Hydra/Scene/Components/Movement/FirstPersonController.h"
 #include "Hydra/Scene/Components/LodGroup.h"
@@ -112,10 +114,16 @@ public:
 		cameraObj->AddComponent<FirstPersonController>();
 		rm->MainScene->AddChild(cameraObj);
 
-		SpatialPtr testModel = Meshimporter::Import("Assets/IndustryEmpire/Models/Pine_002_L.FBX", MeshImportOptions());
+		SpatialPtr testModel = Meshimporter::Import("Assets/Sponza/SponzaNoFlag.obj", MeshImportOptions());
 		testModel->Scale = Vector3(0.01f, 0.01f, 0.01f);
 		testModel->AddComponent<LodGroup>();
 		rm->MainScene->AddChild(testModel);
+
+
+		/*SpatialPtr box = MakeShared<Spatial>();
+		RendererPtr r = box->AddComponent<Renderer>();
+		r->SetMesh(Mesh::CreatePrimitive(PrimitiveType::Box));
+		rm->MainScene->AddChild(box);*/
 
 		rsd = MakeShared<RenderStageDeffered>();
 
@@ -163,6 +171,8 @@ public:
 	{
 		_InputManager->Update();
 		rm->MainScene->Update();
+
+		//std::cout << Engine::GetDeviceManager()->GetAverageFrameTime() << std::endl;
 	}
 };
 

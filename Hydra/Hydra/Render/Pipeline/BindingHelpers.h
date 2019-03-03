@@ -77,7 +77,7 @@ namespace NVRHI
         binding.slot = slot;
         binding.texture = t;
         binding.format = fmt;
-        binding.mipLevel = mipLevel;
+        binding.mipLevel = t->GetDesc().mipLevels;
         if (!t)
         {
             //remove null

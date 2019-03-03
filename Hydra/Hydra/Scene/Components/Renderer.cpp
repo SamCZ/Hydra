@@ -87,19 +87,19 @@ namespace Hydra
 		_InstanceData.clear();
 	}
 
-	void Renderer::WriteMeshData(NVRHI::IRendererInterface* renderInterface)
+	void Renderer::WriteMeshData()
 	{
 		if (!_NeedsUpdate) return;
 		_NeedsUpdate = false;
-		_RenderInterface = renderInterface;
+		_RenderInterface = Engine::GetRenderInterface();
 
 		if (_IndexHandle != nullptr)
 		{
-			renderInterface->destroyBuffer(_IndexHandle);
+			_RenderInterface->destroyBuffer(_IndexHandle);
 		}
 		if (_VertexBuffer != nullptr)
 		{
-			renderInterface->destroyBuffer(_VertexBuffer);
+			_RenderInterface->destroyBuffer(_VertexBuffer);
 		}
 
 		if (_Mesh == nullptr) return;
@@ -126,7 +126,7 @@ namespace Hydra
 		NVRHI::BufferDesc indexBufferDesc;
 		indexBufferDesc.isIndexBuffer = true;
 		indexBufferDesc.byteSize = uint32_t(_Mesh->Indices.size() * sizeof(unsigned int));
-		_IndexHandle = renderInterface->createBuffer(indexBufferDesc, &_Mesh->Indices[0]);
+		_IndexHandle = _RenderInterface->createBuffer(indexBufferDesc, &_Mesh->Indices[0]);
 
 		for (int i = 0; i < vertexCount; i++)
 		{
@@ -160,7 +160,7 @@ namespace Hydra
 		NVRHI::BufferDesc vertexBufferDesc;
 		vertexBufferDesc.isVertexBuffer = true;
 		vertexBufferDesc.byteSize = uint32_t(VertexData.size() * sizeof(VertexBufferEntry));
-		_VertexBuffer = renderInterface->createBuffer(vertexBufferDesc, &VertexData[0]);
+		_VertexBuffer = _RenderInterface->createBuffer(vertexBufferDesc, &VertexData[0]);
 
 		_DrawArguments.instanceCount = 1;
 		_DrawArguments.startIndexLocation = 0;
@@ -171,7 +171,7 @@ namespace Hydra
 		//std::cout << "WriteMeshData (" << ToString(VertexData.size()) << ", " + ToString(_DrawArguments.vertexCount) + ")" << std::endl;
 	}
 
-	void Renderer::UpdateInstancing(NVRHI::IRendererInterface* renderInterface, NVRHI::DrawCallState& state)
+	void Renderer::UpdateInstancing(NVRHI::DrawCallState& state)
 	{
 		if (_LastInstanceCount != _InstanceData.size() || _NeedsUpdateInstances)
 		{
@@ -190,7 +190,7 @@ namespace Hydra
 				instBufferDesc.isVertexBuffer = true;
 				instBufferDesc.byteSize = uint32_t(_InstanceData.size() * sizeof(Matrix4));
 				instBufferDesc.isCPUWritable = true;
-				_InstBuffer = renderInterface->createBuffer(instBufferDesc, &_InstanceData[0]);
+				_InstBuffer = _RenderInterface->createBuffer(instBufferDesc, &_InstanceData[0]);
 
 				_DrawArguments.instanceCount = _LastInstanceCount;
 			}
@@ -215,9 +215,9 @@ namespace Hydra
 		}
 	}
 
-	void Renderer::WriteDataToState(NVRHI::IRendererInterface* renderInterface, NVRHI::DrawCallState& state)
+	void Renderer::WriteDataToState(NVRHI::DrawCallState& state)
 	{
-		WriteMeshData(renderInterface);
+		WriteMeshData();
 		//state.primType = NVRHI::PrimitiveType::;
 		if (_Mesh != nullptr)
 		{
@@ -232,7 +232,7 @@ namespace Hydra
 		state.vertexBuffers[0].slot = 0;
 		state.vertexBuffers[0].stride = sizeof(VertexBufferEntry);
 
-		UpdateInstancing(renderInterface, state);
+		UpdateInstancing(state);
 	}
 	NVRHI::DrawArguments& Renderer::GetDrawArguments()
 	{

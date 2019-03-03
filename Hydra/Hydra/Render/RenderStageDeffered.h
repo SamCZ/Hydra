@@ -17,7 +17,15 @@ namespace Hydra
 		alignas(16) Matrix4 g_ModelMatrix;
 	};
 
+	struct alignas(16) SingleFloatConstant
+	{
+		alignas(16) float Float;
+	};
 
+	struct alignas(16) Float3Constant
+	{
+		alignas(16) Vector3 Vector;
+	};
 
 	class RenderStageDeffered : public RenderStage
 	{
@@ -26,11 +34,16 @@ namespace Hydra
 		ShaderPtr _DefaultShader;
 		ShaderPtr _CompositeShader;
 
-		ConstantBufferPtr _GlobalConstantBuffer;
-		ConstantBufferPtr _ModelConstantBuffer;
-
 		TexturePtr _BrdfLutTexture;
 		SamplerPtr _BrdfLutSampler;
+
+		TexturePtr _Albedo;
+		TexturePtr _Normal;
+		TexturePtr _Roughness;
+		TexturePtr _Metallic;
+		TexturePtr _AO;
+
+		TexturePtr _IrrConv;
 	public:
 		RenderStageDeffered();
 		~RenderStageDeffered();

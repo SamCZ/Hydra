@@ -85,14 +85,9 @@ namespace Hydra
 
 	Matrix4 Spatial::GetModelMatrix()
 	{
-		if (GetComponent<Camera>())
+		if (Parent)
 		{
-			return Matrix4();
-		}
-
-		if (Parent != nullptr)
-		{
-			return Parent->GetModelMatrix() * Transformable::GetModelMatrix();
+			return Parent->GetModelMatrix() * Transformable::GetModelMatrix(); //TODO: Steling fps! -60
 		}
 		else
 		{

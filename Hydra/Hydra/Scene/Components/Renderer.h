@@ -5,6 +5,7 @@
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
 #include "Hydra/Core/Vector.h"
 #include "Hydra/Core/Container.h"
+#include "Hydra/Engine.h"
 
 namespace Hydra
 {
@@ -22,7 +23,7 @@ namespace Hydra
 	class Renderer : public Component
 	{
 	private:
-		NVRHI::IRendererInterface* _RenderInterface;
+		IRendererInterface _RenderInterface;
 		NVRHI::BufferHandle _IndexHandle;
 		NVRHI::BufferHandle _VertexBuffer;
 		NVRHI::BufferHandle _InstBuffer;
@@ -57,11 +58,11 @@ namespace Hydra
 		//TODO: Instancing
 
 	private:
-		void WriteMeshData(NVRHI::IRendererInterface* renderInterface);
-		void UpdateInstancing(NVRHI::IRendererInterface* renderInterface, NVRHI::DrawCallState& state);
+		void WriteMeshData();
+		void UpdateInstancing(NVRHI::DrawCallState& state);
 
 	public:
-		void WriteDataToState(NVRHI::IRendererInterface* renderInterface, NVRHI::DrawCallState& state);
+		void WriteDataToState(NVRHI::DrawCallState& state);
 
 		NVRHI::DrawArguments& GetDrawArguments();
 	};
