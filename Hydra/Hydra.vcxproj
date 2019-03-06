@@ -164,7 +164,7 @@
     <ClInclude Include="Hydra\Render\RenderStage.h" />
     <ClInclude Include="Hydra\Render\RenderStageDeffered.h" />
     <ClInclude Include="Hydra\Render\Shader.h" />
-    <ClInclude Include="Hydra\Render\ShaderPrototype.h" />
+    <ClInclude Include="Hydra\Render\Technique.h" />
     <ClInclude Include="Hydra\Scene\Component.h" />
     <ClInclude Include="Hydra\Scene\Components\Camera.h" />
     <ClInclude Include="Hydra\Scene\Components\LodGroup.h" />
@@ -202,7 +202,7 @@
     <ClCompile Include="Hydra\HydraEngine.cpp" />
     <ClCompile Include="Hydra\Render\RenderManager.cpp" />
     <ClCompile Include="Hydra\Render\RenderStageDeffered.cpp" />
-    <ClCompile Include="Hydra\Render\ShaderPrototype.cpp" />
+    <ClCompile Include="Hydra\Render\Technique.cpp" />
     <ClCompile Include="Hydra\Scene\Components\LodGroup.cpp" />
     <ClCompile Include="IndustryEmpire\IndustryEmpire.cpp" />
     <ClCompile Include="Main.cpp" />

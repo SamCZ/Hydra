@@ -20,7 +20,13 @@ PBROutput OnMainPS(in PS_Input input)
 {
 	PBROutput output;
 
-	float3 pixelNormal = T_Normal.Sample(basicSampler, input.texCoord).xyz;
+	output.Albedo = float3(1.0, 1.0, 1.0);
+	output.Normal = input.normal;
+	output.Metallic = 1.0;
+	output.Roughness = 0.0;
+	output.AO = 1.0;
+
+	/*float3 pixelNormal = T_Normal.Sample(basicSampler, input.texCoord).xyz;
 
 	float3 normal = normalize(input.normal);
 	if (pixelNormal.z)
@@ -40,7 +46,7 @@ PBROutput OnMainPS(in PS_Input input)
 	output.AO = 0.5;
 	output.Emission = float3(0.0, 0.0, 0.0);
 
-	clip(albedo.a - 0.5);
+	clip(albedo.a - 0.5);*/
 
 	return output;
 }

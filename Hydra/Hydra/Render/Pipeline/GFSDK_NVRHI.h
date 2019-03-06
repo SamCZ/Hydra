@@ -202,9 +202,10 @@ namespace NVRHI
 
     struct VertexAttributeDesc
     {
-        enum { MAX_NAME_LENGTH = 256 };
+       /* enum { MAX_NAME_LENGTH = 256 };
 
-        char name[MAX_NAME_LENGTH];
+        char name[MAX_NAME_LENGTH];*/
+		LPCSTR name;
         uint32_t semanticIndex;
         Format::Enum format;
         uint32_t bufferIndex;
@@ -878,6 +879,7 @@ namespace NVRHI
 		virtual void resolveTexture(TextureHandle dst, TextureHandle src, Format::Enum format, uint32_t dstSubres = 0, uint32_t srcSubres = 0) = 0;
         virtual void* handoffTexture(TextureHandle t) = 0;
         virtual TextureHandle getHandleForTexture(void* resource, Format::Enum formatOverride = Format::UNKNOWN) = 0;
+		virtual void generateMipmaps(TextureHandle t) = 0;
 
         virtual BufferHandle createBuffer(const BufferDesc& d, const void* data) = 0;
         virtual void writeBuffer(BufferHandle b, const void* data, size_t dataSize) = 0;

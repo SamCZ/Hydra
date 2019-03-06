@@ -372,7 +372,7 @@ DeviceManager::MessageLoop()
 					if (fpsTimeCounter >= 2.0)
 					{
 						double msPerFrame = 1000.0 / (double)fps;
-						printf("%f ms (%d fps)\r\n", msPerFrame, fps);
+						//printf("%f ms (%d fps)\r\n", msPerFrame, fps);
 						//DEBUG_LOG("FPS", "NONE", "%f ms (%d fps)", msPerFrame, fps);
 
 						M_MsPerFrame = msPerFrame;

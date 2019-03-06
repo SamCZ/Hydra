@@ -578,6 +578,11 @@ namespace NVRHI
         return getHandleForTextureInternal(static_cast<ID3D11Resource*>(resource), nullptr, formatOverride);
     }
 
+	void RendererInterfaceD3D11::generateMipmaps(TextureHandle t)
+	{
+		context->GenerateMips(getSRVForTexture(t, DXGI_FORMAT_UNKNOWN, 6));
+	}
+
     void RendererInterfaceD3D11::destroyTexture(TextureHandle t)
     {
         if (!t)

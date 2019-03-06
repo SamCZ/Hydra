@@ -127,6 +127,7 @@ namespace NVRHI
 	virtual void resolveTexture(TextureHandle dst, TextureHandle src, Format::Enum format, uint32_t dstSubres, uint32_t srcSubres);
     virtual void* handoffTexture(TextureHandle t) override;
     virtual TextureHandle getHandleForTexture(void* resource, Format::Enum formatOverride = Format::UNKNOWN) override;
+	virtual void generateMipmaps(TextureHandle t);
 
     virtual BufferHandle createBuffer(const BufferDesc& d, const void* data);
     virtual void writeBuffer(BufferHandle b, const void* data, size_t dataSize);

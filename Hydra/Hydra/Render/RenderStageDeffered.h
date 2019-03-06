@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Hydra/Render/RenderStage.h"
-#include "Hydra/Render/Shader.h"
 #include "Hydra/Render/Graphics.h"
 
 namespace Hydra
@@ -32,19 +31,11 @@ namespace Hydra
 	{
 	private:
 		InputLayoutPtr _InputLayout;
-		ShaderPtr _DefaultShader;
-		ShaderPtr _CompositeShader;
+		TechniquePtr _DefaultShader;
+		TechniquePtr _CompositeShader;
 
 		TexturePtr _BrdfLutTexture;
 		SamplerPtr _BrdfLutSampler;
-
-		TexturePtr _Albedo;
-		TexturePtr _Normal;
-		TexturePtr _Roughness;
-		TexturePtr _Metallic;
-		TexturePtr _AO;
-
-		TexturePtr _IrrConv;
 	public:
 		RenderStageDeffered();
 		~RenderStageDeffered();

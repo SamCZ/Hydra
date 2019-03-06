@@ -1,3 +1,5 @@
+#if 1
+
 #include <iostream>
 
 #include "Hydra/Render/Pipeline/DeviceManager11.h"
@@ -19,6 +21,10 @@
 #include "Hydra/Scene/Components/LodGroup.h"
 
 #include "Hydra/Input/Windows/WindowsInputManager.h"
+
+#include "Hydra/Core/FastNoise.h"
+#include "Hydra/Core/Random.h"
+#include "Hydra/Terrain/Erosion.h"
 
 void signalError(const char* file, int line, const char* errorDesc)
 {
@@ -75,6 +81,125 @@ public:
 		_InputManager->ToggleMouseCapture();
 	}
 
+	inline float* GenerateNoiseMap(int mapSize)
+	{
+		int seed = 0;
+		bool randomizeSeed = true;
+
+		int numOctaves = 7;
+		float persistence = .5f;
+		float lacunarity = 2;
+		float initialScale = 100.0f;
+
+		auto map = new float[mapSize * mapSize];
+		auto prng = Random(seed);
+
+		Vector2* offsets = new Vector2[numOctaves];
+		for (int i = 0; i < numOctaves; i++)
+		{
+			offsets[i] = Vector2(prng.GetFloat(-1000, 1000), prng.GetFloat(-1000, 1000));
+		}
+
+		float minValue = 999999.999f;
+		float maxValue = -999999.999f;
+
+		FastNoise noise;
+		noise.SetNoiseType(FastNoise::NoiseType::Perlin);
+
+		for (int y = 0; y < mapSize; y++)
+		{
+			for (int x = 0; x < mapSize; x++)
+			{
+				float noiseValue = 0;
+				float scale = initialScale;
+				float weight = 1;
+				for (int i = 0; i < numOctaves; i++)
+				{
+					Vector2 p = offsets[i] + Vector2(x / (float)mapSize, y / (float)mapSize) * scale;
+					noiseValue += noise.GetNoise(p.x, p.y) * weight;
+					weight *= persistence;
+					scale *= lacunarity;
+				}
+				map[y * mapSize + x] = noiseValue;
+				minValue = std::min(noiseValue, minValue);
+				maxValue = std::max(noiseValue, maxValue);
+			}
+		}
+
+		delete[] offsets;
+
+		// Normalize
+		if (maxValue != minValue)
+		{
+			for (int i = 0; i < mapSize * mapSize; i++)
+			{
+				map[i] = (map[i] - minValue) / (maxValue - minValue);
+			}
+		}
+
+		return map;
+	}
+
+	inline Mesh* GenerateTerrain()
+	{
+		int mapSize = 512;
+		float scale = 20;
+		float elevationScale = 10;
+		int numErosionIterations = 50000 * 3;
+
+		float* noise = GenerateNoiseMap(mapSize);
+
+		Erosion erosion;
+		erosion.Erode(noise, mapSize, numErosionIterations);
+
+		List<Vector3> vertices;
+		vertices.reserve(mapSize * mapSize);
+		List<unsigned int> indices;
+		indices.reserve((mapSize - 1) * (mapSize - 1) * 6);
+
+		Log("GenerateTerrain", "Generating...");
+
+		int t = 0;
+		for (int y = 0; y < mapSize; y++)
+		{
+			for (int x = 0; x < mapSize; x++)
+			{
+				int i = y * mapSize + x;
+
+				Vector2 percent = Vector2(x / (mapSize - 1.0f), y / (mapSize - 1.0f));
+				Vector3 pos = Vector3(percent.x * 2 - 1, 0, percent.y * 2 - 1) * scale;
+				pos += Vector3(0, 1, 0) * noise[i] * elevationScale;
+				vertices.insert(vertices.begin() + i, pos);
+
+				// Construct triangles
+				if (x != mapSize - 1 && y != mapSize - 1)
+				{
+					indices.insert(indices.begin() + t + 0, i + mapSize);
+					indices.insert(indices.begin() + t + 1, i + mapSize + 1);
+					indices.insert(indices.begin() + t + 2, i);
+
+					indices.insert(indices.begin() + t + 3, i + mapSize + 1);
+					indices.insert(indices.begin() + t + 4, i + 1);
+					indices.insert(indices.begin() + t + 5, i);
+
+					t += 6;
+				}
+			}
+		}
+
+		Log("GenerateTerrain", "Done...");
+
+		Mesh* mesh = new Mesh();
+		mesh->Vertices = vertices;
+		mesh->Indices = indices;
+
+		mesh->GenerateNormals();
+
+		Log("GenerateTerrain", "yo...");
+
+		return mesh;
+	}
+
 	inline HRESULT DeviceCreated() override
 	{
 		Log("MainRenderView::DeviceCreated");
@@ -95,7 +220,7 @@ public:
 
 		Engine::SetInputManager(_InputManager);
 
-		_InputManager->SetMouseCapture(true);
+		//_InputManager->SetMouseCapture(true);
 
 		_renderInterface = MakeShared<NVRHI::RendererInterfaceD3D11>(&g_ErrorCallback, _deviceManager->GetImmediateContext());
 
@@ -114,17 +239,24 @@ public:
 		cameraObj->AddComponent<FirstPersonController>();
 		rm->MainScene->AddChild(cameraObj);
 
-		SpatialPtr testModel = Meshimporter::Import("Assets/Sponza/SponzaNoFlag.obj", MeshImportOptions());
+		/*SpatialPtr testModel = Meshimporter::Import("Assets/Sponza/SponzaNoFlag.obj", MeshImportOptions());
 		testModel->Scale = Vector3(0.01f, 0.01f, 0.01f);
 		testModel->AddComponent<LodGroup>();
 		testModel->SetStatic(true);
-		rm->MainScene->AddChild(testModel);
+		rm->MainScene->AddChild(testModel);*/
+
+		/*SpatialPtr testModel = New(Spatial);
+		RendererPtr voxelRender = testModel->AddComponent<Renderer>();
+		voxelRender->TestColor = MakeRGB(200, 200, 200).toVec3();
+		Mesh* mesh2 = GenerateTerrain();
+		voxelRender->SetMesh(mesh2);
+		rm->MainScene->AddChild(testModel);*/
 
 
-		/*SpatialPtr box = MakeShared<Spatial>();
+		SpatialPtr box = MakeShared<Spatial>();
 		RendererPtr r = box->AddComponent<Renderer>();
 		r->SetMesh(Mesh::CreatePrimitive(PrimitiveType::Box));
-		rm->MainScene->AddChild(box);*/
+		rm->MainScene->AddChild(box);
 
 		rsd = MakeShared<RenderStageDeffered>();
 
@@ -217,3 +349,4 @@ int main()
 
 	return 0;
 }
+#endif

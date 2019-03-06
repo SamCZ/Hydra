@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <map>
+#include <unordered_map>
 
 namespace Hydra
 {
@@ -10,6 +11,9 @@ namespace Hydra
 
 	template <typename A, typename B>
 	using Map = std::map<A, B>;
+
+	template <typename A, typename B>
+	using FastMap = std::unordered_map<A, B>;
 
 	#define List_Remove(list, type) { list.erase(std::find(list.begin(), list.end(), type)); }
 	//#define Add(type) push_back(type)

@@ -1,3 +1,4 @@
+#if 0
 #include "ShaderImporter.h"
 
 #include <iostream>
@@ -126,7 +127,7 @@ namespace Hydra
 
 	ShaderPtr ShaderImporter::Import(const File& file)
 	{
-		Log("ShaderImporter::Import", file.GetPath(), "Loading...");
+		//Log("ShaderImporter::Import", file.GetPath(), "Loading...");
 
 		String shaderSource;
 		Map<NVRHI::ShaderType::Enum, String> shaderTypes;
@@ -192,7 +193,7 @@ namespace Hydra
 								{
 									renderStage = paramValue;
 
-									Log("ShaderImporter::Import", file.GetPath(), "Found render stage: " + renderStage);
+									//Log("ShaderImporter::Import", file.GetPath(), "Found render stage: " + renderStage);
 								}
 							}
 						}
@@ -213,7 +214,7 @@ namespace Hydra
 
 		if (shaderTypes.size() == 0)
 		{
-			Log("ShaderImporter::Import", file.GetPath(), "ERROR: Has 0 defined shaders !");
+			LogError("ShaderImporter::Import", file.GetPath(), "ERROR: Has 0 defined shaders !");
 
 			return nullptr;
 		}
@@ -227,7 +228,7 @@ namespace Hydra
 			NVRHI::ShaderType::Enum type = it->first;
 			String entryPoint = it->second;
 
-			Log("ShaderImporter::Import", file.GetPath(), "Found entry point: " + entryPoint);
+			//Log("ShaderImporter::Import", file.GetPath(), "Found entry point: " + entryPoint);
 
 			ID3DBlob* shaderBlob = nullptr;
 			HRESULT hr = CompileShaderFromString(shaderSource, file.GetName(), NULL, entryPoint.c_str(), GetFeatureLevelForShaderType(type).c_str(), &shaderBlob);
@@ -255,6 +256,8 @@ namespace Hydra
 				ID3D11ShaderReflectionConstantBuffer* pConstBuffer = refl->GetConstantBufferByIndex(i);
 				pConstBuffer->GetDesc(&Description);
 
+				std::cout << Description.Name << std::endl;
+
 				for (UINT j = 0; j < Description.Variables; j++)
 				{
 					ID3D11ShaderReflectionVariable* pVariable = pConstBuffer->GetVariableByIndex(j);
@@ -266,7 +269,7 @@ namespace Hydra
 				}
 			}
 
-			Log("ShaderImporter::Import", file.GetPath(), ToString(shaderDesc.ConstantBuffers) + " cbuffers.");
+			//Log("ShaderImporter::Import", file.GetPath(), ToString(shaderDesc.ConstantBuffers) + " cbuffers.");
 
 			refl->Release();
 
@@ -283,3 +286,4 @@ namespace Hydra
 		return shader;
 	}
 }
+#endif

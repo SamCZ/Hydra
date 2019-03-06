@@ -210,7 +210,7 @@
     <ClInclude Include="NanoVG\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hydra\Render\ShaderPrototype.h">
+    <ClInclude Include="Hydra\Render\Technique.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -343,7 +343,7 @@
     <ClCompile Include="Hydra\Render\RenderManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hydra\Render\ShaderPrototype.cpp">
+    <ClCompile Include="Hydra\Render\Technique.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

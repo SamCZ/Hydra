@@ -303,7 +303,7 @@ public:
 		float* noise = GenerateNoiseMap(mapSize);
 
 		Erosion erosion;
-		erosion.Erode(noise, mapSize, numErosionIterations);
+		//erosion.Erode(noise, mapSize, numErosionIterations);
 
 		List<Vector3> vertices;
 		vertices.reserve(mapSize * mapSize);
@@ -398,12 +398,12 @@ public:
 
 		_tesselationShader = ShaderImporter::Import("Assets/Shaders/tesseleation.hlsl");
 
-		textur = TextureImporter::Import("Assets/Textures/Grassblock_02.dds");
+		/*textur = TextureImporter::Import("Assets/Textures/Grassblock_02.dds");
 		testModel = Meshimporter::Import("Assets/IndustryEmpire/Models/Pine_002_L.FBX", MeshImportOptions());
 		testModel->PrintHiearchy();
 		testModel->Scale = Vector3(0.01f, 0.01f, 0.01f);
 
-		testModel->AddComponent<LodGroup>()->Start();
+		testModel->AddComponent<LodGroup>()->Start();*/
 		
 		//testModel->FindComponents<Renderer>()[1]->Enabled = false;
 
@@ -418,11 +418,11 @@ public:
 			}
 		}*/
 
-		/*testModel = New(Spatial);
+		testModel = New(Spatial);
 		RendererPtr voxelRender = testModel->AddComponent<Renderer>();
 		voxelRender->TestColor = MakeRGB(200, 200, 200).toVec3();
 		Mesh* mesh2 = GenerateTerrain();
-		voxelRender->SetMesh(mesh2);*/
+		voxelRender->SetMesh(mesh2);
 
 		//GenerateRustTexture(testModel);
 
@@ -511,7 +511,7 @@ public:
 
 	void RenderSpatial(SpatialPtr spatial, NVRHI::DrawCallState& state)
 	{
-		if (!spatial->Enabled) return;
+		if (!spatial->IsEnabled()) return;
 		
 		RendererPtr renderer = spatial->GetComponent<Renderer>();
 
@@ -519,7 +519,7 @@ public:
 		{
 			//std::cout << "Rendering: " << spatial->Name << " - " << ToString(renderer->GetDrawArguments().vertexCount) << std::endl;
 
-			renderer->WriteDataToState(_renderInterface.get(), state);
+			renderer->WriteDataToState(state);
 
 			static BasicConstantBuffer basicConstants = {};
 			basicConstants.ProjectionMatrix = camera->GetProjectionMatrix();
@@ -585,7 +585,7 @@ public:
 			state.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_NONE;
 			//state.renderState.rasterState.fillMode = NVRHI::RasterState::FillMode::FILL_LINE;
 
-			testModel->GetComponent<LodGroup>()->Update();
+			//testModel->GetComponent<LodGroup>()->Update();
 			RenderSpatial(testModel, state);
 
 			//RenderSpatial(quadModel, state);

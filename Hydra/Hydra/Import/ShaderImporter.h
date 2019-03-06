@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Hydra/Render/Shader.h"
+//#include "Hydra/Render/Shader.h"
 
 namespace Hydra
 {
@@ -9,6 +9,9 @@ namespace Hydra
 	class ShaderImporter
 	{
 	public:
-		static ShaderPtr Import(const File& file);
+		static void Import(const File& file)
+		{
+
+		}
 	};
 }

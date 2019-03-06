@@ -11,7 +11,7 @@ namespace Hydra
 	Map<String, NVRHI::TextureHandle> Graphics::_RenderViewTargets;
 	Map<String, InputLayoutPtr> Graphics::_InputLayouts;
 	Map<String, SamplerPtr> Graphics::_Samplers;
-	ShaderPtr Graphics::_BlitShader;
+	TechniquePtr Graphics::_BlitShader;
 
 	void Graphics::Destroy()
 	{
@@ -33,7 +33,7 @@ namespace Hydra
 
 	void Graphics::Create()
 	{
-		_BlitShader = ShaderImporter::Import("Assets/Shaders/blit.hlsl");
+		_BlitShader = MakeShared<Technique>("Assets/Shaders/blit.hlsl");
 	}
 
 	void Graphics::Blit(TexturePtr pSource, TexturePtr pDest)
@@ -41,8 +41,7 @@ namespace Hydra
 		NVRHI::DrawCallState state;
 
 		state.primType = NVRHI::PrimitiveType::TRIANGLE_STRIP;
-		state.VS.shader = _BlitShader->GetShader(NVRHI::ShaderType::SHADER_VERTEX);
-		state.PS.shader = _BlitShader->GetShader(NVRHI::ShaderType::SHADER_PIXEL);
+		SetShader(state, _BlitShader);
 
 		state.renderState.targetCount = 1;
 		state.renderState.targets[0] = pDest;
@@ -63,13 +62,12 @@ namespace Hydra
 		Blit(GetRenderTarget(name), pDest);
 	}
 
-	void Graphics::Composite(ShaderPtr shader, Function<void(NVRHI::DrawCallState&)> preRenderFunction, TexturePtr pDest)
+	void Graphics::Composite(TechniquePtr shader, Function<void(NVRHI::DrawCallState&)> preRenderFunction, TexturePtr pDest)
 	{
 		NVRHI::DrawCallState state;
 
 		state.primType = NVRHI::PrimitiveType::TRIANGLE_STRIP;
-		state.VS.shader = shader->GetShader(NVRHI::ShaderType::SHADER_VERTEX);
-		state.PS.shader = shader->GetShader(NVRHI::ShaderType::SHADER_PIXEL);
+		SetShader(state, shader);
 
 		state.renderState.targetCount = 1;
 		state.renderState.targets[0] = pDest;
@@ -86,12 +84,12 @@ namespace Hydra
 		Engine::GetRenderInterface()->draw(state, &args, 1);
 	}
 
-	void Graphics::Composite(ShaderPtr shader, Function<void(NVRHI::DrawCallState&)> preRenderFunction, const String& outputName)
+	void Graphics::Composite(TechniquePtr shader, Function<void(NVRHI::DrawCallState&)> preRenderFunction, const String& outputName)
 	{
 		Composite(shader, preRenderFunction, GetRenderTarget(outputName));
 	}
 
-	void Graphics::RenderCubeMap(ShaderPtr shader, InputLayoutPtr inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, TexturePtr pDest)
+	void Graphics::RenderCubeMap(TechniquePtr shader, InputLayoutPtr inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, TexturePtr pDest)
 	{
 		Engine::GetRenderInterface()->beginRenderingPass();
 
@@ -131,18 +129,18 @@ namespace Hydra
 		Engine::GetRenderInterface()->endRenderingPass();
 	}
 
-	void Graphics::RenderCubeMap(ShaderPtr shader, const String& inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, const String & outputName)
+	void Graphics::RenderCubeMap(TechniquePtr shader, const String& inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, const String & outputName)
 	{
 		RenderCubeMap(shader, GetInputLayout(inputLayout), viewPort, preRenderFunction, GetRenderTarget(outputName));
 	}
 
-	void Graphics::SetShader(NVRHI::DrawCallState& state, ShaderPtr shader)
+	void Graphics::SetShader(NVRHI::DrawCallState& state, TechniquePtr shader)
 	{
-		state.VS.shader = shader->GetShader(NVRHI::ShaderType::SHADER_VERTEX);
-		state.HS.shader = shader->GetShader(NVRHI::ShaderType::SHADER_HULL);
-		state.DS.shader = shader->GetShader(NVRHI::ShaderType::SHADER_DOMAIN);
-		state.GS.shader = shader->GetShader(NVRHI::ShaderType::SHADER_GEOMETRY);
-		state.PS.shader = shader->GetShader(NVRHI::ShaderType::SHADER_PIXEL);
+		state.VS.shader = shader->GetRawShader(NVRHI::ShaderType::SHADER_VERTEX);
+		state.HS.shader = shader->GetRawShader(NVRHI::ShaderType::SHADER_HULL);
+		state.DS.shader = shader->GetRawShader(NVRHI::ShaderType::SHADER_DOMAIN);
+		state.GS.shader = shader->GetRawShader(NVRHI::ShaderType::SHADER_GEOMETRY);
+		state.PS.shader = shader->GetRawShader(NVRHI::ShaderType::SHADER_PIXEL);
 	}
 
 	void Graphics::SetClearFlags(NVRHI::DrawCallState& state, const ColorRGBA& color)
@@ -376,7 +374,7 @@ namespace Hydra
 		}
 	}
 
-	InputLayoutPtr Graphics::CreateInputLayout(const String & name, const NVRHI::VertexAttributeDesc * d, uint32_t attributeCount, ShaderPtr shader)
+	InputLayoutPtr Graphics::CreateInputLayout(const String & name, const NVRHI::VertexAttributeDesc * d, uint32_t attributeCount, TechniquePtr shader)
 	{
 		if (_InputLayouts.find(name) != _InputLayouts.end())
 		{
