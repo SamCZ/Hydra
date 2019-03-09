@@ -60,9 +60,9 @@ namespace Hydra {
 
 		 Graphics::CreateConstantBuffer(sizeof(Float3Constant), "Float3Constant", PSB_PIXEL, 0);
 
-		_DefaultShader = _TECH("Assets/Shaders/DefaultDeffered.hlsl");
+		 _DefaultShader = Graphics::LoadTechnique("DefaultPBRShader", "Assets/Shaders/DefaultDeffered.hlsl");
 		_CompositeShader = _TECH("Assets/Shaders/DefferedComposite.hlsl");
-
+		
 		Graphics::CreateSampler("DefaultSampler");
 
 		//Create BRDF LUT
@@ -157,8 +157,8 @@ namespace Hydra {
 
 		Graphics::RenderCubeMap(preFilterShader, "Deffered", Vector2(), [=](NVRHI::DrawCallState& state, int mipIndex, int faceIdx)
 		{
-			unsigned mipWidth = 256 * pow(0.5, mipIndex);
-			unsigned mipHeight = 256 * pow(0.5, mipIndex);
+			float mipWidth = 256.0f * powf(0.5f, (float)mipIndex);
+			float mipHeight = 256.0f * powf(0.5f, (float)mipIndex);
 
 			state.renderState.viewports[0] = NVRHI::Viewport(mipWidth, mipHeight);
 
@@ -274,7 +274,7 @@ namespace Hydra {
 				modelData.g_ModelMatrix = r->Parent->GetModelMatrix();
 			}
 
-			modelData.g_Opacity = r->Mat.Opacity == nullptr ? 0 : 1;
+			modelData.g_Opacity = r->Mat.Opacity == nullptr ? 0.0f : 1.0f;
 
 			Engine::GetRenderInterface()->writeConstantBuffer(CBuffers[i], &modelData, sizeof(ModelConstants));
 		}

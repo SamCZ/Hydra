@@ -12,6 +12,8 @@ namespace Hydra
 
 	static inline NVRHI::TextureHandle LoadTex(const File& file)
 	{
+		if (true) return nullptr;
+
 		if (TexCache.find(file.GetPath()) != TexCache.end())
 		{
 			return TexCache[file.GetPath()];
@@ -263,34 +265,39 @@ namespace Hydra
 
 		for (std::uint32_t vertIdx = 0u; vertIdx < mesh->mNumVertices; vertIdx++)
 		{
+			VertexBufferEntry entry = {};
+
 			aiVector3D vert = mesh->mVertices[vertIdx];
 
 			if (mesh->HasTangentsAndBitangents())
 			{
 				aiVector3D tan = mesh->mTangents[vertIdx];
 				aiVector3D bit = mesh->mBitangents[vertIdx];
-				nMesh->Tangents.push_back(aiVecToGlm(tan));
-				nMesh->BiNormals.push_back(aiVecToGlm(bit));
+
+				entry.tangent = aiVecToGlm(tan);
+				entry.binormal = aiVecToGlm(bit);
 			}
 
-			nMesh->Vertices.push_back(aiVecToGlm(vert));
+			entry.position = aiVecToGlm(vert);
 
 
 			if (hasNormals)
 			{
 				aiVector3D norm = mesh->mNormals[vertIdx];
-				nMesh->Normals.push_back(aiVecToGlm(norm));
+				entry.normal = aiVecToGlm(norm);
 			}
 
 			if (mesh->mTextureCoords[0])
 			{
-				nMesh->TexCoords.push_back(glm::vec2(mesh->mTextureCoords[0][vertIdx].x, mesh->mTextureCoords[0][vertIdx].y));
+				entry.texCoord = Vector2(mesh->mTextureCoords[0][vertIdx].x, mesh->mTextureCoords[0][vertIdx].y);
 			}
 
 			if (mesh->HasVertexColors(0))
 			{
 
 			}
+
+			nMesh->VertexData.emplace_back(entry);
 		}
 
 		for (std::uint32_t faceIdx = 0u; faceIdx < mesh->mNumFaces; faceIdx++)

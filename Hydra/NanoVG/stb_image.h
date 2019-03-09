@@ -535,6 +535,8 @@ static int stbi__err(const char *str)
    #define stbi__err(x,y)  stbi__err(x)
 #endif
 
+#pragma warning( disable : 4312)
+
 #define stbi__errpf(x,y)   ((float *) (stbi__err(x,y)?NULL:NULL))
 #define stbi__errpuc(x,y)  ((unsigned char *) (stbi__err(x,y)?NULL:NULL))
 

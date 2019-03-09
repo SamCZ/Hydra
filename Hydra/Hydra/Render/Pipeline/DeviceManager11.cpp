@@ -313,9 +313,9 @@ DeviceManager::MessageLoop()
     
 	Hydra::uint32 fps = 0;
 	double lastTime = Hydra::Time::getTime();
-	double fpsTimeCounter = 0.0;
-	double updateTimer = 1.0;
-	float frameTime = 1.0 / 120.0;
+	double fpsTimeCounter = 0.0f;
+	double updateTimer = 1.0f;
+	float frameTime = 1.0f / 120.0f;
 
     while (WM_QUIT != msg.message)
     {
@@ -374,6 +374,8 @@ DeviceManager::MessageLoop()
 						double msPerFrame = 1000.0 / (double)fps;
 						//printf("%f ms (%d fps)\r\n", msPerFrame, fps);
 						//DEBUG_LOG("FPS", "NONE", "%f ms (%d fps)", msPerFrame, fps);
+
+						SetWindowTextA(m_hWnd, ("Hydra | DX11 | " + ToString(msPerFrame) + " ms (" + ToString(fps) + " fps)").c_str());
 
 						M_MsPerFrame = msPerFrame;
 						m_Fps = fps;

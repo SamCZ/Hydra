@@ -44,6 +44,7 @@ namespace Hydra
 		static Map<String, TexturePtr> _RenderViewTargets;
 		static Map<String, InputLayoutPtr> _InputLayouts;
 		static Map<String, SamplerPtr> _Samplers;
+		static Map<String, TechniquePtr> _Techniques;
 
 		static TechniquePtr _BlitShader;
 	public:
@@ -55,6 +56,9 @@ namespace Hydra
 
 		static void Blit(TexturePtr pSource, TexturePtr pDest);
 		static void Blit(const String& name, TexturePtr pDest);
+
+		static TechniquePtr LoadTechnique(const String& name, const File& file);
+		static TechniquePtr GetTechnique(const String& name);
 
 		static void Composite(TechniquePtr shader, Function<void(NVRHI::DrawCallState&)> preRenderFunction, TexturePtr pDest);
 		static void Composite(TechniquePtr shader, Function<void(NVRHI::DrawCallState&)> preRenderFunction, const String& outputName);

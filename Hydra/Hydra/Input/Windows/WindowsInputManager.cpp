@@ -751,7 +751,7 @@ namespace Hydra
 			float centerX = rect.left + (rect.right - rect.left) / 2.0f;
 			float centerY = rect.top + (rect.bottom - rect.top) / 2.0f;
 
-			::SetCursorPos(centerX, centerY);
+			::SetCursorPos(static_cast<int>(centerX), static_cast<int>(centerY));
 
 			POINT pos;
 			::GetCursorPos(&pos);

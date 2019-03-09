@@ -18,7 +18,7 @@ namespace Hydra
 		static InputManagerPtr _InputManager;
 
 	public:
-		static Vector2 ScreenSize;
+		static Vector2i ScreenSize;
 
 		static void SetRenderInterface(IRendererInterface renderInterface);
 		static IRendererInterface GetRenderInterface();

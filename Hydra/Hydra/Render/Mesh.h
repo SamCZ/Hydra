@@ -6,6 +6,7 @@
 #include "Hydra/Core/Container.h"
 #include "Hydra/Core/Math/Box.h"
 
+#include "Hydra/Render/VertexBuffer.h"
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
 
 namespace Hydra
@@ -25,11 +26,7 @@ namespace Hydra
 	public:
 		Mesh();
 
-		List<Vector3> Vertices;
-		List<Vector2> TexCoords;
-		List<Vector3> Normals;
-		List<Vector3> Tangents;
-		List<Vector3> BiNormals;
+		List<VertexBufferEntry> VertexData;
 		List<unsigned int> Indices;
 		Box Bounds;
 

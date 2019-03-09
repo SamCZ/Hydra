@@ -6,18 +6,10 @@
 #include "Hydra/Core/Vector.h"
 #include "Hydra/Core/Container.h"
 #include "Hydra/Engine.h"
+#include "Hydra/Render/VertexBuffer.h"
 
 namespace Hydra
 {
-	struct VertexBufferEntry
-	{
-		glm::vec3 position;
-		glm::vec2 texCoord;
-		glm::vec3 normal;
-		glm::vec3 tangent;
-		glm::vec3 binormal;
-	};
-
 	struct Material
 	{
 		NVRHI::TextureHandle Albedo;
@@ -47,7 +39,7 @@ namespace Hydra
 		bool _NeedsUpdate;
 		bool _IsInstanced;
 		bool _NeedsUpdateInstances;
-		int _LastInstanceCount;
+		size_t _LastInstanceCount;
 	public:
 		Renderer();
 		~Renderer();

@@ -10,12 +10,12 @@ namespace Hydra
 	{
 		Matrix4 rotation = Matrix4();
 
-		/*rotation *= glm::rotate(glm::radians(Rotation.z), axisZ);
+		rotation *= glm::rotate(glm::radians(Rotation.z), axisZ);
 		rotation *= glm::rotate(glm::radians(Rotation.y), axisY);
-		rotation *= glm::rotate(glm::radians(Rotation.x), axisX);*/
-		//return (glm::translate(Position) * rotation) * glm::scale(Scale);
+		rotation *= glm::rotate(glm::radians(Rotation.x), axisX);
+		return (glm::translate(Position) * rotation) * glm::scale(Scale);
 
-		rotation = glm::rotate(rotation, glm::radians(Rotation.z), axisZ);
+		/*rotation = glm::rotate(rotation, glm::radians(Rotation.z), axisZ);
 		rotation = glm::rotate(rotation, glm::radians(Rotation.y), axisY);
 		rotation = glm::rotate(rotation, glm::radians(Rotation.x), axisX);
 
@@ -24,6 +24,6 @@ namespace Hydra
 		tranform = glm::matrixCompMult(tranform, rotation);
 		tranform = glm::matrixCompMult(tranform, glm::scale(Scale));
 
-		return tranform;
+		return tranform;*/
 	}
 }

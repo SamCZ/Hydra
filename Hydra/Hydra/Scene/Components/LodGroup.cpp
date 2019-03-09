@@ -18,7 +18,7 @@ namespace Hydra
 			}
 		}
 
-		_LodMax = _Lods.size();
+		_LodMax = static_cast<unsigned int>(_Lods.size());
 
 		SelectLod(0);
 	}

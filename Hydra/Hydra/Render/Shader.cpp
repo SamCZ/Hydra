@@ -109,7 +109,7 @@ namespace Hydra
 
 			String perInstanceStr = "_PER_INSTANCE";
 			String sem = paramDesc.SemanticName;
-			int lenDiff = sem.size() - perInstanceStr.size();
+			size_t lenDiff = sem.size() - perInstanceStr.size();
 			bool isPerInstance = lenDiff >= 0 && sem.compare(lenDiff, perInstanceStr.size(), perInstanceStr) == 0;
 
 			uint32_t sizeToAdd = 0;
@@ -199,7 +199,7 @@ namespace Hydra
 			nextSize += sizeToAdd;
 		}
 
-		_InputLayoutHandle = Engine::GetRenderInterface()->createInputLayout(&attributes[0], attributes.size(), _ShaderBlob->GetBufferPointer(), _ShaderBlob->GetBufferSize());
+		_InputLayoutHandle = Engine::GetRenderInterface()->createInputLayout(&attributes[0], static_cast<uint32_t>(attributes.size()), _ShaderBlob->GetBufferPointer(), _ShaderBlob->GetBufferSize());
 
 		reflection->Release();
 
@@ -361,7 +361,7 @@ namespace Hydra
 		_ConstantBufferCount = shaderDesc.ConstantBuffers;
 		_ConstantBuffers = new RawShaderConstantBuffer[_ConstantBufferCount];
 
-		for (unsigned int i = 0; i < _ConstantBufferCount; i++)
+		for (int i = 0; i < _ConstantBufferCount; i++)
 		{
 			ID3D11ShaderReflectionConstantBuffer* cb = reflection->GetConstantBufferByIndex(i);
 
@@ -406,7 +406,7 @@ namespace Hydra
 				{
 					RawShaderTextureDefine define = {};
 					define.BindIndex = resourceDesc.BindPoint;
-					define.Index = _TextureDefines.size();
+					define.Index = static_cast<int>(_TextureDefines.size());
 					define.TextureHandle = nullptr;
 
 					_TextureDefines[resourceDesc.Name] = define;
@@ -417,7 +417,7 @@ namespace Hydra
 				{
 					RawShaderSamplerDefine define = {};
 					define.BindIndex = resourceDesc.BindPoint;
-					define.Index = _SamplerDefines.size();
+					define.Index = static_cast<int>(_SamplerDefines.size());
 
 					_SamplerDefines[resourceDesc.Name] = define;
 

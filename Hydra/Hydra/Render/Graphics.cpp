@@ -11,6 +11,7 @@ namespace Hydra
 	Map<String, NVRHI::TextureHandle> Graphics::_RenderViewTargets;
 	Map<String, InputLayoutPtr> Graphics::_InputLayouts;
 	Map<String, SamplerPtr> Graphics::_Samplers;
+	Map<String, TechniquePtr> Graphics::_Techniques;
 	TechniquePtr Graphics::_BlitShader;
 
 	void Graphics::Destroy()
@@ -62,6 +63,30 @@ namespace Hydra
 		Blit(GetRenderTarget(name), pDest);
 	}
 
+	TechniquePtr Hydra::Graphics::LoadTechnique(const String& name, const File & file)
+	{
+		if (_Techniques.find(name) != _Techniques.end())
+		{
+			return _Techniques[name];
+		}
+
+		TechniquePtr tech = _TECH(file);
+
+		_Techniques[name] = tech;
+
+		return tech;
+	}
+
+	TechniquePtr Hydra::Graphics::GetTechnique(const String& name)
+	{
+		if (_Techniques.find(name) != _Techniques.end())
+		{
+			return _Techniques[name];
+		}
+
+		return nullptr;
+	}
+
 	void Graphics::Composite(TechniquePtr shader, Function<void(NVRHI::DrawCallState&)> preRenderFunction, TexturePtr pDest)
 	{
 		NVRHI::DrawCallState state;
@@ -108,7 +133,7 @@ namespace Hydra
 		state.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_NONE;
 		state.renderState.depthStencilState.depthEnable = true;
 
-		for (int mipLevel = 0; mipLevel < pDest->GetDesc().mipLevels; mipLevel++)
+		for (uint32_t mipLevel = 0; mipLevel < pDest->GetDesc().mipLevels; mipLevel++)
 		{
 			state.renderState.clearColorTarget = true;
 			state.renderState.clearDepthTarget = true;

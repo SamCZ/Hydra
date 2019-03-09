@@ -7,7 +7,8 @@ struct PS_Input
 	float3 normal : NORMAL;
 	float3 tangent : TANGENT;
 	float3 binormal : BINORMAL;
-	float3 positionWS : WSPOSITION;
+	float3 positionWS : WSPOSITION0;
+	float3 positionLS : WSPOSITION1;
 };
 
 cbuffer GlobalConstants : register(b0)
@@ -50,6 +51,7 @@ PS_Input MainVS(VS_Input input, unsigned int InstanceID : SV_InstanceID)
 
 	output.position = mul(mul(mul(g_ProjectionMatrix, g_ViewMatrix), modelMatrix), output.position);
 	output.positionWS = mul(modelMatrix, float4(input.position.xyz, 1.0)).xyz;
+	output.positionLS = input.position.xyz;
 
 	output.texCoord = input.texCoord;
 	output.normal = input.normal;

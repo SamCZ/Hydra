@@ -1,4 +1,4 @@
-#if 1
+﻿#if 1
 
 #include <iostream>
 
@@ -15,6 +15,8 @@
 #include "Hydra/Render/Mesh.h"
 
 #include "Hydra/Import/MeshImporter.h"
+#include "Hydra/Import/TextureImporter.h"
+
 #include "Hydra/Scene/Components/Renderer.h"
 #include "Hydra/Scene/Components/Camera.h"
 #include "Hydra/Scene/Components/Movement/FirstPersonController.h"
@@ -25,6 +27,14 @@
 #include "Hydra/Core/FastNoise.h"
 #include "Hydra/Core/Random.h"
 #include "Hydra/Terrain/Erosion.h"
+
+/* Set the better graphic card for notebooks ( ͡° ͜ʖ ͡°)
+*  http://developer.download.nvidia.com/devzone/devcenter/gamegraphics/files/OptimusRenderingPolicies.pdf
+*  http://stevendebock.blogspot.com/2013/07/nvidia-optimus.html
+*/
+extern "C" {
+	_declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+}
 
 void signalError(const char* file, int line, const char* errorDesc)
 {
@@ -152,7 +162,7 @@ public:
 		Erosion erosion;
 		erosion.Erode(noise, mapSize, numErosionIterations);
 
-		List<Vector3> vertices;
+		List<VertexBufferEntry> vertices;
 		vertices.reserve(mapSize * mapSize);
 		List<unsigned int> indices;
 		indices.reserve((mapSize - 1) * (mapSize - 1) * 6);
@@ -169,7 +179,11 @@ public:
 				Vector2 percent = Vector2(x / (mapSize - 1.0f), y / (mapSize - 1.0f));
 				Vector3 pos = Vector3(percent.x * 2 - 1, 0, percent.y * 2 - 1) * scale;
 				pos += Vector3(0, 1, 0) * noise[i] * elevationScale;
-				vertices.insert(vertices.begin() + i, pos);
+
+				VertexBufferEntry entry = {};
+				entry.position = pos;
+
+				vertices.insert(vertices.begin() + i, entry);
 
 				// Construct triangles
 				if (x != mapSize - 1 && y != mapSize - 1)
@@ -190,7 +204,7 @@ public:
 		Log("GenerateTerrain", "Done...");
 
 		Mesh* mesh = new Mesh();
-		mesh->Vertices = vertices;
+		mesh->VertexData = vertices;
 		mesh->Indices = indices;
 
 		mesh->GenerateNormals();
@@ -198,6 +212,16 @@ public:
 		Log("GenerateTerrain", "yo...");
 
 		return mesh;
+	}
+
+	inline void RecompileDefaultShader()
+	{
+		Log("RecompileDefaultShader");
+
+		TechniquePtr tech = Graphics::GetTechnique("DefaultPBRShader");
+
+		tech->SetKeywordByHash(tech->GetKeywordHash({ "USE_ALBEDO_TEX" }));
+		tech->Recompile(false);
 	}
 
 	inline HRESULT DeviceCreated() override
@@ -217,6 +241,9 @@ public:
 
 		_InputManager->AddActionMapping("Esc", Keys::Escape);
 		_InputManager->BindAction("Esc", IE_Pressed, this, &MainRenderView::Escape);
+
+		_InputManager->AddActionMapping("F5", Keys::F5);
+		_InputManager->BindAction("F5", IE_Pressed, this, &MainRenderView::RecompileDefaultShader);
 
 		Engine::SetInputManager(_InputManager);
 
@@ -256,7 +283,24 @@ public:
 		SpatialPtr box = MakeShared<Spatial>();
 		RendererPtr r = box->AddComponent<Renderer>();
 		r->SetMesh(Mesh::CreatePrimitive(PrimitiveType::Box));
+		r->Mat.Albedo = TextureImporter::Import("Assets/Textures/Rock2.dds");
 		rm->MainScene->AddChild(box);
+
+		class TestRotationComponent : public Component
+		{
+		public:
+			inline void Start()
+			{
+
+			}
+			inline void Update()
+			{
+				Parent->Rotation += 0.1f;
+
+				Parent->Position = Vector3(cos(Parent->Rotation.x * 0.1f) * 1, sin(Parent->Rotation.y * 0.1f) * 1, cos(Parent->Rotation.z * 0.1f) * 1);
+			}
+		};
+		box->AddComponent<TestRotationComponent>();
 
 		rsd = MakeShared<RenderStageDeffered>();
 

@@ -111,8 +111,8 @@ protected:
     bool                    m_EnableRenderTargetClear;
     float                   m_RenderTargetClearColor[4];
 
-	float m_Fps;
-	float M_MsPerFrame;
+	uint32_t m_Fps;
+	double M_MsPerFrame;
 private:
     HRESULT                 CreateRenderTarget();
     void                    ResizeSwapChain();
@@ -175,8 +175,8 @@ public:
     void            SetAverageTimeUpdateInterval(double value) { m_AverageTimeUpdateInterval = value; }
     void            SetPrimaryRenderTargetClearColor(bool enableClear, const float* pColor);
 
-	float GetFPS() { return m_Fps; }
-	float GetMsPerFrame()
+	uint32_t GetFPS() { return m_Fps; }
+	double GetMsPerFrame()
 	{
 		return M_MsPerFrame;
 	}

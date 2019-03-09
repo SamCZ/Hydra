@@ -14,10 +14,10 @@ namespace Hydra
 		Vector3 maxBounds = Vector3(floatMin, floatMin, floatMin);
 		Vector3 minBounds = Vector3(floatMax, floatMax, floatMax);
 
-		for (Vector3& pos : Vertices)
+		for (VertexBufferEntry& vb : VertexData)
 		{
-			minBounds = glm::min(minBounds, pos);
-			maxBounds = glm::max(maxBounds, pos);
+			minBounds = glm::min(minBounds, vb.position);
+			maxBounds = glm::max(maxBounds, vb.position);
 		}
 
 		Bounds = {};
@@ -27,27 +27,23 @@ namespace Hydra
 
 	void Mesh::GenerateNormals()
 	{
-		List<Vector3> normals;
-		normals.resize(Vertices.size());
-
+		
 		for (int i = 0; i < Indices.size() / 3; i++)
 		{
 			int n0 = Indices[i * 3 + 0];
 			int n1 = Indices[i * 3 + 1];
 			int n2 = Indices[i * 3 + 2];
 
-			Vector3& v0 = Vertices[n0];
-			Vector3& v1 = Vertices[n1];
-			Vector3& v2 = Vertices[n2];
+			VertexBufferEntry& vb0 = VertexData[n0];
+			VertexBufferEntry& vb1 = VertexData[n1];
+			VertexBufferEntry& vb2 = VertexData[n2];
 
-			Vector3 normal = ComputeTriangleNormal(v0, v1, v2);
+			Vector3 normal = ComputeTriangleNormal(vb0.position, vb1.position, vb2.position);
 
-			normals[n0] = normal;
-			normals[n1] = normal;
-			normals[n2] = normal;
+			vb0.normal = normal;
+			vb1.normal = normal;
+			vb2.normal = normal;
 		}
-
-		Normals = normals;
 	}
 
 	Mesh* Mesh::CreatePrimitive(const PrimitiveType::Enum & type, const Vector3& scale)
@@ -78,7 +74,7 @@ namespace Hydra
 					20,22,23
 				};
 
-				mesh->Vertices = {
+				List<Vector3> verts = {
 					{ xSize,-ySize,-zSize },
 					{ xSize,-ySize,zSize },
 					{ -xSize,-ySize,zSize },
@@ -105,7 +101,7 @@ namespace Hydra
 					{ -xSize,ySize,-zSize }
 				};
 
-				mesh->TexCoords = {
+				List<Vector2> uvs = {
 						{ 0,1 },
 						{ 1,1 },
 						{ 1,0 },
@@ -132,7 +128,7 @@ namespace Hydra
 						{ 0,0 }
 				};
 
-				mesh->Normals = {
+				List<Vector3> normals = {
 						{ 0,-1,0 },
 						{ 0,-1,0 },
 						{ 0,-1,0 },
@@ -158,6 +154,15 @@ namespace Hydra
 						{ 0,0,-1 },
 						{ 0,0,-1 }
 				};
+
+				for (int i = 0; i < verts.size(); i++)
+				{
+					VertexBufferEntry entry = {};
+					entry.position = verts[i];
+					entry.texCoord = uvs[i];
+					entry.normal = normals[i];
+					mesh->VertexData.emplace_back(entry);
+				}
 
 				return mesh;
 
@@ -215,10 +220,14 @@ namespace Hydra
 				int index = 0;
 				for (int i = 0; i < (36 * 8) / 8; i++)
 				{
-					mesh->Vertices.push_back({ vertices[i * 8 + 0], vertices[i * 8 + 1], vertices[i * 8 + 2] });
-					mesh->Normals.push_back({ vertices[i * 8 + 3], vertices[i * 8 + 4], vertices[i * 8 + 5] });
-					mesh->TexCoords.push_back({ vertices[i * 8 + 6], vertices[i * 8 + 7] });
+					VertexBufferEntry entry = {};
+					entry.position = { vertices[i * 8 + 0], vertices[i * 8 + 1], vertices[i * 8 + 2] };
+					entry.normal = { vertices[i * 8 + 3], vertices[i * 8 + 4], vertices[i * 8 + 5] };
+					entry.texCoord = { vertices[i * 8 + 6], vertices[i * 8 + 7] };
+
 					mesh->Indices.push_back(i++);
+
+					mesh->VertexData.emplace_back(entry);
 				}
 
 				return mesh;

@@ -150,6 +150,7 @@
     <ClInclude Include="Hydra\Input\Windows\WindowsInputManager.h" />
     <ClInclude Include="Hydra\Input\Windows\WindowsPlatformInput.h" />
     <ClInclude Include="Hydra\Render\Graphics.h" />
+    <ClInclude Include="Hydra\Render\Material.h" />
     <ClInclude Include="Hydra\Render\Mesh.h" />
     <ClInclude Include="Hydra\Render\Pipeline\BindingHelpers.h" />
     <ClInclude Include="Hydra\Render\Pipeline\DDS\DDS.h" />
@@ -165,6 +166,7 @@
     <ClInclude Include="Hydra\Render\RenderStageDeffered.h" />
     <ClInclude Include="Hydra\Render\Shader.h" />
     <ClInclude Include="Hydra\Render\Technique.h" />
+    <ClInclude Include="Hydra\Render\VertexBuffer.h" />
     <ClInclude Include="Hydra\Scene\Component.h" />
     <ClInclude Include="Hydra\Scene\Components\Camera.h" />
     <ClInclude Include="Hydra\Scene\Components\LodGroup.h" />
@@ -200,6 +202,7 @@
   <ItemGroup>
     <ClCompile Include="Hydra\Core\FastNoise.cpp" />
     <ClCompile Include="Hydra\HydraEngine.cpp" />
+    <ClCompile Include="Hydra\Render\Material.cpp" />
     <ClCompile Include="Hydra\Render\RenderManager.cpp" />
     <ClCompile Include="Hydra\Render\RenderStageDeffered.cpp" />
     <ClCompile Include="Hydra\Render\Technique.cpp" />

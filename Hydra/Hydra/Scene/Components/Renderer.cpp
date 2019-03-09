@@ -132,25 +132,13 @@ namespace Hydra
 		}
 
 		if (_Mesh == nullptr) return;
-		if (_Mesh->Vertices.size() == 0 || _Mesh->Indices.size() == 0) return;
+		if (_Mesh->VertexData.size() == 0 || _Mesh->Indices.size() == 0) return;
 
-		List<VertexBufferEntry> VertexData;
 
-		size_t vertexCount = _Mesh->Vertices.size();
-		size_t uvsCount = _Mesh->TexCoords.size();
-		size_t normalCount = _Mesh->Normals.size();
-		size_t tangentCount = _Mesh->Tangents.size();
-		size_t binormalCount = _Mesh->BiNormals.size();
-
-		bool useUvs = uvsCount == vertexCount;
-		bool useNormals = normalCount == vertexCount;
-		bool useTangents = tangentCount == vertexCount;
-		bool useBiNormals = binormalCount == vertexCount;
-
-		if (!useUvs)
+		/*if (!useUvs)
 		{
 			Log("Renderer::WriteMeshData", "Mesh(" + _Mesh->GetSource() + ") has zero UVs that can broke lighting because UVs are needed for tange space callculation !");
-		}
+		}*/
 
 		//Log("Renderer::WriteMeshData", "Mesh(" + _Mesh->GetSource() + ") UV: " + ToString(useUvs) + ", N: " + ToString(useNormals) + ", TA: " + ToString(useTangents) + ", BITA: " + ToString(useBiNormals));
 
@@ -159,45 +147,19 @@ namespace Hydra
 		indexBufferDesc.byteSize = uint32_t(_Mesh->Indices.size() * sizeof(unsigned int));
 		_IndexHandle = _RenderInterface->createBuffer(indexBufferDesc, &_Mesh->Indices[0]);
 
-		for (int i = 0; i < vertexCount; i++)
-		{
-			VertexBufferEntry entry;
-
-			entry.position = _Mesh->Vertices[i];
-
-			if (useUvs)
-			{
-				entry.texCoord = _Mesh->TexCoords[i];
-			}
-			
-			if (useNormals)
-			{
-				entry.normal = _Mesh->Normals[i];
-			}
-			
-			if (useTangents)
-			{
-				entry.tangent = _Mesh->Tangents[i];
-			}
-			
-			if (useBiNormals)
-			{
-				entry.binormal = _Mesh->BiNormals[i];
-			}
-
-			VertexData.push_back(entry);
-		}
 
 		NVRHI::BufferDesc vertexBufferDesc;
 		vertexBufferDesc.isVertexBuffer = true;
-		vertexBufferDesc.byteSize = uint32_t(VertexData.size() * sizeof(VertexBufferEntry));
-		_VertexBuffer = _RenderInterface->createBuffer(vertexBufferDesc, &VertexData[0]);
+		vertexBufferDesc.byteSize = uint32_t(_Mesh->VertexData.size() * sizeof(VertexBufferEntry));
+		_VertexBuffer = _RenderInterface->createBuffer(vertexBufferDesc, &_Mesh->VertexData[0]);
 
 		_DrawArguments.instanceCount = 1;
 		_DrawArguments.startIndexLocation = 0;
 		_DrawArguments.startInstanceLocation = 0;
 		_DrawArguments.startVertexLocation = 0;
 		_DrawArguments.vertexCount = static_cast<uint32_t>(_Mesh->Indices.size());
+
+		_Mesh->VertexData.clear();
 
 		//std::cout << "WriteMeshData (" << ToString(VertexData.size()) << ", " + ToString(_DrawArguments.vertexCount) + ")" << std::endl;
 	}
@@ -223,7 +185,7 @@ namespace Hydra
 				instBufferDesc.isCPUWritable = true;
 				_InstBuffer = _RenderInterface->createBuffer(instBufferDesc, &_InstanceData[0]);
 
-				_DrawArguments.instanceCount = _LastInstanceCount;
+				_DrawArguments.instanceCount = (uint32_t)_LastInstanceCount;
 			}
 			else
 			{
