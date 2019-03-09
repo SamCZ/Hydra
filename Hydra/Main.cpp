@@ -295,9 +295,9 @@ public:
 			}
 			inline void Update()
 			{
-				Parent->Rotation += 0.1f;
+				//Parent->Rotation += 0.1f;
 
-				Parent->Position = Vector3(cos(Parent->Rotation.x * 0.1f) * 1, sin(Parent->Rotation.y * 0.1f) * 1, cos(Parent->Rotation.z * 0.1f) * 1);
+				//Parent->Position = Vector3(cos(Parent->Rotation.x * 0.1f) * 1, sin(Parent->Rotation.y * 0.1f) * 1, cos(Parent->Rotation.z * 0.1f) * 1);
 			}
 		};
 		box->AddComponent<TestRotationComponent>();
@@ -321,6 +321,8 @@ public:
 		}
 
 		rsd->AllocateViewDependentResources(width, height, sampleCount);
+
+		Graphics::AllocateViewDependentResources(width, height, sampleCount);
 	}
 
 	inline void DeviceDestroyed() override

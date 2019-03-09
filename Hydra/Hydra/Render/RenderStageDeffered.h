@@ -34,6 +34,9 @@ namespace Hydra
 		TechniquePtr _DefaultShader;
 		TechniquePtr _CompositeShader;
 
+		TechniquePtr _PostEmissionPreShader;
+		TechniquePtr _PostEmissionShader;
+
 		TexturePtr _BrdfLutTexture;
 		SamplerPtr _BrdfLutSampler;
 	public:

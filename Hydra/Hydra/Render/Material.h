@@ -12,9 +12,12 @@ namespace Hydra
 	class Material
 	{
 	private:
+		String _Name;
+		SharedPtr<Technique> _Technique;
 		List<String> _EnabledKeywords;
+		uint32 _CurrentShaderHash;
 	public:
-		Material();
+		Material(const String& name, SharedPtr<Technique> technique);
 		~Material();
 
 		void SetInt(const String& name, const int& i);
@@ -32,5 +35,8 @@ namespace Hydra
 		void SetSampler(const String& name, NVRHI::SamplerHandle sampler);
 		
 		void SetKeyword(const String& name, bool value);
+
+	private:
+		void UpdateHashAndData();
 	};
 }

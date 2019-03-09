@@ -71,7 +71,7 @@ namespace Hydra {
 
 		TechniquePtr brdfLutShader = _TECH("Assets/Shaders/Utils/BrdfLUT.hlsl");
 
-		Graphics::Composite(brdfLutShader, NULL, "DPBR_BrdfLut");
+		Graphics::Composite(brdfLutShader, [](NVRHI::DrawCallState& state) {}, "DPBR_BrdfLut");
 
 
 		// Convert skybox to lower resolution
@@ -208,7 +208,8 @@ namespace Hydra {
 		delete cubeRenderer;
 
 
-		ShaderImporter::Import("Assets/Shaders/testKeywords.hlsl");
+		_PostEmissionPreShader = _TECH("Assets/Shaders/PostProcess/EmissionPre.hlsl");
+		_PostEmissionShader = _TECH("Assets/Shaders/PostProcess/Emission.hlsl");
 	}
 
 	RenderStageDeffered::~RenderStageDeffered()
@@ -225,7 +226,7 @@ namespace Hydra {
 		Engine::GetRenderInterface()->beginRenderingPass();
 
 		NVRHI::DrawCallState state;
-		Graphics::SetClearFlags(state, MakeRGBf(0.2f, 0.2f, 0.2f));
+		Graphics::SetClearFlags(state, MakeRGBAf(0.0f, 0.0f, 0.0f, 0.0f));
 
 		state.renderState.viewportCount = 1;
 		state.renderState.viewports[0] = NVRHI::Viewport(float(camera->GetWidth()), float(camera->GetHeight()));
@@ -346,6 +347,14 @@ namespace Hydra {
 			Graphics::WriteConstantBufferDataAndBind(state, "Float3Constant", &data);*/
 
 		}, "DPBR_Output");
+
+		// Post emission
+		Graphics::Composite(_PostEmissionPreShader, "DPBR_AO_Emission", "DPBR_POST_Emission_Output");
+		Graphics::BlurTexture("DPBR_POST_Emission_Output", "DPBR_POST_EmissionBlurred_Output");
+		Graphics::Composite(_PostEmissionShader, [](NVRHI::DrawCallState& state) {
+			Graphics::BindRenderTarget(state, "DPBR_Output", 0);
+			Graphics::BindRenderTarget(state, "DPBR_POST_EmissionBlurred_Output", 1);
+		}, "DPBR_POST_Output");
 	}
 
 	void RenderStageDeffered::AllocateViewDependentResources(uint32 width, uint32 height, uint32 sampleCount)
@@ -357,19 +366,28 @@ namespace Hydra {
 		Graphics::ReleaseRenderTarget("DPBR_Depth");
 
 		Graphics::ReleaseRenderTarget("DPBR_Output");
+		Graphics::ReleaseRenderTarget("DPBR_POST_Output");
+		Graphics::ReleaseRenderTarget("DPBR_POST_Emission_Output");
+		Graphics::ReleaseRenderTarget("DPBR_POST_EmissionBlurred_Output");
+
+		// WARNING CLEAR VALUE DOEST WORK ! TARGET IS CLEARED BY DrawCallArguments clear color value !
 
 		Graphics::CreateRenderTarget("DPBR_AlbedoMetallic", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(0.f), sampleCount);
 		Graphics::CreateRenderTarget("DPBR_NormalRoughness", NVRHI::Format::RGBA16_FLOAT, width, height, NVRHI::Color(0.f), sampleCount);
-		Graphics::CreateRenderTarget("DPBR_AO_Emission", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(0.f), sampleCount);
+		Graphics::CreateRenderTarget("DPBR_AO_Emission", NVRHI::Format::RGBA16_FLOAT, width, height, NVRHI::Color(0.0f, 0.0, 0.0, 0.0), sampleCount);
 		Graphics::CreateRenderTarget("DPBR_WorldPos", NVRHI::Format::RGBA16_FLOAT, width, height, NVRHI::Color(0.f), sampleCount);
 		Graphics::CreateRenderTarget("DPBR_Depth", NVRHI::Format::D24S8, width, height, NVRHI::Color(1.f, 0.f, 0.f, 0.f), sampleCount);
 
 		Graphics::CreateRenderTarget("DPBR_Output", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(0.f), sampleCount);
+		Graphics::CreateRenderTarget("DPBR_POST_Output", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(0.f), sampleCount);
+
+		Graphics::CreateRenderTarget("DPBR_POST_Emission_Output", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(0.f), sampleCount);
+		Graphics::CreateRenderTarget("DPBR_POST_EmissionBlurred_Output", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(0.f), sampleCount);
 	}
 
 	String RenderStageDeffered::GetOutputName()
 	{
-		return "DPBR_Output";
+		return "DPBR_POST_Output";
 	}
 
 	String RenderStageDeffered::GetDepthOutputName()

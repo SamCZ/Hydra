@@ -28,6 +28,8 @@ namespace Hydra
 
 	typedef NVRHI::SamplerDesc::WrapMode WrapMode;
 
+	#define CmpFnc Function<void(NVRHI::DrawCallState&, int, int)>
+
 	struct ConstantBufferInfo
 	{
 		String Name;
@@ -47,6 +49,7 @@ namespace Hydra
 		static Map<String, TechniquePtr> _Techniques;
 
 		static TechniquePtr _BlitShader;
+		static TechniquePtr _BlurShader;
 	public:
 		//Graphics();
 		//~Graphics();
@@ -54,14 +57,21 @@ namespace Hydra
 		static void Create();
 		static void Destroy();
 
+		static void AllocateViewDependentResources(uint32 width, uint32 height, uint32 sampleCount);
+
 		static void Blit(TexturePtr pSource, TexturePtr pDest);
 		static void Blit(const String& name, TexturePtr pDest);
+
+		static void BlurTexture(TexturePtr pSource, TexturePtr pDest);
+		static void BlurTexture(const String pSource, const String pDest);
 
 		static TechniquePtr LoadTechnique(const String& name, const File& file);
 		static TechniquePtr GetTechnique(const String& name);
 
 		static void Composite(TechniquePtr shader, Function<void(NVRHI::DrawCallState&)> preRenderFunction, TexturePtr pDest);
 		static void Composite(TechniquePtr shader, Function<void(NVRHI::DrawCallState&)> preRenderFunction, const String& outputName);
+		static void Composite(TechniquePtr shader, TexturePtr slot0Texture, TexturePtr pDest);
+		static void Composite(TechniquePtr shader, const String& slot0Texture, const String& pDest);
 
 		static void RenderCubeMap(TechniquePtr shader, InputLayoutPtr inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, TexturePtr pDest);
 		static void RenderCubeMap(TechniquePtr shader, const String& inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, const String& outputName);

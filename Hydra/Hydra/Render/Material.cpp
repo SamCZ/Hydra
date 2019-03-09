@@ -1,7 +1,16 @@
 #include "Hydra/Render/Material.h"
+#include "Hydra/Render/Technique.h"
 
 namespace Hydra
 {
+	Material::Material(const String & name, SharedPtr<Technique> technique) : _Name(name), _Technique(technique), _CurrentShaderHash(0)
+	{
+	}
+
+	Material::~Material()
+	{
+	}
+
 	void Material::SetInt(const String& name, const int& i)
 	{
 
@@ -52,7 +61,7 @@ namespace Hydra
 
 	}
 
-	void Material::SetKeyword(const String & name, bool value)
+	void Material::SetKeyword(const String& name, bool value)
 	{
 		auto it = Find(_EnabledKeywords, name);
 
@@ -61,11 +70,20 @@ namespace Hydra
 		if (existInArr && value == false)
 		{
 			_EnabledKeywords.erase(it);
+
+			UpdateHashAndData();
 		}
 
 		if (!existInArr && value)
 		{
 			_EnabledKeywords.emplace_back(name);
+
+			UpdateHashAndData();
 		}
+	}
+
+	void Material::UpdateHashAndData()
+	{
+		_CurrentShaderHash = _Technique->GetKeywordHash(_EnabledKeywords);
 	}
 }

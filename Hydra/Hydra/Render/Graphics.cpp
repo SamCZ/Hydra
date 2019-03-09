@@ -13,6 +13,7 @@ namespace Hydra
 	Map<String, SamplerPtr> Graphics::_Samplers;
 	Map<String, TechniquePtr> Graphics::_Techniques;
 	TechniquePtr Graphics::_BlitShader;
+	TechniquePtr Graphics::_BlurShader;
 
 	void Graphics::Destroy()
 	{
@@ -34,7 +35,14 @@ namespace Hydra
 
 	void Graphics::Create()
 	{
-		_BlitShader = MakeShared<Technique>("Assets/Shaders/blit.hlsl");
+		_BlitShader = _TECH("Assets/Shaders/blit.hlsl");
+		_BlurShader = _TECH("Assets/Shaders/PostProcess/GaussianBlur.hlsl");
+	}
+
+	void Graphics::AllocateViewDependentResources(uint32 width, uint32 height, uint32 sampleCount)
+	{
+		ReleaseRenderTarget("G_MEM_BLUR_PASS");
+		CreateRenderTarget("G_MEM_BLUR_PASS", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(1.f), sampleCount);
 	}
 
 	void Graphics::Blit(TexturePtr pSource, TexturePtr pDest)
@@ -61,6 +69,50 @@ namespace Hydra
 	void Graphics::Blit(const String & name, TexturePtr pDest)
 	{
 		Blit(GetRenderTarget(name), pDest);
+	}
+
+	void Graphics::BlurTexture(TexturePtr pSource, TexturePtr pDest)
+	{
+		//TODO: Different size of textures
+
+		NVRHI::TextureDesc desc = pDest->GetDesc();
+
+		float width = Engine::ScreenSize.x;
+		float height = Engine::ScreenSize.y;
+
+		// Horizontal blur
+		Composite(_BlurShader, [pSource, width, height](NVRHI::DrawCallState& state) {
+			NVRHI::BindTexture(state.PS, 0, pSource);
+
+			ShaderPtr iShader = _BlurShader->GetShader(NVRHI::ShaderType::SHADER_PIXEL);
+
+			iShader->SetVariable("_Direction", Vector2(1, 0));
+			iShader->SetVariable("_TexSize", Vector2(width, height));
+
+			iShader->UploadVariableData();
+			iShader->BindConstantBuffers(state.PS);
+
+		}, "G_MEM_BLUR_PASS");
+
+		// Vertical blur
+		Composite(_BlurShader, [pSource, width, height](NVRHI::DrawCallState& state)
+		{
+			BindRenderTarget(state, "G_MEM_BLUR_PASS", 0);
+
+			ShaderPtr iShader = _BlurShader->GetShader(NVRHI::ShaderType::SHADER_PIXEL);
+
+			iShader->SetVariable("_Direction", Vector2(0, 1));
+			iShader->SetVariable("_TexSize", Vector2(width, height));
+
+			iShader->UploadVariableData();
+			iShader->BindConstantBuffers(state.PS);
+
+		}, pDest);
+	}
+
+	void Graphics::BlurTexture(const String pSource, const String pDest)
+	{
+		BlurTexture(GetRenderTarget(pSource), GetRenderTarget(pDest));
 	}
 
 	TechniquePtr Hydra::Graphics::LoadTechnique(const String& name, const File & file)
@@ -112,6 +164,19 @@ namespace Hydra
 	void Graphics::Composite(TechniquePtr shader, Function<void(NVRHI::DrawCallState&)> preRenderFunction, const String& outputName)
 	{
 		Composite(shader, preRenderFunction, GetRenderTarget(outputName));
+	}
+
+	void Graphics::Composite(TechniquePtr shader, TexturePtr slot0Texture, TexturePtr pDest)
+	{
+		Composite(shader, [slot0Texture](NVRHI::DrawCallState& state)
+		{
+			NVRHI::BindTexture(state.PS, 0, slot0Texture);
+		}, pDest);
+	}
+
+	void Graphics::Composite(TechniquePtr shader, const String & slot0Texture, const String & pDest)
+	{
+		Composite(shader, GetRenderTarget(slot0Texture), GetRenderTarget(pDest));
 	}
 
 	void Graphics::RenderCubeMap(TechniquePtr shader, InputLayoutPtr inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, TexturePtr pDest)
@@ -294,7 +359,7 @@ namespace Hydra
 		gbufferDesc.width = width;
 		gbufferDesc.height = height;
 		gbufferDesc.isRenderTarget = true;
-		gbufferDesc.useClearValue = true;
+		gbufferDesc.useClearValue = false;
 		gbufferDesc.sampleCount = sampleCount;
 		gbufferDesc.disableGPUsSync = true;
 
