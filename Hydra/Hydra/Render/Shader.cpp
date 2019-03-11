@@ -77,6 +77,7 @@ namespace Hydra
 
 	NVRHI::InputLayoutHandle Shader::GetOrGenerateInputLayout()
 	{
+		//TODO: Not working properly
 		if (_ShaderBlob == nullptr)
 		{
 			return nullptr;
@@ -109,7 +110,7 @@ namespace Hydra
 
 			String perInstanceStr = "_PER_INSTANCE";
 			String sem = paramDesc.SemanticName;
-			size_t lenDiff = sem.size() - perInstanceStr.size();
+			int lenDiff = (int)sem.size() - (int)perInstanceStr.size();
 			bool isPerInstance = lenDiff >= 0 && sem.compare(lenDiff, perInstanceStr.size(), perInstanceStr) == 0;
 
 			uint32_t sizeToAdd = 0;

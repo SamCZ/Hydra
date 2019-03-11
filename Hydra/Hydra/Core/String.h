@@ -35,6 +35,14 @@ namespace Hydra
 
 	static inline bool StartsWith(const String& string, const String& expression)
 	{
+		/*
+		if (string.rfind(expression, 0) == 0)
+		{
+			return true;
+		}
+
+		return false;*/
+		
 		if (expression.length() > string.length())
 		{
 			return false;

@@ -14,6 +14,8 @@ namespace Hydra
 	struct alignas(16) ModelConstants
 	{
 		alignas(16) Matrix4 g_ModelMatrix;
+		alignas(16) Matrix3 g_NormalMatrix;
+		alignas(16) float _pad;
 		alignas(16) float g_Opacity;
 	};
 
@@ -36,6 +38,10 @@ namespace Hydra
 
 		TechniquePtr _PostEmissionPreShader;
 		TechniquePtr _PostEmissionShader;
+
+		TechniquePtr _PostSSAOShader;
+
+		TechniquePtr _MultShader;
 
 		TexturePtr _BrdfLutTexture;
 		SamplerPtr _BrdfLutSampler;

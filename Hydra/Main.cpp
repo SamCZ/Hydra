@@ -1,4 +1,4 @@
-﻿#if 1
+﻿#if 0
 
 #include <iostream>
 
@@ -221,7 +221,9 @@ public:
 		TechniquePtr tech = Graphics::GetTechnique("DefaultPBRShader");
 
 		tech->SetKeywordByHash(tech->GetKeywordHash({ "USE_ALBEDO_TEX" }));
-		tech->Recompile(false);
+		tech->Recompile(true);
+
+		Graphics::GetTechnique("SSAO")->Recompile(true);
 	}
 
 	inline HRESULT DeviceCreated() override
@@ -266,11 +268,11 @@ public:
 		cameraObj->AddComponent<FirstPersonController>();
 		rm->MainScene->AddChild(cameraObj);
 
-		/*SpatialPtr testModel = Meshimporter::Import("Assets/Sponza/SponzaNoFlag.obj", MeshImportOptions());
+		SpatialPtr testModel = Meshimporter::Import("Assets/Sponza/SponzaNoFlag.obj", MeshImportOptions());
 		testModel->Scale = Vector3(0.01f, 0.01f, 0.01f);
 		testModel->AddComponent<LodGroup>();
 		testModel->SetStatic(true);
-		rm->MainScene->AddChild(testModel);*/
+		rm->MainScene->AddChild(testModel);
 
 		/*SpatialPtr testModel = New(Spatial);
 		RendererPtr voxelRender = testModel->AddComponent<Renderer>();
@@ -280,7 +282,7 @@ public:
 		rm->MainScene->AddChild(testModel);*/
 
 
-		SpatialPtr box = MakeShared<Spatial>();
+		/*SpatialPtr box = MakeShared<Spatial>();
 		RendererPtr r = box->AddComponent<Renderer>();
 		r->SetMesh(Mesh::CreatePrimitive(PrimitiveType::Box));
 		r->Mat.Albedo = TextureImporter::Import("Assets/Textures/Rock2.dds");
@@ -300,7 +302,7 @@ public:
 				//Parent->Position = Vector3(cos(Parent->Rotation.x * 0.1f) * 1, sin(Parent->Rotation.y * 0.1f) * 1, cos(Parent->Rotation.z * 0.1f) * 1);
 			}
 		};
-		box->AddComponent<TestRotationComponent>();
+		box->AddComponent<TestRotationComponent>();*/
 
 		rsd = MakeShared<RenderStageDeffered>();
 

@@ -12,7 +12,7 @@ namespace Hydra
 
 	static inline NVRHI::TextureHandle LoadTex(const File& file)
 	{
-		if (true) return nullptr;
+		//if (true) return nullptr;
 
 		if (TexCache.find(file.GetPath()) != TexCache.end())
 		{

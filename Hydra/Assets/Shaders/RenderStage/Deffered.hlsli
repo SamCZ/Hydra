@@ -20,6 +20,8 @@ cbuffer GlobalConstants : register(b0)
 cbuffer ModelConstants : register(b1)
 {
 	float4x4 g_ModelMatrix;
+	float3x3 g_NormalMatrix;
+	float pad;
 	float g_Opacity;
 }
 
@@ -50,11 +52,11 @@ PS_Input MainVS(VS_Input input, unsigned int InstanceID : SV_InstanceID)
 	output = OnMainVS(input, output);
 
 	output.position = mul(mul(mul(g_ProjectionMatrix, g_ViewMatrix), modelMatrix), output.position);
-	output.positionWS = mul(modelMatrix, float4(input.position.xyz, 1.0)).xyz;
+	output.positionWS = mul(mul(g_ViewMatrix, modelMatrix), float4(input.position.xyz, 1.0)).xyz;
 	output.positionLS = input.position.xyz;
 
 	output.texCoord = input.texCoord;
-	output.normal = input.normal;
+	output.normal = mul(g_NormalMatrix, input.normal);
 	output.tangent = mul(modelMatrix, float4(input.tangent, 0.0)).xyz;
 	output.binormal = mul(modelMatrix, float4(input.binormal, 0.0)).xyz;
 

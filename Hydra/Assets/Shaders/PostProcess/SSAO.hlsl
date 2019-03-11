@@ -26,6 +26,7 @@ FullScreenQuadOutput MainVS(uint id : SV_VertexID)
 cbuffer Constants : register(b0)
 {
 	float4x4 g_Projection;
+	float4x4 g_View;
 	float4 g_Samples[64];
 }
 
@@ -34,16 +35,14 @@ cbuffer RuntimeConstants : register(b1)
 	float4 g_Settings;
 }
 
-#define RADIUS g_Settings.x
-#define BIAS g_Settings.y
+#define RADIUS 0.5
+#define BIAS 0.1
 #define PREVIEW g_Settings.z
 #define INTENSITY g_Settings.w
 
 Texture2D t_SceneTexture : register(t0);
 Texture2D t_NormalTexture : register(t1);
 Texture2D t_PositionTexture : register(t2);
-
-static float2 noiseScale = float2(1280.0 / 4.0, 720.0 / 4.0);
 
 static int kernelSize = 64;
 /*static float radius = 0.085;
@@ -74,34 +73,43 @@ float4 MainPS(FullScreenQuadOutput IN) : SV_Target
 	//return t_SceneTexture[IN.position.xy]; //TODO: Disabled ssao for a moment, enable afterwards.
 
 	//return float4(t_PositionTexture[IN.position.xy].xyz, 1.0);
+	//return t_PositionTexture.Sample(MeshTextureSampler, IN.uv);
+	//return t_NormalTexture.Sample(MeshTextureSampler, IN.uv);
 
-	float3 fragPos = t_PositionTexture[IN.position.xy].xyz;
-	float3 normal = (t_NormalTexture[IN.position.xy].xyz);
-	//int index = (int)(IN.position.x * 1000.0) % 15;
-	float3 randomVec = normalize((rand_2_10(IN.position.xy) * 2.0));
-	
+	float3 fragPos = t_PositionTexture.Sample(MeshTextureSampler, IN.uv).xyz;
+	float3 normal = t_NormalTexture.Sample(MeshTextureSampler, IN.uv).xyz;
+
+	float3 randomVec = normalize((rand_2_10(IN.position.xy) * 2.0) - 1.0);
+
+	randomVec = normalize(float3(0.0, 0.0, 1.0));
+
 	float3 tangent = normalize(randomVec - normal * dot(randomVec, normal));
+	
 	float3 bitangent = cross(normal, tangent);
 	float3x3 TBN = float3x3(tangent, bitangent, normal);
+
+	//return float4(mul(TBN, float3(0, 1, 0)), 1.0);
 
 	float occlusion = 0.0;
 
 	for (int i = 0; i < kernelSize; ++i)
 	{
-		//float3 samplePos = mul(TBN, g_Samples[i].xyz);
-		float3 samplePos = g_Samples[i].xyz;
+		float3 samplePos = mul(TBN, g_Samples[i].xyz);
+		//float3 samplePos = g_Samples[i].xyz;
 		samplePos = fragPos + samplePos * RADIUS;
-		samplePos = fragPos;
+		//samplePos = fragPos;
 
 		float4 offset = float4(samplePos, 1.0);
 		offset = mul(g_Projection, offset);
 		offset.xyz /= offset.w;
 		offset.xyz = offset.xyz * 0.5 + 0.5;
 
-		return t_PositionTexture.Sample(MeshTextureSampler, float2(offset.x, 1.0 - offset.y));
+		//return t_PositionTexture.Sample(MeshTextureSampler, float2(offset.x, 1.0 - offset.y));
 
 		float sampleDepth = t_PositionTexture.Sample(MeshTextureSampler, float2(offset.x, 1.0 - offset.y)).z;
 		//float sampleDepth = t_PositionTexture[float2(offset.x, 1.0 - offset.y)].z;
+
+		//return (abs(fragPos.z - sampleDepth) / 0.01).xxxx;
 
 		float rangeCheck = smoothstep(0.0, 1.0, RADIUS / abs(fragPos.z - sampleDepth));
 		occlusion += (sampleDepth >= samplePos.z + BIAS ? 1.0 : 0.0) * rangeCheck;

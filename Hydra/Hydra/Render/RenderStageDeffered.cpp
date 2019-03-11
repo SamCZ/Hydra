@@ -20,17 +20,6 @@ namespace Hydra {
 	static float AO_Intensity = 1.0f;
 	static bool AO_Preview = true;
 
-	struct alignas(16) SSAO_CB
-	{
-		alignas(16) Matrix4 Projection;
-		alignas(16) Vector4 Samples[64];
-	};
-
-	struct alignas(16) SSAO_CB_RT
-	{
-		alignas(16) Vector4 RadiusBias;
-	};
-
 	float lerp(float a, float b, float f)
 	{
 		return a + f * (b - a);
@@ -210,6 +199,10 @@ namespace Hydra {
 
 		_PostEmissionPreShader = _TECH("Assets/Shaders/PostProcess/EmissionPre.hlsl");
 		_PostEmissionShader = _TECH("Assets/Shaders/PostProcess/Emission.hlsl");
+
+		_PostSSAOShader = Graphics::LoadTechnique("SSAO", "Assets/Shaders/PostProcess/SSAO.hlsl");
+
+		_MultShader = _TECH("Assets/Shaders/Mult.hlsl");
 	}
 
 	RenderStageDeffered::~RenderStageDeffered()
@@ -274,6 +267,8 @@ namespace Hydra {
 			{
 				modelData.g_ModelMatrix = r->Parent->GetModelMatrix();
 			}
+
+			modelData.g_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(camera->GetViewMatrix() * modelData.g_ModelMatrix)));
 
 			modelData.g_Opacity = r->Mat.Opacity == nullptr ? 0.0f : 1.0f;
 
@@ -349,11 +344,67 @@ namespace Hydra {
 		}, "DPBR_Output");
 
 		// Post emission
-		Graphics::Composite(_PostEmissionPreShader, "DPBR_AO_Emission", "DPBR_POST_Emission_Output");
+		/*Graphics::Composite(_PostEmissionPreShader, "DPBR_AO_Emission", "DPBR_POST_Emission_Output");
 		Graphics::BlurTexture("DPBR_POST_Emission_Output", "DPBR_POST_EmissionBlurred_Output");
 		Graphics::Composite(_PostEmissionShader, [](NVRHI::DrawCallState& state) {
 			Graphics::BindRenderTarget(state, "DPBR_Output", 0);
 			Graphics::BindRenderTarget(state, "DPBR_POST_EmissionBlurred_Output", 1);
+		}, "DPBR_POST_Output");*/
+
+		// Post ssao
+		Graphics::Composite(_PostSSAOShader, [this, camera](NVRHI::DrawCallState& state)
+		{
+			Graphics::BindRenderTarget(state, "DPBR_POST_Output", 0);
+			Graphics::BindRenderTarget(state, "DPBR_NormalRoughness", 1);
+			Graphics::BindRenderTarget(state, "DPBR_WorldPos", 2);
+
+			static Vector4 Samples[64];
+			static bool Inited = false;
+
+			ShaderPtr iShader = _PostSSAOShader->GetShader(NVRHI::ShaderType::SHADER_PIXEL);
+
+			if (!Inited)
+			{
+				Inited = true;
+
+				std::uniform_real_distribution<float> randomFloats(0.0, 1.0); // random floats between 0.0 - 1.0
+				std::default_random_engine generator;
+				for (unsigned int i = 0; i < 64; ++i)
+				{
+					glm::vec3 sample(randomFloats(generator) * 2.0 - 1.0, randomFloats(generator) * 2.0 - 1.0, randomFloats(generator));
+					sample = glm::normalize(sample);
+					sample *= randomFloats(generator);
+					float scale = float(i) / 64.0f;
+
+					// scale samples s.t. they're more aligned to center of kernel
+					scale = lerp(0.1f, 1.0f, scale * scale);
+					sample *= scale;
+
+					Samples[i] = Vector4(sample, 0.0);
+				}
+
+				std::cout << "Generated : " << sizeof(Samples) << std::endl;
+
+				
+			}
+
+			
+			iShader->SetVariable("g_Projection", camera->GetProjectionMatrix());
+			iShader->SetVariable("g_Samples", &Samples, sizeof(Samples));
+			iShader->SetVariable("g_View", camera->GetViewMatrix());
+			
+			iShader->SetVariable("g_Settings", Vector4(AO_Radius, AO_Bias, AO_Preview ? 1.0 : 0.0, AO_Intensity));
+
+			iShader->UploadVariableData();
+			iShader->BindConstantBuffers(state.PS);
+
+		}, "DPBR_POST_SSAO");
+
+		Graphics::BlurTexture("DPBR_POST_SSAO", "DPBR_POST_SSAOBlurred");
+
+		Graphics::Composite(_MultShader, [this, camera](NVRHI::DrawCallState& state) {
+			Graphics::BindRenderTarget(state, "DPBR_Output", 0);
+			Graphics::BindRenderTarget(state, "DPBR_POST_SSAOBlurred", 1);
 		}, "DPBR_POST_Output");
 	}
 
@@ -369,13 +420,15 @@ namespace Hydra {
 		Graphics::ReleaseRenderTarget("DPBR_POST_Output");
 		Graphics::ReleaseRenderTarget("DPBR_POST_Emission_Output");
 		Graphics::ReleaseRenderTarget("DPBR_POST_EmissionBlurred_Output");
+		Graphics::ReleaseRenderTarget("DPBR_POST_SSAO");
+		Graphics::ReleaseRenderTarget("DPBR_POST_SSAOBlurred");
 
 		// WARNING CLEAR VALUE DOEST WORK ! TARGET IS CLEARED BY DrawCallArguments clear color value !
 
 		Graphics::CreateRenderTarget("DPBR_AlbedoMetallic", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(0.f), sampleCount);
-		Graphics::CreateRenderTarget("DPBR_NormalRoughness", NVRHI::Format::RGBA16_FLOAT, width, height, NVRHI::Color(0.f), sampleCount);
+		Graphics::CreateRenderTarget("DPBR_NormalRoughness", NVRHI::Format::RGBA32_FLOAT, width, height, NVRHI::Color(0.f), sampleCount);
 		Graphics::CreateRenderTarget("DPBR_AO_Emission", NVRHI::Format::RGBA16_FLOAT, width, height, NVRHI::Color(0.0f, 0.0, 0.0, 0.0), sampleCount);
-		Graphics::CreateRenderTarget("DPBR_WorldPos", NVRHI::Format::RGBA16_FLOAT, width, height, NVRHI::Color(0.f), sampleCount);
+		Graphics::CreateRenderTarget("DPBR_WorldPos", NVRHI::Format::RGBA32_FLOAT, width, height, NVRHI::Color(0.f), sampleCount);
 		Graphics::CreateRenderTarget("DPBR_Depth", NVRHI::Format::D24S8, width, height, NVRHI::Color(1.f, 0.f, 0.f, 0.f), sampleCount);
 
 		Graphics::CreateRenderTarget("DPBR_Output", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(0.f), sampleCount);
@@ -383,6 +436,9 @@ namespace Hydra {
 
 		Graphics::CreateRenderTarget("DPBR_POST_Emission_Output", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(0.f), sampleCount);
 		Graphics::CreateRenderTarget("DPBR_POST_EmissionBlurred_Output", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(0.f), sampleCount);
+
+		Graphics::CreateRenderTarget("DPBR_POST_SSAO", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(0.f), sampleCount);
+		Graphics::CreateRenderTarget("DPBR_POST_SSAOBlurred", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(0.f), sampleCount);
 	}
 
 	String RenderStageDeffered::GetOutputName()

@@ -86,7 +86,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)nvapi-public;$(ProjectDir)assimp-c4d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Yaml\include;$(ProjectDir);$(ProjectDir)nvapi-public;$(ProjectDir)assimp-c4d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_D3D11=1;NVRHI_WITH_WRL;NOMINMAX;WIN32;_DEBUG;DEBUG;PROFILE;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -116,7 +116,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)nvapi-public;$(ProjectDir)assimp-c4d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Yaml\include;$(ProjectDir);$(ProjectDir)nvapi-public;$(ProjectDir)assimp-c4d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_D3D11=1;NVRHI_WITH_WRL;NOMINMAX;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -138,6 +138,7 @@
     <ClInclude Include="Hydra\Core\Random.h" />
     <ClInclude Include="Hydra\Core\Resource.h" />
     <ClInclude Include="Hydra\Core\Timing.h" />
+    <ClInclude Include="Hydra\Core\YamlConvertors.h" />
     <ClInclude Include="Hydra\Engine.h" />
     <ClInclude Include="Hydra\HydraEngine.h" />
     <ClInclude Include="Hydra\Import\MeshImporter.h" />
@@ -195,6 +196,28 @@
     <ClInclude Include="IndustryEmpire\IndustryEmpire.h" />
     <ClInclude Include="NanoVG\stb_image.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Yaml\src\collectionstack.h" />
+    <ClInclude Include="Yaml\src\contrib\graphbuilderadapter.h" />
+    <ClInclude Include="Yaml\src\directives.h" />
+    <ClInclude Include="Yaml\src\emitterstate.h" />
+    <ClInclude Include="Yaml\src\emitterutils.h" />
+    <ClInclude Include="Yaml\src\exp.h" />
+    <ClInclude Include="Yaml\src\indentation.h" />
+    <ClInclude Include="Yaml\src\nodebuilder.h" />
+    <ClInclude Include="Yaml\src\nodeevents.h" />
+    <ClInclude Include="Yaml\src\ptr_vector.h" />
+    <ClInclude Include="Yaml\src\regeximpl.h" />
+    <ClInclude Include="Yaml\src\regex_yaml.h" />
+    <ClInclude Include="Yaml\src\scanner.h" />
+    <ClInclude Include="Yaml\src\scanscalar.h" />
+    <ClInclude Include="Yaml\src\scantag.h" />
+    <ClInclude Include="Yaml\src\setting.h" />
+    <ClInclude Include="Yaml\src\singledocparser.h" />
+    <ClInclude Include="Yaml\src\stream.h" />
+    <ClInclude Include="Yaml\src\streamcharsource.h" />
+    <ClInclude Include="Yaml\src\stringsource.h" />
+    <ClInclude Include="Yaml\src\tag.h" />
+    <ClInclude Include="Yaml\src\token.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Hydra.rc" />
@@ -202,6 +225,7 @@
   <ItemGroup>
     <ClCompile Include="Hydra\Core\FastNoise.cpp" />
     <ClCompile Include="Hydra\HydraEngine.cpp" />
+    <ClCompile Include="Hydra\Render\MainYamlTest.cpp" />
     <ClCompile Include="Hydra\Render\Material.cpp" />
     <ClCompile Include="Hydra\Render\RenderManager.cpp" />
     <ClCompile Include="Hydra\Render\RenderStageDeffered.cpp" />
@@ -243,6 +267,36 @@
     <ClCompile Include="ImGui\imgui_draw.cpp" />
     <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />
     <ClCompile Include="MainOld.cpp" />
+    <ClCompile Include="Yaml\src\binary.cpp" />
+    <ClCompile Include="Yaml\src\contrib\graphbuilder.cpp" />
+    <ClCompile Include="Yaml\src\contrib\graphbuilderadapter.cpp" />
+    <ClCompile Include="Yaml\src\convert.cpp" />
+    <ClCompile Include="Yaml\src\directives.cpp" />
+    <ClCompile Include="Yaml\src\emit.cpp" />
+    <ClCompile Include="Yaml\src\emitfromevents.cpp" />
+    <ClCompile Include="Yaml\src\emitter.cpp" />
+    <ClCompile Include="Yaml\src\emitterstate.cpp" />
+    <ClCompile Include="Yaml\src\emitterutils.cpp" />
+    <ClCompile Include="Yaml\src\exceptions.cpp" />
+    <ClCompile Include="Yaml\src\exp.cpp" />
+    <ClCompile Include="Yaml\src\memory.cpp" />
+    <ClCompile Include="Yaml\src\node.cpp" />
+    <ClCompile Include="Yaml\src\nodebuilder.cpp" />
+    <ClCompile Include="Yaml\src\nodeevents.cpp" />
+    <ClCompile Include="Yaml\src\node_data.cpp" />
+    <ClCompile Include="Yaml\src\null.cpp" />
+    <ClCompile Include="Yaml\src\ostream_wrapper.cpp" />
+    <ClCompile Include="Yaml\src\parse.cpp" />
+    <ClCompile Include="Yaml\src\parser.cpp" />
+    <ClCompile Include="Yaml\src\regex_yaml.cpp" />
+    <ClCompile Include="Yaml\src\scanner.cpp" />
+    <ClCompile Include="Yaml\src\scanscalar.cpp" />
+    <ClCompile Include="Yaml\src\scantag.cpp" />
+    <ClCompile Include="Yaml\src\scantoken.cpp" />
+    <ClCompile Include="Yaml\src\simplekey.cpp" />
+    <ClCompile Include="Yaml\src\singledocparser.cpp" />
+    <ClCompile Include="Yaml\src\stream.cpp" />
+    <ClCompile Include="Yaml\src\tag.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

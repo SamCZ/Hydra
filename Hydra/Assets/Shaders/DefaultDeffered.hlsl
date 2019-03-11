@@ -48,23 +48,7 @@ PBROutput OnMainPS(in PS_Input input)
 {
 	PBROutput output;
 
-#ifdef USE_ALBEDO_TEX
-	output.Albedo = TriplanarTexturing(_AlbedoMap, input.positionLS, input.normal, 1.0).rgb;
-
-	output.Emission = pow(output.Albedo, 5.0) * 40;
-
-	//output.Emission = (100.0).xxxx;
-#else
-	output.Albedo = float3(0.5, 0.5, 0.5);
-#endif
-
-
-	output.Normal = input.normal;
-	output.Metallic = 0.0;
-	output.Roughness = 1.0;
-	output.AO = 0.0;
-
-	/*float3 pixelNormal = T_Normal.Sample(basicSampler, input.texCoord).xyz;
+	float3 pixelNormal = _NormalMap.Sample(DefaultSampler, input.texCoord).xyz;
 
 	float3 normal = normalize(input.normal);
 	if (pixelNormal.z)
@@ -75,16 +59,16 @@ PBROutput OnMainPS(in PS_Input input)
 		normal = normalize(mul(pixelNormal * 2 - 1, TangentMatrix));
 	}
 
-	float4 albedo = T_Albedo.Sample(basicSampler, input.texCoord);
+	float4 albedo = _AlbedoMap.Sample(DefaultSampler, input.texCoord);
 
 	output.Albedo = albedo.rgb;
-	output.Normal = normal;
-	output.Metallic = T_Metallic.Sample(basicSampler, input.texCoord).r;
-	output.Roughness = T_Roughness.Sample(basicSampler, input.texCoord).r;
+	output.Normal = normalize(input.normal);
+	output.Metallic = _MetallicMap.Sample(DefaultSampler, input.texCoord).r;
+	output.Roughness = _RoughnessMap.Sample(DefaultSampler, input.texCoord).r;
 	output.AO = 0.5;
 	output.Emission = float3(0.0, 0.0, 0.0);
 
-	clip(albedo.a - 0.5);*/
+	clip(albedo.a - 0.5);
 
 	return output;
 }
