@@ -29,6 +29,9 @@ namespace Hydra
 		String Name;
 		Spatial* Parent;
 
+		String GUID;
+		long FileID;
+
 		virtual ~Spatial();
 		Spatial();
 		Spatial(const String& name);
@@ -48,6 +51,7 @@ namespace Hydra
 		String GetHiearchy();
 
 		SpatialPtr Find(const String& name);
+		SpatialPtr Find(long fileID);
 		SpatialPtr FindApprox(const String& name);
 		List<SpatialPtr> FindAllApprox(const String& name);
 

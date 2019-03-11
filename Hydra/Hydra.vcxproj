@@ -144,6 +144,7 @@
     <ClInclude Include="Hydra\Import\MeshImporter.h" />
     <ClInclude Include="Hydra\Import\ShaderImporter.h" />
     <ClInclude Include="Hydra\Import\TextureImporter.h" />
+    <ClInclude Include="Hydra\Import\UnityAssetManager.h" />
     <ClInclude Include="Hydra\Input\GenericPlatformInput.h" />
     <ClInclude Include="Hydra\Input\InputCoreTypes.h" />
     <ClInclude Include="Hydra\Input\InputManager.h" />
@@ -225,6 +226,7 @@
   <ItemGroup>
     <ClCompile Include="Hydra\Core\FastNoise.cpp" />
     <ClCompile Include="Hydra\HydraEngine.cpp" />
+    <ClCompile Include="Hydra\Import\UnityAssetManager.cpp" />
     <ClCompile Include="Hydra\Render\MainYamlTest.cpp" />
     <ClCompile Include="Hydra\Render\Material.cpp" />
     <ClCompile Include="Hydra\Render\RenderManager.cpp" />

@@ -288,6 +288,9 @@
     <ClInclude Include="Hydra\Core\YamlConvertors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Hydra\Import\UnityAssetManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Hydra.rc">
@@ -515,6 +518,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Render\MainYamlTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Import\UnityAssetManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

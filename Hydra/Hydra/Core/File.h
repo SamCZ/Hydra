@@ -21,6 +21,8 @@ namespace Hydra
 		String GetParent() const;
 		File GetParentFile() const;
 
+		File GetPathAt(const String& folder) const;
+
 		bool IsExist() const;
 		bool IsDirectory() const;
 		bool Mkdirs() const;

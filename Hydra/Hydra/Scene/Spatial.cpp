@@ -156,6 +156,28 @@ namespace Hydra
 		return nullptr;
 	}
 
+	SpatialPtr Spatial::Find(long fileID)
+	{
+		for (SpatialPtr child : GetChilds())
+		{
+			if (child->FileID == fileID)
+			{
+				return child;
+			}
+		}
+
+		for (SpatialPtr child : GetChilds())
+		{
+			SpatialPtr finded = child->Find(fileID);
+			if (finded != nullptr)
+			{
+				return finded;
+			}
+		}
+
+		return nullptr;
+	}
+
 	SpatialPtr Spatial::FindApprox(const String & name)
 	{
 		for (SpatialPtr child : GetChilds())

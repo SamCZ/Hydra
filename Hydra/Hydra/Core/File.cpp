@@ -74,6 +74,37 @@ namespace Hydra
 		return File(GetParent());
 	}
 
+	File File::GetPathAt(const String& folder) const
+	{
+		String path = GetPath();
+		List<String> splitted = SplitString(path, '/');
+
+		String newPath = "";
+		bool spotted = false;
+
+		for (int i = 0; i < splitted.size(); i++)
+		{
+			String p = splitted[i];
+
+			if (p == folder && !spotted)
+			{
+				spotted = true;
+			}
+
+			if (spotted)
+			{
+				newPath += p;
+
+				if (i != splitted.size() - 1)
+				{
+					newPath += "/";
+				}
+			}
+		}
+
+		return File(newPath);
+	}
+
 	bool File::IsExist() const
 	{
 		struct stat buffer;
@@ -196,13 +227,15 @@ namespace Hydra
 		String spec;
 		std::stack<String> directories;
 
-		directories.push(GetPath());
+		directories.push(FixPath(GetPath(), '/', '\\'));
 
 		while (!directories.empty())
 		{
 			path = directories.top();
-			spec = path + "\\";// +mask;
+			spec = path + "\\*";
 			directories.pop();
+
+			
 
 			hFind = FindFirstFileA(spec.c_str(), &ffd);
 			if (hFind == INVALID_HANDLE_VALUE)

@@ -2,62 +2,22 @@
 
 #include <iostream>
 
-#include "Hydra/Core/Common.h"
-#include "Hydra/Core/Container.h"
-#include "Hydra/Core/File.h"
-#include "Hydra/Scene/Spatial.h"
-
-#include "Hydra/Core/YamlConvertors.h"
+#include "Hydra/Import/UnityAssetManager.h"
 
 using namespace Hydra;
 
-typedef String FileID;
-
-Map<FileID, YAML::Node> LoadBaseFile(const File& file)
-{
-	List<String> lines = file.ReadLines();
-
-	Map<FileID, YAML::Node> nodes;
-
-	String fixedYaml = "";
-	FileID lastFileId = "";
-
-	for (String& line : lines)
-	{
-		if (line.length() == 0) continue;
-
-		if (StartsWith(line, "--- !u!"))
-		{
-			if (fixedYaml.length() > 0 && lastFileId.length() != 0)
-			{
-				nodes[lastFileId] = YAML::Load(fixedYaml);
-				fixedYaml = "";
-			}
-
-			String ids = line.substr(7);
-			List<String> idList = SplitString(ids, ' ');
-
-			lastFileId = idList[1].substr(1);
-		}
-		else
-		{
-			fixedYaml += line + "\r\n";
-		}
-	}
-
-	
-
-	return nodes;
-}
-
-YAML::Node LoadMetaFile(const File& file)
-{
-	return YAML::LoadFile(file.GetPath());
-}
-
 int main()
 {
-	File baseFolder = File("D:\\Sam\\Projekty\\Unity\\IndustryEmpire\\Assets\\");
+	File baseFolder = File("D:\\Sam\\Projekty\\C++\\Hydra\\UnityEditorProject\\Assets");
+
+	UnityAssetManager asman = UnityAssetManager(baseFolder);
+
+	asman.Init();
+
+
+	/*
+
+	
 
 	Map<FileID, YAML::Node> nodes = LoadBaseFile(File(baseFolder, "MainScene.unity"));
 	YAML::Node meta = LoadMetaFile(File(baseFolder, "MainScene.unity.meta"));
@@ -161,24 +121,7 @@ int main()
 
 	rootNode->PrintHiearchy();
 
-	YAML::Node mappingNode = YAML::LoadFile(File(baseFolder, "FileAssetMap.yml").GetPath());
-
-	for (YAML::const_iterator it = mappingNode.begin(); it != mappingNode.end(); ++it)
-	{
-		String name = (*it).first.as<String>();
-
-		std::cout << name << std::endl;
-
-		YAML::Node childNode = mappingNode[name];
-
-		for (YAML::const_iterator it2 = childNode.begin(); it2 != childNode.end(); ++it2)
-		{
-			String name2 = (*it2).first.as<String>();
-			String name3 = (*it2).second.as<String>();
-
-			std::cout << " - " << name2 << ": " << name3 << std::endl;
-		}
-	}
+	*/
 
 	while (true);
 
