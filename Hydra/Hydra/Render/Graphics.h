@@ -61,6 +61,7 @@ namespace Hydra
 
 		static void Blit(TexturePtr pSource, TexturePtr pDest);
 		static void Blit(const String& name, TexturePtr pDest);
+		static void Blit(const String& pSource, const String& pDest);
 
 		static void BlurTexture(TexturePtr pSource, TexturePtr pDest);
 		static void BlurTexture(const String pSource, const String pDest);

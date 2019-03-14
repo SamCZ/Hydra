@@ -52,11 +52,11 @@ PS_Input MainVS(VS_Input input, unsigned int InstanceID : SV_InstanceID)
 	output = OnMainVS(input, output);
 
 	output.position = mul(mul(mul(g_ProjectionMatrix, g_ViewMatrix), modelMatrix), output.position);
-	output.positionWS = mul(mul(g_ViewMatrix, modelMatrix), float4(input.position.xyz, 1.0)).xyz;
+	output.positionWS = mul(modelMatrix, float4(input.position.xyz, 1.0)).xyz;
 	output.positionLS = input.position.xyz;
 
 	output.texCoord = input.texCoord;
-	output.normal = mul(g_NormalMatrix, input.normal);
+	output.normal = mul(modelMatrix, float4(input.normal, 0.0)).xyz;
 	output.tangent = mul(modelMatrix, float4(input.tangent, 0.0)).xyz;
 	output.binormal = mul(modelMatrix, float4(input.binormal, 0.0)).xyz;
 

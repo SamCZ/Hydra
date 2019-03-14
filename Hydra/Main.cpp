@@ -1,4 +1,4 @@
-﻿#if 0
+﻿#if 1
 
 #include <iostream>
 
@@ -11,8 +11,10 @@
 #include "Hydra/Scene/Spatial.h"
 
 #include "Hydra/Render/RenderManager.h"
-#include "Hydra/Render/RenderStageDeffered.h"
+#include "Hydra/Render/RenderStage/RenderStageDeffered.h"
 #include "Hydra/Render/Mesh.h"
+#include "Hydra/Render/TextureLayoutDef.h"
+#include "Hydra/Render/Material.h"
 
 #include "Hydra/Import/MeshImporter.h"
 #include "Hydra/Import/TextureImporter.h"
@@ -78,6 +80,7 @@ public:
 
 	RenderManagerPtr rm;
 	RenderStageDefferedPtr rsd;
+	TextureLayoutDefPtr texLayout;
 
 	inline LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
@@ -274,6 +277,22 @@ public:
 		testModel->SetStatic(true);
 		rm->MainScene->AddChild(testModel);
 
+		Material* mat = new Material("Test", nullptr);
+
+		Vector4 arr[2]{
+			Vector4(0, 1, 2, 3),
+			Vector4(4, 5, 6, 7)
+		};
+
+		mat->SetVector4Array("arr", arr, 2);
+
+		Vector4 arr2[2];
+
+		mat->GetVector4Array("arr", arr2, 2);
+
+		std::cout << glm::to_string(arr2[0]) << std::endl;
+		std::cout << glm::to_string(arr2[1]) << std::endl;
+
 		/*SpatialPtr testModel = New(Spatial);
 		RendererPtr voxelRender = testModel->AddComponent<Renderer>();
 		voxelRender->TestColor = MakeRGB(200, 200, 200).toVec3();
@@ -297,14 +316,17 @@ public:
 			}
 			inline void Update()
 			{
-				//Parent->Rotation += 0.1f;
+				Parent->Rotation += 0.1f;
 
-				//Parent->Position = Vector3(cos(Parent->Rotation.x * 0.1f) * 1, sin(Parent->Rotation.y * 0.1f) * 1, cos(Parent->Rotation.z * 0.1f) * 1);
+				Parent->Scale = Vector3(cos(Parent->Rotation.x * 0.1f) + 0.5f, sin(Parent->Rotation.y * 0.1f) + 0.5f, cos(Parent->Rotation.z * 0.1f) + 0.5f);
 			}
 		};
 		box->AddComponent<TestRotationComponent>();*/
 
+		texLayout = MakeShared<TextureLayoutDef>();
+
 		rsd = MakeShared<RenderStageDeffered>();
+		rsd->SetTextureLayoutDef(texLayout);
 
 		rm->MainScene->Start();
 

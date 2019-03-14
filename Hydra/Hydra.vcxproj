@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{0600F8C5-A252-4546-8982-0EF976413165}</ProjectGuid>
     <RootNamespace>Hydra</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.10240.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -163,11 +163,16 @@
     <ClInclude Include="Hydra\Render\Pipeline\DeviceManager11.h" />
     <ClInclude Include="Hydra\Render\Pipeline\GFSDK_NVRHI.h" />
     <ClInclude Include="Hydra\Render\Pipeline\GFSDK_NVRHI_D3D11.h" />
+    <ClInclude Include="Hydra\Render\PostProcess\EmissionPostEffect.h" />
+    <ClInclude Include="Hydra\Render\PostProcess\PostEffect.h" />
+    <ClInclude Include="Hydra\Render\PostProcess\SSAOPostEffect.h" />
     <ClInclude Include="Hydra\Render\RenderManager.h" />
     <ClInclude Include="Hydra\Render\RenderStage.h" />
-    <ClInclude Include="Hydra\Render\RenderStageDeffered.h" />
+    <ClInclude Include="Hydra\Render\RenderStage\RenderStageDeffered.h" />
+    <ClInclude Include="Hydra\Render\RenderStage\RenderStagePostProcess.h" />
     <ClInclude Include="Hydra\Render\Shader.h" />
     <ClInclude Include="Hydra\Render\Technique.h" />
+    <ClInclude Include="Hydra\Render\TextureLayoutDef.h" />
     <ClInclude Include="Hydra\Render\VertexBuffer.h" />
     <ClInclude Include="Hydra\Scene\Component.h" />
     <ClInclude Include="Hydra\Scene\Components\Camera.h" />
@@ -227,10 +232,14 @@
     <ClCompile Include="Hydra\Core\FastNoise.cpp" />
     <ClCompile Include="Hydra\HydraEngine.cpp" />
     <ClCompile Include="Hydra\Import\UnityAssetManager.cpp" />
-    <ClCompile Include="Hydra\Render\MainYamlTest.cpp" />
+    <ClCompile Include="Hydra\Render\PostProcess\PostEffect.cpp" />
+    <ClCompile Include="Hydra\Render\RenderStage.cpp" />
+    <ClCompile Include="Hydra\Render\RenderStage\RenderStagePostProcess.cpp" />
+    <ClCompile Include="Hydra\Render\TextureLayoutDef.cpp" />
+    <ClCompile Include="MainYamlTest.cpp" />
     <ClCompile Include="Hydra\Render\Material.cpp" />
     <ClCompile Include="Hydra\Render\RenderManager.cpp" />
-    <ClCompile Include="Hydra\Render\RenderStageDeffered.cpp" />
+    <ClCompile Include="Hydra\Render\RenderStage\RenderStageDeffered.cpp" />
     <ClCompile Include="Hydra\Render\Technique.cpp" />
     <ClCompile Include="Hydra\Scene\Components\LodGroup.cpp" />
     <ClCompile Include="IndustryEmpire\IndustryEmpire.cpp" />

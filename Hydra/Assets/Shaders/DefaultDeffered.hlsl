@@ -1,4 +1,5 @@
 #include "Assets/Shaders/RenderStage/Deffered.hlsli"
+#include "Assets/Shaders/Utils/Texturing.hlsli"
 
 #pragma hydra vert:MainVS pixel:MainPS
 #pragma hydra rs:Deffered
@@ -25,25 +26,6 @@ PS_Input OnMainVS(in VS_Input input, in PS_Input output)
 	return output;
 }
 
-float3 getTriaplanarBlend(float3 normal)
-{
-	float3 blending = abs(normal) - 0.2679f;
-	blending = normalize(max(blending, 0.0));
-	return blending / (blending.x + blending.y + blending.z).xxx;
-}
-
-float4 TriplanarTexturing(Texture2D tex, float3 worldPos, float3 normal, float scale)
-{
-	float3 blendAxes = getTriaplanarBlend(normalize(normal));
-	float3 scaledWorldPos = worldPos / scale;
-	float4 xProjection = tex.Sample(DefaultSampler, scaledWorldPos.yz) * blendAxes.x;
-	float4 yProjection = tex.Sample(DefaultSampler, scaledWorldPos.xz) * blendAxes.y;
-	float4 zProjection = tex.Sample(DefaultSampler, scaledWorldPos.xy) * blendAxes.z;
-	float4 color = xProjection + yProjection + zProjection;
-	color.a /= 3.0;
-	return color;
-}
-
 PBROutput OnMainPS(in PS_Input input)
 {
 	PBROutput output;
@@ -60,15 +42,23 @@ PBROutput OnMainPS(in PS_Input input)
 	}
 
 	float4 albedo = _AlbedoMap.Sample(DefaultSampler, input.texCoord);
+	//float4 albedo = TriplanarTexturing(_AlbedoMap, DefaultSampler, input.positionLS, input.normal, 1.0);
 
 	output.Albedo = albedo.rgb;
 	output.Normal = normalize(input.normal);
 	output.Metallic = _MetallicMap.Sample(DefaultSampler, input.texCoord).r;
 	output.Roughness = _RoughnessMap.Sample(DefaultSampler, input.texCoord).r;
 	output.AO = 0.5;
-	output.Emission = float3(0.0, 0.0, 0.0);
+	//output.Emission = ((1.0).xxx - albedo.r) * 2;
 
-	clip(albedo.a - 0.5);
+	//output.Emission = float3(0.0, 0.0, 0.0);
+
+	if (albedo.a < 0.5)
+	{
+		//output.Emission = (1.0).xxx;
+	}
+
+	//clip(albedo.a - 0.5);
 
 	return output;
 }

@@ -22,9 +22,11 @@ namespace Hydra
 	class Mesh : public Resource
 	{
 	private:
-
+		NVRHI::BufferHandle _IndexHandle;
+		NVRHI::BufferHandle _VertexBuffer;
 	public:
 		Mesh();
+		~Mesh();
 
 		List<VertexBufferEntry> VertexData;
 		List<unsigned int> Indices;
@@ -33,10 +35,14 @@ namespace Hydra
 		NVRHI::PrimitiveType::Enum PrimitiveType;
 
 		void UpdateBounds();
-
 		void GenerateNormals();
 
+		void UpdateBuffers();
+
 		static Mesh* CreatePrimitive(const PrimitiveType::Enum& type, const Vector3& scale = Vector3(1.0f, 1.0f, 1.0f));
+
+		NVRHI::BufferHandle GetVertexBuffer();
+		NVRHI::BufferHandle GetIndexBuffer();
 
 	private:
 		Vector3 ComputeTriangleNormal(const Vector3& p1, const Vector3& p2, const Vector3& p3);

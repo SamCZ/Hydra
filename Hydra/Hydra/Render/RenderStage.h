@@ -1,12 +1,17 @@
 #pragma once
 
 #include "Hydra/Render/RenderManager.h"
+#include "Hydra/Render/TextureLayoutDef.h"
 
 namespace Hydra
 {
 	class RenderStage
 	{
+	protected:
+		TextureLayoutDefPtr TextureLayout;
 	public:
+
+		void SetTextureLayoutDef(TextureLayoutDefPtr layout);
 
 		virtual void Render(RenderManagerPtr rm) = 0;
 

@@ -7,7 +7,7 @@
 namespace Hydra
 {
 
-	Renderer::Renderer() : _RenderInterface(nullptr), _IndexHandle(nullptr), _VertexBuffer(nullptr), _InstBuffer(nullptr), _Mesh(nullptr), _IsInstanced(false), _LastInstanceCount(0), _NeedsUpdate(true), _NeedsUpdateInstances(true)
+	Renderer::Renderer() : _RenderInterface(nullptr), _InstBuffer(nullptr), _Mesh(nullptr), _IsInstanced(false), _LastInstanceCount(0), _NeedsUpdate(true), _NeedsUpdateInstances(true)
 	{
 		Mat.Albedo = nullptr;
 		Mat.Normal = nullptr;
@@ -20,15 +20,6 @@ namespace Hydra
 	{
 		if (_RenderInterface == nullptr) return;
 
-		if (_IndexHandle != nullptr)
-		{
-			_RenderInterface->destroyBuffer(_IndexHandle);
-		}
-
-		if (_VertexBuffer != nullptr)
-		{
-			_RenderInterface->destroyBuffer(_VertexBuffer);
-		}
 
 		if (_InstBuffer != nullptr)
 		{
@@ -122,15 +113,6 @@ namespace Hydra
 		_NeedsUpdate = false;
 		_RenderInterface = Engine::GetRenderInterface();
 
-		if (_IndexHandle != nullptr)
-		{
-			_RenderInterface->destroyBuffer(_IndexHandle);
-		}
-		if (_VertexBuffer != nullptr)
-		{
-			_RenderInterface->destroyBuffer(_VertexBuffer);
-		}
-
 		if (_Mesh == nullptr) return;
 		if (_Mesh->VertexData.size() == 0 || _Mesh->Indices.size() == 0) return;
 
@@ -142,26 +124,13 @@ namespace Hydra
 
 		//Log("Renderer::WriteMeshData", "Mesh(" + _Mesh->GetSource() + ") UV: " + ToString(useUvs) + ", N: " + ToString(useNormals) + ", TA: " + ToString(useTangents) + ", BITA: " + ToString(useBiNormals));
 
-		NVRHI::BufferDesc indexBufferDesc;
-		indexBufferDesc.isIndexBuffer = true;
-		indexBufferDesc.byteSize = uint32_t(_Mesh->Indices.size() * sizeof(unsigned int));
-		_IndexHandle = _RenderInterface->createBuffer(indexBufferDesc, &_Mesh->Indices[0]);
-
-
-		NVRHI::BufferDesc vertexBufferDesc;
-		vertexBufferDesc.isVertexBuffer = true;
-		vertexBufferDesc.byteSize = uint32_t(_Mesh->VertexData.size() * sizeof(VertexBufferEntry));
-		_VertexBuffer = _RenderInterface->createBuffer(vertexBufferDesc, &_Mesh->VertexData[0]);
-
 		_DrawArguments.instanceCount = 1;
 		_DrawArguments.startIndexLocation = 0;
 		_DrawArguments.startInstanceLocation = 0;
 		_DrawArguments.startVertexLocation = 0;
 		_DrawArguments.vertexCount = static_cast<uint32_t>(_Mesh->Indices.size());
 
-		_Mesh->VertexData.clear();
-
-		//std::cout << "WriteMeshData (" << ToString(VertexData.size()) << ", " + ToString(_DrawArguments.vertexCount) + ")" << std::endl;
+		//_Mesh->VertexData.clear();
 	}
 
 	void Renderer::UpdateInstancing(NVRHI::DrawCallState& state)
@@ -210,18 +179,17 @@ namespace Hydra
 
 	void Renderer::WriteDataToState(NVRHI::DrawCallState& state)
 	{
+		if (_Mesh == nullptr) return;
+
 		WriteMeshData();
-		//state.primType = NVRHI::PrimitiveType::;
-		if (_Mesh != nullptr)
-		{
-			state.primType = _Mesh->PrimitiveType;
-		}
+
+		state.primType = _Mesh->PrimitiveType;
 
 		state.indexBufferFormat = NVRHI::Format::R32_UINT;
-		state.indexBuffer = _IndexHandle;
+		state.indexBuffer = _Mesh->GetIndexBuffer();
 
 		state.vertexBufferCount = 1;
-		state.vertexBuffers[0].buffer = _VertexBuffer;
+		state.vertexBuffers[0].buffer = _Mesh->GetVertexBuffer();
 		state.vertexBuffers[0].slot = 0;
 		state.vertexBuffers[0].stride = sizeof(VertexBufferEntry);
 

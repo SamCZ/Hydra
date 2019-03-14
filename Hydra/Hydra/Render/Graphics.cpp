@@ -71,6 +71,11 @@ namespace Hydra
 		Blit(GetRenderTarget(name), pDest);
 	}
 
+	void Hydra::Graphics::Blit(const String & pSource, const String & pDest)
+	{
+		Blit(GetRenderTarget(pSource), GetRenderTarget(pDest));
+	}
+
 	void Graphics::BlurTexture(TexturePtr pSource, TexturePtr pDest)
 	{
 		//TODO: Different size of textures
@@ -460,7 +465,7 @@ namespace Hydra
 		{
 			TexturePtr rt = _RenderViewTargets[name];
 
-			NVRHI::BindTexture(state.PS, index, rt, false, NVRHI::Format::UNKNOWN, rt->GetDesc().mipLevels);
+			NVRHI::BindTexture(state.PS, index, rt, false, rt->GetDesc().format, rt->GetDesc().mipLevels);
 		}
 	}
 

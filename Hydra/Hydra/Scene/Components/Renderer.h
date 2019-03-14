@@ -10,7 +10,7 @@
 
 namespace Hydra
 {
-	struct Material
+	struct MaterialRaw
 	{
 		NVRHI::TextureHandle Albedo;
 		NVRHI::TextureHandle Normal;
@@ -25,8 +25,6 @@ namespace Hydra
 	{
 	private:
 		IRendererInterface _RenderInterface;
-		NVRHI::BufferHandle _IndexHandle;
-		NVRHI::BufferHandle _VertexBuffer;
 		NVRHI::BufferHandle _InstBuffer;
 
 		List<Transformable> _InstanceObjects;
@@ -45,7 +43,7 @@ namespace Hydra
 		~Renderer();
 
 		glm::vec3 TestColor;
-		Material Mat;
+		MaterialRaw Mat;
 
 		virtual void Start();
 		virtual void Update();

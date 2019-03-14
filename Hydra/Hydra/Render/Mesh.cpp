@@ -1,9 +1,23 @@
 #include "Mesh.h"
+#include "Hydra/Engine.h"
 
 namespace Hydra
 {
-	Mesh::Mesh() : PrimitiveType(NVRHI::PrimitiveType::TRIANGLE_LIST)
+	Mesh::Mesh() : PrimitiveType(NVRHI::PrimitiveType::TRIANGLE_LIST), _IndexHandle(nullptr), _VertexBuffer(nullptr)
 	{
+	}
+
+	Mesh::~Mesh()
+	{
+		if (_IndexHandle != nullptr)
+		{
+			Engine::GetRenderInterface()->destroyBuffer(_IndexHandle);
+		}
+
+		if (_VertexBuffer != nullptr)
+		{
+			Engine::GetRenderInterface()->destroyBuffer(_VertexBuffer);
+		}
 	}
 
 	void Mesh::UpdateBounds()
@@ -44,6 +58,32 @@ namespace Hydra
 			vb1.normal = normal;
 			vb2.normal = normal;
 		}
+	}
+
+	void Mesh::UpdateBuffers()
+	{
+		if (_IndexHandle != nullptr)
+		{
+			Engine::GetRenderInterface()->destroyBuffer(_IndexHandle);
+		}
+
+		if (_VertexBuffer != nullptr)
+		{
+			Engine::GetRenderInterface()->destroyBuffer(_VertexBuffer);
+		}
+
+		if (VertexData.size() == 0 || Indices.size() == 0) return;
+
+		NVRHI::BufferDesc indexBufferDesc;
+		indexBufferDesc.isIndexBuffer = true;
+		indexBufferDesc.byteSize = uint32_t(Indices.size() * sizeof(unsigned int));
+		_IndexHandle = Engine::GetRenderInterface()->createBuffer(indexBufferDesc, &Indices[0]);
+
+
+		NVRHI::BufferDesc vertexBufferDesc;
+		vertexBufferDesc.isVertexBuffer = true;
+		vertexBufferDesc.byteSize = uint32_t(VertexData.size() * sizeof(VertexBufferEntry));
+		_VertexBuffer = Engine::GetRenderInterface()->createBuffer(vertexBufferDesc, &VertexData[0]);
 	}
 
 	Mesh* Mesh::CreatePrimitive(const PrimitiveType::Enum & type, const Vector3& scale)
@@ -164,6 +204,8 @@ namespace Hydra
 					mesh->VertexData.emplace_back(entry);
 				}
 
+				mesh->UpdateBuffers();
+
 				return mesh;
 
 				break;
@@ -230,6 +272,8 @@ namespace Hydra
 					mesh->VertexData.emplace_back(entry);
 				}
 
+				mesh->UpdateBuffers();
+
 				return mesh;
 
 				break;
@@ -237,6 +281,16 @@ namespace Hydra
 		}
 
 		return nullptr;
+	}
+
+	NVRHI::BufferHandle Mesh::GetVertexBuffer()
+	{
+		return _VertexBuffer;
+	}
+
+	NVRHI::BufferHandle Mesh::GetIndexBuffer()
+	{
+		return _IndexHandle;
 	}
 
 	Vector3 Mesh::ComputeTriangleNormal(const Vector3 & p1, const Vector3 & p2, const Vector3 & p3)
