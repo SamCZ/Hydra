@@ -221,12 +221,12 @@ public:
 	{
 		Log("RecompileDefaultShader");
 
-		TechniquePtr tech = Graphics::GetTechnique("DefaultPBRShader");
+		/*TechniquePtr tech = Graphics::GetTechnique("DefaultPBRShader");
 
 		tech->SetKeywordByHash(tech->GetKeywordHash({ "USE_ALBEDO_TEX" }));
 		tech->Recompile(true);
 
-		Graphics::GetTechnique("SSAO")->Recompile(true);
+		Graphics::GetTechnique("SSAO")->Recompile(true);*/
 	}
 
 	inline HRESULT DeviceCreated() override
@@ -279,19 +279,7 @@ public:
 
 		Material* mat = new Material("Test", nullptr);
 
-		Vector4 arr[2]{
-			Vector4(0, 1, 2, 3),
-			Vector4(4, 5, 6, 7)
-		};
 
-		mat->SetVector4Array("arr", arr, 2);
-
-		Vector4 arr2[2];
-
-		mat->GetVector4Array("arr", arr2, 2);
-
-		std::cout << glm::to_string(arr2[0]) << std::endl;
-		std::cout << glm::to_string(arr2[1]) << std::endl;
 
 		/*SpatialPtr testModel = New(Spatial);
 		RendererPtr voxelRender = testModel->AddComponent<Renderer>();

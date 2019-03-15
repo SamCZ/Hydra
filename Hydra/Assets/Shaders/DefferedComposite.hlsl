@@ -38,7 +38,7 @@ TextureCube skyIR			: register(t5);
 TextureCube skyPrefilter	: register(t6);
 Texture2D brdfLUT			: register(t7);
 
-SamplerState basicSampler	: register(s0);
+SamplerState DefaultSampler	: register(s0);
 
 struct GBUFFER_DATA
 {
@@ -125,11 +125,11 @@ float4 MainPS(FullScreenQuadOutput IN) : SV_Target
 	float3 kD = 1.0 - kS;
 	kD *= 1.0 - metallic;
 
-	float3 irradiance = skyIR.Sample(basicSampler, N * float3(1.0, -1.0, 1.0)).rgb;
+	float3 irradiance = skyIR.Sample(DefaultSampler, N * float3(1.0, -1.0, 1.0)).rgb;
 	float3 diffuse = irradiance * albedo;
 
 	// sample both the pre-filter map and the BRDF lut and combine them together as per the Split-Sum approximation to get the IBL specular part.
-	float3 prefilteredColor = skyPrefilter.SampleLevel(basicSampler, R, roughness * 4.0).rgb;
+	float3 prefilteredColor = skyPrefilter.SampleLevel(DefaultSampler, R, roughness * 4.0).rgb;
 	float2 brdf = brdfLUT.Sample(SamplerAnisotropic, (max(dot(N, V), 0.0), roughness).xx).rg;
 	float3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 

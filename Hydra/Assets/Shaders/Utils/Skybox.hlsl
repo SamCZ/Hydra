@@ -26,12 +26,12 @@ PS_Input MainVS(VS_Input input)
 	return output;
 }
 
-TextureCube Sky			: register(t0);
-SamplerState basicSampler	: register(s0);
+TextureCube _Texture			: register(t0);
+SamplerState _DefaultSampler	: register(s0);
 
 float4 MainPS(PS_Input input) : SV_TARGET
 {
-	return Sky.Sample(basicSampler, normalize(input.uvw));
+	return _Texture.Sample(_DefaultSampler, normalize(input.uvw));
 	//return float4(normalize(input.uvw), 1.0);
 	//return float4(1.0, 1.0, 1.0, 1.0);
 }

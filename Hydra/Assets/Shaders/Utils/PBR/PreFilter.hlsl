@@ -29,11 +29,11 @@ PS_Input MainVS(VS_Input input)
 
 cbuffer IBLData : register(b1)
 {
-	float roughness;
+	float _Roughness;
 }
 
-TextureCube EnvMap : register(t0);
-SamplerState basicSampler	: register(s0);
+TextureCube _Texture : register(t0);
+SamplerState _DefaultSampler	: register(s0);
 
 float4 MainPS(PS_Input input) : SV_TARGET
 {
@@ -48,13 +48,13 @@ float4 MainPS(PS_Input input) : SV_TARGET
 	for (uint i = 0; i < NumSamples; i++)
 	{
 		float2 Xi = Hammersley(i, NumSamples);
-		float3 halfwayVec = ImportanceSampleGGX(Xi, roughness, normalVec);
+		float3 halfwayVec = ImportanceSampleGGX(Xi, _Roughness, normalVec);
 		float3 lightDir = 2 * dot(viewDir, halfwayVec) * halfwayVec - viewDir;
 		float NdotL = saturate(dot(normalVec, lightDir));
 		if (NdotL > 0)
 		{
 			// sample from the environment's mip level based on roughness/pdf
-			float D = NormalDistributionGGXTR(normalVec, halfwayVec, roughness);
+			float D = NormalDistributionGGXTR(normalVec, halfwayVec, _Roughness);
 			float NdotH = max(dot(normalVec, halfwayVec), 0.0f);
 			float HdotV = max(dot(halfwayVec, viewDir), 0.0f);
 			float pdf = D * NdotH / (4.0f * HdotV) + 0.0001f;
@@ -63,9 +63,9 @@ float4 MainPS(PS_Input input) : SV_TARGET
 			float saTexel = 4.0f * PI / (6.0f * resolution * resolution);
 			float saSample = 1.0f / (float(NumSamples) * pdf + 0.0001f);
 
-			float mipLevel = roughness == 0.0 ? 0.0 : 0.5 * log2(saSample / saTexel);
+			float mipLevel = _Roughness == 0.0 ? 0.0 : 0.5 * log2(saSample / saTexel);
 
-			PrefilteredColor += EnvMap.SampleLevel(basicSampler , lightDir, 0).rgb * NdotL;
+			PrefilteredColor += _Texture.SampleLevel(_DefaultSampler, lightDir, 0).rgb * NdotL;
 			totalWeight += NdotL;
 		}
 	}

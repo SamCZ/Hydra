@@ -3,6 +3,7 @@
 #include "Hydra/Core/Common.h"
 #include "Hydra/Core/Vector.h"
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
+#include "Hydra/Render/Technique.h"
 
 namespace Hydra
 {
@@ -103,6 +104,9 @@ namespace Hydra
 		void SetKeyword(const String& name, bool value);
 		void SetDefine(const String& name, const String& value);
 
+		static SharedPtr<Material> CreateOrGet(const String& name, const File& source, bool doNotPreCompile = false);
+		static SharedPtr<Material> CreateOrGet(const File& source, bool doNotPreCompile = false);
+
 	private:
 
 		bool SetVariable(const String& name, const VarType::Type& type, const void* data, size_t size);
@@ -152,4 +156,6 @@ namespace Hydra
 
 		void UpdateHashAndData();
 	};
+
+	DEFINE_PTR(Material)
 }

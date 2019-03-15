@@ -27,7 +27,7 @@ namespace Hydra {
 
 	RenderStageDeffered::RenderStageDeffered()
 	{
-		TechniquePtr basicInputShader = _TECH("Assets/Shaders/Input/DefferedInput.hlsl");
+		MaterialPtr basicInputMaterial = Material::CreateOrGet("InputLayout", "Assets/Shaders/Input/DefferedInput.hlsl");
 
 		const NVRHI::VertexAttributeDesc SceneLayout[] = {
 			{ "POSITION", 0, NVRHI::Format::RGB32_FLOAT, 0, offsetof(VertexBufferEntry, position), false },
@@ -42,12 +42,10 @@ namespace Hydra {
 			{ "WORLD",    3,    NVRHI::Format::RGBA32_FLOAT, 1, 48, true }
 		};
 
-		_InputLayout = Graphics::CreateInputLayout("Deffered", SceneLayout, _countof(SceneLayout), basicInputShader);
+		_InputLayout = Graphics::CreateInputLayout("Deffered", SceneLayout, _countof(SceneLayout), basicInputMaterial);
 
-		 Graphics::CreateConstantBuffer(sizeof(Float3Constant), "Float3Constant", PSB_PIXEL, 0);
-
-		 _DefaultShader = Graphics::LoadTechnique("DefaultPBRShader", "Assets/Shaders/DefaultDeffered.hlsl");
-		_CompositeShader = _TECH("Assets/Shaders/DefferedComposite.hlsl");
+		_DefaultMaterial = Material::CreateOrGet("DefaultDeffered", "Assets/Shaders/DefaultDeffered.hlsl");
+		_CompositeMaterial = Material::CreateOrGet("Assets/Shaders/DefferedComposite.hlsl");
 		
 		Graphics::CreateSampler("DefaultSampler");
 
@@ -55,9 +53,9 @@ namespace Hydra {
 		_BrdfLutTexture = Graphics::CreateRenderTarget("DPBR_BrdfLut", NVRHI::Format::RG16_FLOAT, 512, 512, NVRHI::Color(0.f), 1);
 		_BrdfLutSampler = Graphics::CreateSampler("DPBR_BrdfLut", WrapMode::WRAP_MODE_CLAMP, WrapMode::WRAP_MODE_CLAMP, WrapMode::WRAP_MODE_CLAMP);
 
-		TechniquePtr brdfLutShader = _TECH("Assets/Shaders/Utils/PBR/BrdfLUT.hlsl");
+		MaterialPtr brdfLutMaterial = Material::CreateOrGet("Assets/Shaders/Utils/PBR/BrdfLUT.hlsl");
 
-		Graphics::Composite(brdfLutShader, [](NVRHI::DrawCallState& state) {}, "DPBR_BrdfLut");
+		Graphics::Composite(brdfLutMaterial, [](NVRHI::DrawCallState& state) {}, "DPBR_BrdfLut");
 
 
 		// Convert skybox to lower resolution
@@ -109,23 +107,19 @@ namespace Hydra {
 		}*/
 
 
-		TechniquePtr diffuseIBLShader = _TECH("Assets/Shaders/Utils/Skybox.hlsl");
+		MaterialPtr diffuseIBLMaterial = Material::CreateOrGet("Assets/Shaders/Utils/Skybox.hlsl");
 
 		Graphics::CreateRenderTargetCubeMap("DiffuseIBL", NVRHI::Format::RGBA16_FLOAT, 64, 64, NVRHI::Color(0.6f, 0.6f, 0.6f, 1.0f));
 
-		Graphics::RenderCubeMap(diffuseIBLShader, "Deffered", Vector2(64, 64), [=](NVRHI::DrawCallState& state, int mipIndex, int faceIdx)
+		Graphics::RenderCubeMap(diffuseIBLMaterial, "Deffered", Vector2(64, 64), [=](NVRHI::DrawCallState& state, int mipIndex, int faceIdx)
 		{
-			
-			Graphics::BindSampler(state, "DefaultSampler", 0);
-			NVRHI::BindTexture(state.PS, 0, envMap);
+			diffuseIBLMaterial->SetSampler("_DefaultSampler", Graphics::GetSampler("DefaultSampler"));
+			diffuseIBLMaterial->SetTexture("_Texture", envMap);
 
-			ShaderPtr shader = diffuseIBLShader->GetShader(NVRHI::ShaderType::SHADER_VERTEX);
+			diffuseIBLMaterial->SetMatrix4("g_ProjectionMatrix", captureProjection);
+			diffuseIBLMaterial->SetMatrix4("g_ViewMatrix", captureViews[faceIdx]);
 
-			shader->SetVariable("g_ProjectionMatrix", captureProjection);
-			shader->SetVariable("g_ViewMatrix", captureViews[faceIdx]);
-
-			shader->UploadVariableData();
-			shader->BindConstantBuffers(state.VS);
+			Graphics::ApplyMaterialParameters(state, diffuseIBLMaterial);
 
 			cubeRenderer->WriteDataToState(state);
 			Engine::GetRenderInterface()->drawIndexed(state, &cubeRenderer->GetDrawArguments(), 1);
@@ -138,13 +132,11 @@ namespace Hydra {
 #pragma region Prefilter EnvMap
 		unsigned int maxMipLevels = 5;
 
-		TechniquePtr preFilterShader = _TECH("Assets/Shaders/Utils/PBR/PreFilter.hlsl");
+		MaterialPtr preFilterMaterial = Material::CreateOrGet("Assets/Shaders/Utils/PBR/PreFilter.hlsl");
 
 		Graphics::CreateRenderTargetCubeMap("EnvMap", NVRHI::Format::RGBA16_FLOAT, 256, 256, NVRHI::Color(0.6f, 0.6f, 0.6f, 1.0f), maxMipLevels);
 
-		Graphics::CreateConstantBuffer(sizeof(SingleFloatConstant), "SingleFloatConstant", PSB_PIXEL, 1);
-
-		Graphics::RenderCubeMap(preFilterShader, "Deffered", Vector2(), [=](NVRHI::DrawCallState& state, int mipIndex, int faceIdx)
+		Graphics::RenderCubeMap(preFilterMaterial, "Deffered", Vector2(), [=](NVRHI::DrawCallState& state, int mipIndex, int faceIdx)
 		{
 			float mipWidth = 256.0f * powf(0.5f, (float)mipIndex);
 			float mipHeight = 256.0f * powf(0.5f, (float)mipIndex);
@@ -154,20 +146,15 @@ namespace Hydra {
 			float roughness = (float)mipIndex / (float)(maxMipLevels - 1);
 
 
-			Graphics::BindSampler(state, "DefaultSampler", 0);
-			NVRHI::BindTexture(state.PS, 0, envMap);
+			preFilterMaterial->SetSampler("_DefaultSampler", Graphics::GetSampler("DefaultSampler"));
+			preFilterMaterial->SetTexture("_Texture", envMap);
 
-			ShaderPtr shader = preFilterShader->GetShader(NVRHI::ShaderType::SHADER_VERTEX);
+			preFilterMaterial->SetMatrix4("g_ProjectionMatrix", captureProjection);
+			preFilterMaterial->SetMatrix4("g_ViewMatrix", captureViews[faceIdx]);
+			
+			preFilterMaterial->SetFloat("_Roughness", roughness);
 
-			shader->SetVariable("g_ProjectionMatrix", captureProjection);
-			shader->SetVariable("g_ViewMatrix", captureViews[faceIdx]);
-
-			shader->UploadVariableData();
-			shader->BindConstantBuffers(state.VS);
-
-			SingleFloatConstant data2 = {};
-			data2.Float = roughness;
-			Graphics::WriteConstantBufferDataAndBind(state, "SingleFloatConstant", &data2);
+			Graphics::ApplyMaterialParameters(state, preFilterMaterial);
 
 			cubeRenderer->WriteDataToState(state);
 			Engine::GetRenderInterface()->drawIndexed(state, &cubeRenderer->GetDrawArguments(), 1);
@@ -176,23 +163,20 @@ namespace Hydra {
 #pragma endregion
 
 #pragma region IrradianceConvolution
-		TechniquePtr irrConvShader = _TECH("Assets/Shaders/Utils/PBR/IrradianceConvolution.hlsl");
+		MaterialPtr irrConvMaterial = Material::CreateOrGet("Assets/Shaders/Utils/PBR/IrradianceConvolution.hlsl");
 
 		Graphics::CreateRenderTargetCubeMap("IrradianceConvolution", NVRHI::Format::RGBA16_FLOAT, 128, 128, NVRHI::Color(0.6f, 0.6f, 0.6f, 1.0f));
 
-		Graphics::RenderCubeMap(irrConvShader, "Deffered", Vector2(128, 128), [=](NVRHI::DrawCallState& state, int mipIndex, int faceIdx)
+		Graphics::RenderCubeMap(irrConvMaterial, "Deffered", Vector2(128, 128), [=](NVRHI::DrawCallState& state, int mipIndex, int faceIdx)
 		{
 
-			Graphics::BindSampler(state, "DefaultSampler", 0);
-			NVRHI::BindTexture(state.PS, 0, envMap);
+			irrConvMaterial->SetSampler("_DefaultSampler", Graphics::GetSampler("DefaultSampler"));
+			irrConvMaterial->SetTexture("_Texture", envMap);
 
-			ShaderPtr shader = irrConvShader->GetShader(NVRHI::ShaderType::SHADER_VERTEX);
+			irrConvMaterial->SetMatrix4("g_ProjectionMatrix", captureProjection);
+			irrConvMaterial->SetMatrix4("g_ViewMatrix", captureViews[faceIdx]);
 
-			shader->SetVariable("g_ProjectionMatrix", captureProjection);
-			shader->SetVariable("g_ViewMatrix", captureViews[faceIdx]);
-
-			shader->UploadVariableData();
-			shader->BindConstantBuffers(state.VS);
+			Graphics::ApplyMaterialParameters(state, irrConvMaterial);
 
 			cubeRenderer->WriteDataToState(state);
 			Engine::GetRenderInterface()->drawIndexed(state, &cubeRenderer->GetDrawArguments(), 1);
@@ -203,12 +187,12 @@ namespace Hydra {
 		delete cubeRenderer;
 
 
-		_PostEmissionPreShader = _TECH("Assets/Shaders/PostProcess/EmissionPre.hlsl");
-		_PostEmissionShader = _TECH("Assets/Shaders/PostProcess/Emission.hlsl");
+		_PostEmissionPreMaterial = Material::CreateOrGet("Assets/Shaders/PostProcess/EmissionPre.hlsl");
+		_PostEmissionMaterial = Material::CreateOrGet("Assets/Shaders/PostProcess/Emission.hlsl");
 
-		_PostSSAOShader = Graphics::LoadTechnique("SSAO", "Assets/Shaders/PostProcess/SSAO.hlsl");
+		_PostSSAOMaterial = Material::CreateOrGet("SSAO", "Assets/Shaders/PostProcess/SSAO.hlsl");
 
-		_MultShader = _TECH("Assets/Shaders/Mult.hlsl");
+		_MultMaterial = Material::CreateOrGet("Assets/Shaders/Mult.hlsl");
 	}
 
 	RenderStageDeffered::~RenderStageDeffered()
@@ -238,17 +222,15 @@ namespace Hydra {
 		state.renderState.depthTarget = Graphics::GetRenderTarget("DPBR_Depth");
 
 		state.inputLayout = _InputLayout;
-		Graphics::SetShader(state, _DefaultShader);
+		Graphics::SetMaterialShaders(state, _DefaultMaterial);
 
 		state.renderState.depthStencilState.depthEnable = true;
 		state.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_NONE;
 
-		Graphics::BindSampler(state, "DefaultSampler", 0);
-		
-		ShaderPtr shader = _DefaultShader->GetShader(NVRHI::ShaderType::SHADER_VERTEX);
+		_DefaultMaterial->SetSampler("DefaultSampler", Graphics::GetSampler("DefaultSampler"));
 
-		shader->SetVariable("g_ProjectionMatrix", camera->GetProjectionMatrix());
-		shader->SetVariable("g_ViewMatrix", camera->GetViewMatrix());
+		_DefaultMaterial->SetMatrix4("g_ProjectionMatrix", camera->GetProjectionMatrix());
+		_DefaultMaterial->SetMatrix4("g_ViewMatrix", camera->GetViewMatrix());
 
 		for (int i = 0; i < activeRenderers.size(); i++)
 		{
@@ -256,24 +238,24 @@ namespace Hydra {
 
 			//if (r->Enabled == false || r->Parent->IsEnabled() == false) continue;
 
+			
 
-
-			NVRHI::BindTexture(state.PS, 0, r->Mat.Albedo);
+			_DefaultMaterial->SetTexture("_AlbedoMap", r->Mat.Albedo);
 			if (r->Mat.Normal)
 			{
-				NVRHI::BindTexture(state.PS, 1, r->Mat.Normal);
+				_DefaultMaterial->SetTexture("_NormalMap", r->Mat.Normal);
 			}
 			if (r->Mat.Roughness)
 			{
-				NVRHI::BindTexture(state.PS, 2, r->Mat.Roughness);
+				_DefaultMaterial->SetTexture("_RoughnessMap", r->Mat.Roughness);
 			}
 			if (r->Mat.Metallic)
 			{
-				NVRHI::BindTexture(state.PS, 3, r->Mat.Metallic);
+				_DefaultMaterial->SetTexture("_MetallicMap", r->Mat.Metallic);
 			}
 			if (r->Mat.Opacity)
 			{
-				NVRHI::BindTexture(state.PS, 4, r->Mat.Opacity);
+				_DefaultMaterial->SetTexture("_AOMap", r->Mat.Opacity);
 			}
 
 			r->WriteDataToState(state);
@@ -281,17 +263,16 @@ namespace Hydra {
 
 			if (r->Parent->IsStatic())
 			{
-				shader->SetVariable("g_ModelMatrix", r->Parent->GetStaticModelMatrix());
+				_DefaultMaterial->SetMatrix4("g_ModelMatrix", r->Parent->GetStaticModelMatrix());
 			}
 			else
 			{
-				shader->SetVariable("g_ModelMatrix", r->Parent->GetModelMatrix());
+				_DefaultMaterial->SetMatrix4("g_ModelMatrix", r->Parent->GetModelMatrix());
 			}
 
 
 
-			shader->UploadVariableData();
-			shader->BindConstantBuffers(state.VS);
+			Graphics::ApplyMaterialParameters(state, _DefaultMaterial);
 
 
 
@@ -305,31 +286,27 @@ namespace Hydra {
 
 		//Composite data
 
-		Graphics::Composite(_CompositeShader, [this, camera](NVRHI::DrawCallState& state)
+		Graphics::Composite(_CompositeMaterial, [this, camera](NVRHI::DrawCallState& state)
 		{
-			Graphics::BindSampler(state, "DefaultSampler", 0);
+			_CompositeMaterial->SetSampler("DefaultSampler", Graphics::GetSampler("DefaultSampler"));
 
-			Graphics::BindRenderTarget(state, "DPBR_AlbedoMetallic", 0);
-			Graphics::BindRenderTarget(state, "DPBR_NormalRoughness", 1);
-			Graphics::BindRenderTarget(state, "DPBR_AO_Emission", 2);
-			Graphics::BindRenderTarget(state, "DPBR_Depth", 3);
-			Graphics::BindRenderTarget(state, "DPBR_WorldPos", 4);
+			_CompositeMaterial->SetTexture("AlbedoMetallic", Graphics::GetRenderTarget("DPBR_AlbedoMetallic"));
+			_CompositeMaterial->SetTexture("NormalRoughness", Graphics::GetRenderTarget("DPBR_NormalRoughness"));
+			_CompositeMaterial->SetTexture("Additional", Graphics::GetRenderTarget("DPBR_AO_Emission"));
+			_CompositeMaterial->SetTexture("Depth", Graphics::GetRenderTarget("DPBR_Depth"));
+			_CompositeMaterial->SetTexture("WorldPos", Graphics::GetRenderTarget("DPBR_WorldPos"));
 
-			//NVRHI::BindTexture(state.PS, 5, _IrrConv);
-			Graphics::BindRenderTarget(state, "IrradianceConvolution", 5);
-			Graphics::BindRenderTarget(state, "EnvMap", 6);
-			Graphics::BindRenderTarget(state, "DPBR_BrdfLut", 7);
+			_CompositeMaterial->SetTexture("skyIR", Graphics::GetRenderTarget("IrradianceConvolution"));
+			_CompositeMaterial->SetTexture("skyPrefilter", Graphics::GetRenderTarget("EnvMap"));
+			_CompositeMaterial->SetTexture("brdfLUT", Graphics::GetRenderTarget("DPBR_BrdfLut"));
 
-			ShaderPtr iShader = _CompositeShader->GetShader(NVRHI::ShaderType::SHADER_PIXEL);
+			_CompositeMaterial->SetVector3("ViewPos", camera->Parent->Position);
 
-			iShader->SetVariable("ViewPos", camera->Parent->Position);
-
-			iShader->UploadVariableData();
-			iShader->BindConstantBuffers(state.PS);
+			Graphics::ApplyMaterialParameters(state, _CompositeMaterial);
 
 		}, "DPBR_Output");
 
-		// Post emission
+		/*// Post emission
 		Graphics::Composite(_PostEmissionPreShader, "DPBR_AO_Emission", "DPBR_POST_Emission_Output");
 
 		Graphics::BlurTexture("DPBR_POST_Emission_Output", "DPBR_POST_EmissionBlurred_Output");
@@ -338,7 +315,7 @@ namespace Hydra {
 			Graphics::BindRenderTarget(state, "DPBR_POST_EmissionBlurred_Output", 1);
 		}, "DPBR_POST_Output");
 
-		bool ssao = false;
+		bool ssao = false;*/
 
 		// Post ssao
 		/*if (ssao)
@@ -451,7 +428,7 @@ namespace Hydra {
 
 	String RenderStageDeffered::GetOutputName()
 	{
-		return "DPBR_POST_Output";
+		return "DPBR_Output";
 	}
 
 	String RenderStageDeffered::GetDepthOutputName()

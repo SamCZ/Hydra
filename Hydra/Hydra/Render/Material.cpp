@@ -189,6 +189,18 @@ namespace Hydra
 
 	}
 
+	SharedPtr<Material> Hydra::Material::CreateOrGet(const String & name, const File & source, bool doNotPreCompile)
+	{
+		//TODO: Material loading
+		return nullptr;
+	}
+
+	SharedPtr<Material> Hydra::Material::CreateOrGet(const File & source, bool doNotPreCompile)
+	{
+		//TODO: Material loading
+		return nullptr;
+	}
+
 	bool Hydra::Material::SetVariable(const String & name, const VarType::Type & type, const void* data, size_t size)
 	{
 		Var* var = nullptr;
@@ -229,6 +241,6 @@ namespace Hydra
 
 	void Material::UpdateHashAndData()
 	{
-		_CurrentShaderHash = _Technique->GetKeywordHash(_EnabledKeywords);
+		//_CurrentShaderHash = _Technique->GetKeywordHash(_EnabledKeywords);
 	}
 }

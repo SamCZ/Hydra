@@ -81,9 +81,6 @@
     <ClInclude Include="Hydra\Render\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hydra\Render\Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Hydra\Import\ShaderImporter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -204,9 +201,6 @@
     <ClInclude Include="NanoVG\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hydra\Render\Technique.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Hydra\Render\Material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -306,6 +300,18 @@
     <ClInclude Include="Hydra\Render\TextureLayoutDef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Hydra\Render\ShaderOld.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Render\TechniqueOld.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Render\Technique.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Render\Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Hydra.rc">
@@ -353,9 +359,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Render\Mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Render\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Import\ShaderImporter.cpp">
@@ -431,9 +434,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Render\RenderManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Render\Technique.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Render\Material.cpp">
@@ -548,6 +548,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Render\RenderStage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Render\ShaderOld.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Render\TechniqueOld.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Render\Technique.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Render\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

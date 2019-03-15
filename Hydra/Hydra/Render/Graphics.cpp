@@ -11,9 +11,9 @@ namespace Hydra
 	Map<String, NVRHI::TextureHandle> Graphics::_RenderViewTargets;
 	Map<String, InputLayoutPtr> Graphics::_InputLayouts;
 	Map<String, SamplerPtr> Graphics::_Samplers;
-	Map<String, TechniquePtr> Graphics::_Techniques;
-	TechniquePtr Graphics::_BlitShader;
-	TechniquePtr Graphics::_BlurShader;
+
+	MaterialPtr Graphics::_BlitMaterial;
+	MaterialPtr Graphics::_BlurMaterial;
 
 	void Graphics::Destroy()
 	{
@@ -35,8 +35,8 @@ namespace Hydra
 
 	void Graphics::Create()
 	{
-		_BlitShader = _TECH("Assets/Shaders/blit.hlsl");
-		_BlurShader = _TECH("Assets/Shaders/PostProcess/GaussianBlur.hlsl");
+		_BlitMaterial = Material::CreateOrGet("Blit", "Assets/Shaders/Blit.hlsl");
+		_BlurMaterial = Material::CreateOrGet("GaussianBlur", "Assets/Shaders/PostProcess/GaussianBlur.hlsl");
 	}
 
 	void Graphics::AllocateViewDependentResources(uint32 width, uint32 height, uint32 sampleCount)
@@ -50,7 +50,7 @@ namespace Hydra
 		NVRHI::DrawCallState state;
 
 		state.primType = NVRHI::PrimitiveType::TRIANGLE_STRIP;
-		SetShader(state, _BlitShader);
+		SetMaterialShaders(state, _BlitMaterial);
 
 		state.renderState.targetCount = 1;
 		state.renderState.targets[0] = pDest;
@@ -59,7 +59,9 @@ namespace Hydra
 		state.renderState.depthStencilState.depthEnable = false;
 		state.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_NONE;
 
-		NVRHI::BindTexture(state.PS, 0, pSource);
+		_BlitMaterial->SetTexture("_Texture", pSource);
+
+		ApplyMaterialParameters(state, _BlitMaterial);
 
 		NVRHI::DrawArguments args;
 		args.vertexCount = 4;
@@ -86,31 +88,25 @@ namespace Hydra
 		float height = Engine::ScreenSize.y;
 
 		// Horizontal blur
-		Composite(_BlurShader, [pSource, width, height](NVRHI::DrawCallState& state) {
-			NVRHI::BindTexture(state.PS, 0, pSource);
+		Composite(_BlurMaterial, [pSource, width, height](NVRHI::DrawCallState& state) {
+			_BlurMaterial->SetTexture("_Texture", pSource);
 
-			ShaderPtr iShader = _BlurShader->GetShader(NVRHI::ShaderType::SHADER_PIXEL);
+			_BlurMaterial->SetVector2("_Direction", Vector2(1, 0));
+			_BlurMaterial->SetVector2("_TexSize", Vector2(width, height));
 
-			iShader->SetVariable("_Direction", Vector2(1, 0));
-			iShader->SetVariable("_TexSize", Vector2(width, height));
-
-			iShader->UploadVariableData();
-			iShader->BindConstantBuffers(state.PS);
+			ApplyMaterialParameters(state, _BlurMaterial);
 
 		}, "G_MEM_BLUR_PASS");
 
 		// Vertical blur
-		Composite(_BlurShader, [pSource, width, height](NVRHI::DrawCallState& state)
+		Composite(_BlurMaterial, [pSource, width, height](NVRHI::DrawCallState& state)
 		{
-			BindRenderTarget(state, "G_MEM_BLUR_PASS", 0);
+			_BlurMaterial->SetTexture("_Texture", GetRenderTarget("G_MEM_BLUR_PASS"));
 
-			ShaderPtr iShader = _BlurShader->GetShader(NVRHI::ShaderType::SHADER_PIXEL);
+			_BlurMaterial->SetVector2("_Direction", Vector2(0, 1));
+			_BlurMaterial->SetVector2("_TexSize", Vector2(width, height));
 
-			iShader->SetVariable("_Direction", Vector2(0, 1));
-			iShader->SetVariable("_TexSize", Vector2(width, height));
-
-			iShader->UploadVariableData();
-			iShader->BindConstantBuffers(state.PS);
+			ApplyMaterialParameters(state, _BlurMaterial);
 
 		}, pDest);
 	}
@@ -120,36 +116,11 @@ namespace Hydra
 		BlurTexture(GetRenderTarget(pSource), GetRenderTarget(pDest));
 	}
 
-	TechniquePtr Hydra::Graphics::LoadTechnique(const String& name, const File & file)
-	{
-		if (_Techniques.find(name) != _Techniques.end())
-		{
-			return _Techniques[name];
-		}
-
-		TechniquePtr tech = _TECH(file);
-
-		_Techniques[name] = tech;
-
-		return tech;
-	}
-
-	TechniquePtr Hydra::Graphics::GetTechnique(const String& name)
-	{
-		if (_Techniques.find(name) != _Techniques.end())
-		{
-			return _Techniques[name];
-		}
-
-		return nullptr;
-	}
-
-	void Graphics::Composite(TechniquePtr shader, Function<void(NVRHI::DrawCallState&)> preRenderFunction, TexturePtr pDest)
+	void Graphics::Composite(MaterialPtr material, Function<void(NVRHI::DrawCallState&)> preRenderFunction, TexturePtr pDest)
 	{
 		NVRHI::DrawCallState state;
 
 		state.primType = NVRHI::PrimitiveType::TRIANGLE_STRIP;
-		SetShader(state, shader);
 
 		state.renderState.targetCount = 1;
 		state.renderState.targets[0] = pDest;
@@ -157,6 +128,8 @@ namespace Hydra
 		state.renderState.viewports[0] = NVRHI::Viewport(float(Engine::ScreenSize.x), float(Engine::ScreenSize.y));
 		state.renderState.depthStencilState.depthEnable = false;
 		state.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_NONE;
+
+		SetMaterialShaders(state, material);
 
 		if(preRenderFunction)
 			preRenderFunction(state);
@@ -166,25 +139,25 @@ namespace Hydra
 		Engine::GetRenderInterface()->draw(state, &args, 1);
 	}
 
-	void Graphics::Composite(TechniquePtr shader, Function<void(NVRHI::DrawCallState&)> preRenderFunction, const String& outputName)
+	void Graphics::Composite(MaterialPtr material, Function<void(NVRHI::DrawCallState&)> preRenderFunction, const String& outputName)
 	{
-		Composite(shader, preRenderFunction, GetRenderTarget(outputName));
+		Composite(material, preRenderFunction, GetRenderTarget(outputName));
 	}
 
-	void Graphics::Composite(TechniquePtr shader, TexturePtr slot0Texture, TexturePtr pDest)
+	void Graphics::Composite(MaterialPtr material, TexturePtr slot0Texture, TexturePtr pDest)
 	{
-		Composite(shader, [slot0Texture](NVRHI::DrawCallState& state)
+		Composite(material, [material, slot0Texture](NVRHI::DrawCallState& state)
 		{
-			NVRHI::BindTexture(state.PS, 0, slot0Texture);
+			material->SetTexture("_Texture", slot0Texture);
 		}, pDest);
 	}
 
-	void Graphics::Composite(TechniquePtr shader, const String & slot0Texture, const String & pDest)
+	void Graphics::Composite(MaterialPtr material, const String & slot0Texture, const String & pDest)
 	{
-		Composite(shader, GetRenderTarget(slot0Texture), GetRenderTarget(pDest));
+		Composite(material, GetRenderTarget(slot0Texture), GetRenderTarget(pDest));
 	}
 
-	void Graphics::RenderCubeMap(TechniquePtr shader, InputLayoutPtr inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, TexturePtr pDest)
+	void Graphics::RenderCubeMap(MaterialPtr material, InputLayoutPtr inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, TexturePtr pDest)
 	{
 		Engine::GetRenderInterface()->beginRenderingPass();
 
@@ -198,7 +171,7 @@ namespace Hydra
 		state.renderState.targets[0] = pDest;
 
 		state.inputLayout = inputLayout;
-		SetShader(state, shader);
+		SetMaterialShaders(state, material);
 
 		state.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_NONE;
 		state.renderState.depthStencilState.depthEnable = true;
@@ -224,18 +197,25 @@ namespace Hydra
 		Engine::GetRenderInterface()->endRenderingPass();
 	}
 
-	void Graphics::RenderCubeMap(TechniquePtr shader, const String& inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, const String & outputName)
+	void Graphics::RenderCubeMap(MaterialPtr material, const String& inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, const String & outputName)
 	{
-		RenderCubeMap(shader, GetInputLayout(inputLayout), viewPort, preRenderFunction, GetRenderTarget(outputName));
+		RenderCubeMap(material, GetInputLayout(inputLayout), viewPort, preRenderFunction, GetRenderTarget(outputName));
 	}
 
-	void Graphics::SetShader(NVRHI::DrawCallState& state, TechniquePtr shader)
+	void Graphics::SetMaterialShaders(NVRHI::DrawCallState& state, MaterialPtr material)
 	{
-		state.VS.shader = shader->GetRawShader(NVRHI::ShaderType::SHADER_VERTEX);
+		/*state.VS.shader = shader->GetRawShader(NVRHI::ShaderType::SHADER_VERTEX);
 		state.HS.shader = shader->GetRawShader(NVRHI::ShaderType::SHADER_HULL);
 		state.DS.shader = shader->GetRawShader(NVRHI::ShaderType::SHADER_DOMAIN);
 		state.GS.shader = shader->GetRawShader(NVRHI::ShaderType::SHADER_GEOMETRY);
-		state.PS.shader = shader->GetRawShader(NVRHI::ShaderType::SHADER_PIXEL);
+		state.PS.shader = shader->GetRawShader(NVRHI::ShaderType::SHADER_PIXEL);*/
+
+		//TODO: Set sehaders from material
+	}
+
+	void Graphics::ApplyMaterialParameters(NVRHI::DrawCallState & state, MaterialPtr mateiral)
+	{
+		//TODO: Set mateiral parameters
 	}
 
 	void Graphics::SetClearFlags(NVRHI::DrawCallState& state, const ColorRGBA& color)
@@ -340,7 +320,7 @@ namespace Hydra
 		}
 	}
 
-	ConstantBufferPtr Hydra::Graphics::GetConstantBuffer(const String & mappedName)
+	ConstantBufferPtr Graphics::GetConstantBuffer(const String & mappedName)
 	{
 		if (_ConstantBuffers.find(mappedName) == _ConstantBuffers.end())
 		{
@@ -469,9 +449,10 @@ namespace Hydra
 		}
 	}
 
-	InputLayoutPtr Graphics::CreateInputLayout(const String & name, const NVRHI::VertexAttributeDesc * d, uint32_t attributeCount, TechniquePtr shader)
+	InputLayoutPtr Graphics::CreateInputLayout(const String & name, const NVRHI::VertexAttributeDesc * d, uint32_t attributeCount, MaterialPtr material)
 	{
-		if (_InputLayouts.find(name) != _InputLayouts.end())
+		return nullptr;
+		/*if (_InputLayouts.find(name) != _InputLayouts.end())
 		{
 			return _InputLayouts[name];
 		}
@@ -481,7 +462,7 @@ namespace Hydra
 
 		_InputLayouts[name] = layout;
 
-		return layout;
+		return layout;*/
 	}
 
 	InputLayoutPtr Graphics::GetInputLayout(const String & name)

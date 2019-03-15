@@ -171,7 +171,9 @@
     <ClInclude Include="Hydra\Render\RenderStage\RenderStageDeffered.h" />
     <ClInclude Include="Hydra\Render\RenderStage\RenderStagePostProcess.h" />
     <ClInclude Include="Hydra\Render\Shader.h" />
+    <ClInclude Include="Hydra\Render\ShaderOld.h" />
     <ClInclude Include="Hydra\Render\Technique.h" />
+    <ClInclude Include="Hydra\Render\TechniqueOld.h" />
     <ClInclude Include="Hydra\Render\TextureLayoutDef.h" />
     <ClInclude Include="Hydra\Render\VertexBuffer.h" />
     <ClInclude Include="Hydra\Scene\Component.h" />
@@ -235,12 +237,14 @@
     <ClCompile Include="Hydra\Render\PostProcess\PostEffect.cpp" />
     <ClCompile Include="Hydra\Render\RenderStage.cpp" />
     <ClCompile Include="Hydra\Render\RenderStage\RenderStagePostProcess.cpp" />
+    <ClCompile Include="Hydra\Render\Shader.cpp" />
+    <ClCompile Include="Hydra\Render\Technique.cpp" />
     <ClCompile Include="Hydra\Render\TextureLayoutDef.cpp" />
     <ClCompile Include="MainYamlTest.cpp" />
     <ClCompile Include="Hydra\Render\Material.cpp" />
     <ClCompile Include="Hydra\Render\RenderManager.cpp" />
     <ClCompile Include="Hydra\Render\RenderStage\RenderStageDeffered.cpp" />
-    <ClCompile Include="Hydra\Render\Technique.cpp" />
+    <ClCompile Include="Hydra\Render\TechniqueOld.cpp" />
     <ClCompile Include="Hydra\Scene\Components\LodGroup.cpp" />
     <ClCompile Include="IndustryEmpire\IndustryEmpire.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -262,7 +266,7 @@
     <ClCompile Include="Hydra\Render\Pipeline\DDS\DDSTextureLoader.cpp" />
     <ClCompile Include="Hydra\Render\Pipeline\DeviceManager11.cpp" />
     <ClCompile Include="Hydra\Render\Pipeline\GFSDK_NVRHI_D3D11.cpp" />
-    <ClCompile Include="Hydra\Render\Shader.cpp" />
+    <ClCompile Include="Hydra\Render\ShaderOld.cpp" />
     <ClCompile Include="Hydra\Scene\Components\Camera.cpp" />
     <ClCompile Include="Hydra\Scene\Component.cpp" />
     <ClCompile Include="Hydra\Scene\Components\Movement\FirstPersonController.cpp" />

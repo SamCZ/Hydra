@@ -21,7 +21,7 @@ FullScreenQuadOutput MainVS(uint id : SV_VertexID)
 	return OUT;
 }
 
-Texture2D t_SourceTexture : register(t0);
+Texture2D _Texture : register(t0);
 
 float4 MainPS(FullScreenQuadOutput IN) : SV_Target
 {

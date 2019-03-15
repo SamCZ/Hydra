@@ -5,29 +5,19 @@
 
 namespace Hydra
 {
-	struct alignas(16) SingleFloatConstant
-	{
-		alignas(16) float Float;
-	};
-
-	struct alignas(16) Float3Constant
-	{
-		alignas(16) Vector3 Vector;
-	};
-
 	class RenderStageDeffered : public RenderStage
 	{
 	private:
 		InputLayoutPtr _InputLayout;
-		TechniquePtr _DefaultShader;
-		TechniquePtr _CompositeShader;
+		MaterialPtr _DefaultMaterial;
+		MaterialPtr _CompositeMaterial;
 
-		TechniquePtr _PostEmissionPreShader;
-		TechniquePtr _PostEmissionShader;
+		MaterialPtr _PostEmissionPreMaterial;
+		MaterialPtr _PostEmissionMaterial;
 
-		TechniquePtr _PostSSAOShader;
+		MaterialPtr _PostSSAOMaterial;
 
-		TechniquePtr _MultShader;
+		MaterialPtr _MultMaterial;
 
 		TexturePtr _BrdfLutTexture;
 		SamplerPtr _BrdfLutSampler;

@@ -6,7 +6,7 @@
 #include "Hydra/Core/Function.h"
 
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
-#include "Hydra/Render/Technique.h"
+#include "Hydra/Render/Material.h"
 
 namespace Hydra
 {
@@ -46,10 +46,9 @@ namespace Hydra
 		static Map<String, TexturePtr> _RenderViewTargets;
 		static Map<String, InputLayoutPtr> _InputLayouts;
 		static Map<String, SamplerPtr> _Samplers;
-		static Map<String, TechniquePtr> _Techniques;
 
-		static TechniquePtr _BlitShader;
-		static TechniquePtr _BlurShader;
+		static MaterialPtr _BlitMaterial;
+		static MaterialPtr _BlurMaterial;
 	public:
 		//Graphics();
 		//~Graphics();
@@ -66,18 +65,16 @@ namespace Hydra
 		static void BlurTexture(TexturePtr pSource, TexturePtr pDest);
 		static void BlurTexture(const String pSource, const String pDest);
 
-		static TechniquePtr LoadTechnique(const String& name, const File& file);
-		static TechniquePtr GetTechnique(const String& name);
+		static void Composite(MaterialPtr mateiral, Function<void(NVRHI::DrawCallState&)> preRenderFunction, TexturePtr pDest);
+		static void Composite(MaterialPtr mateiral, Function<void(NVRHI::DrawCallState&)> preRenderFunction, const String& outputName);
+		static void Composite(MaterialPtr mateiral, TexturePtr slot0Texture, TexturePtr pDest);
+		static void Composite(MaterialPtr mateiral, const String& slot0Texture, const String& pDest);
 
-		static void Composite(TechniquePtr shader, Function<void(NVRHI::DrawCallState&)> preRenderFunction, TexturePtr pDest);
-		static void Composite(TechniquePtr shader, Function<void(NVRHI::DrawCallState&)> preRenderFunction, const String& outputName);
-		static void Composite(TechniquePtr shader, TexturePtr slot0Texture, TexturePtr pDest);
-		static void Composite(TechniquePtr shader, const String& slot0Texture, const String& pDest);
+		static void RenderCubeMap(MaterialPtr mateiral, InputLayoutPtr inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, TexturePtr pDest);
+		static void RenderCubeMap(MaterialPtr mateiral, const String& inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, const String& outputName);
 
-		static void RenderCubeMap(TechniquePtr shader, InputLayoutPtr inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, TexturePtr pDest);
-		static void RenderCubeMap(TechniquePtr shader, const String& inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, const String& outputName);
-
-		static void SetShader(NVRHI::DrawCallState& state, TechniquePtr shader);
+		static void SetMaterialShaders(NVRHI::DrawCallState& state, MaterialPtr mateiral);
+		static void ApplyMaterialParameters(NVRHI::DrawCallState& state, MaterialPtr mateiral);
 
 		static void SetClearFlags(NVRHI::DrawCallState& state, const ColorRGBA& color);
 
@@ -100,7 +97,7 @@ namespace Hydra
 		static void ReleaseRenderTarget(const String& name);
 		static void BindRenderTarget(NVRHI::DrawCallState& state, const String& name, int index);
 
-		static InputLayoutPtr CreateInputLayout(const String& name, const NVRHI::VertexAttributeDesc* d, uint32_t attributeCount, TechniquePtr shader);
+		static InputLayoutPtr CreateInputLayout(const String& name, const NVRHI::VertexAttributeDesc* d, uint32_t attributeCount, MaterialPtr material);
 		static InputLayoutPtr GetInputLayout(const String& name);
 
 		static SamplerPtr CreateSampler(const String& name, const WrapMode& wrapX = WrapMode::WRAP_MODE_WRAP, const WrapMode& wrapY = WrapMode::WRAP_MODE_WRAP, const WrapMode& wrapZ = WrapMode::WRAP_MODE_WRAP, bool minFilter = true, bool magFilter = true, bool mipFilter = true, int anisotropy = 16);
