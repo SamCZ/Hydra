@@ -68,6 +68,8 @@
                                                  Hayaki Saito
 */
 
+#pragma once
+
 #ifndef STBI_INCLUDE_STB_IMAGE_H
 #define STBI_INCLUDE_STB_IMAGE_H
 
@@ -188,7 +190,6 @@
 #ifndef STBI_NO_STDIO
 
 #if defined(_MSC_VER) && _MSC_VER >= 1400
-#define _CRT_SECURE_NO_WARNINGS // suppress warnings about fopen()
 #pragma warning(push)
 #pragma warning(disable:4996)   // suppress even more warnings about fopen()
 #endif

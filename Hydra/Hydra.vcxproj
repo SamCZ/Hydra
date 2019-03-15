@@ -87,7 +87,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)Yaml\include;$(ProjectDir);$(ProjectDir)nvapi-public;$(ProjectDir)assimp-c4d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>USE_D3D11=1;NVRHI_WITH_WRL;NOMINMAX;WIN32;_DEBUG;DEBUG;PROFILE;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_D3D11=1;NVRHI_WITH_WRL;NOMINMAX;WIN32;_DEBUG;DEBUG;PROFILE;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -161,6 +161,7 @@
     <ClInclude Include="Hydra\Render\Pipeline\DDS\LoaderHelpers.h" />
     <ClInclude Include="Hydra\Render\Pipeline\DDS\PlatformHelpers.h" />
     <ClInclude Include="Hydra\Render\Pipeline\DeviceManager11.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\DX11\UIRendererDX11.h" />
     <ClInclude Include="Hydra\Render\Pipeline\GFSDK_NVRHI.h" />
     <ClInclude Include="Hydra\Render\Pipeline\GFSDK_NVRHI_D3D11.h" />
     <ClInclude Include="Hydra\Render\PostProcess\EmissionPostEffect.h" />
@@ -175,6 +176,7 @@
     <ClInclude Include="Hydra\Render\Technique.h" />
     <ClInclude Include="Hydra\Render\TechniqueOld.h" />
     <ClInclude Include="Hydra\Render\TextureLayoutDef.h" />
+    <ClInclude Include="Hydra\Render\UI\UIRenderer.h" />
     <ClInclude Include="Hydra\Render\VertexBuffer.h" />
     <ClInclude Include="Hydra\Scene\Component.h" />
     <ClInclude Include="Hydra\Scene\Components\Camera.h" />
@@ -202,6 +204,12 @@
     <ClInclude Include="ImGui\stb_textedit.h" />
     <ClInclude Include="ImGui\stb_truetype.h" />
     <ClInclude Include="IndustryEmpire\IndustryEmpire.h" />
+    <ClInclude Include="NanoVG\D3D11PixelShader.h" />
+    <ClInclude Include="NanoVG\D3D11PixelShaderAA.h" />
+    <ClInclude Include="NanoVG\D3D11VertexShader.h" />
+    <ClInclude Include="NanoVG\fontstash.h" />
+    <ClInclude Include="NanoVG\nanovg.h" />
+    <ClInclude Include="NanoVG\nanovg_d3d11.h" />
     <ClInclude Include="NanoVG\stb_image.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Yaml\src\collectionstack.h" />
@@ -234,12 +242,14 @@
     <ClCompile Include="Hydra\Core\FastNoise.cpp" />
     <ClCompile Include="Hydra\HydraEngine.cpp" />
     <ClCompile Include="Hydra\Import\UnityAssetManager.cpp" />
+    <ClCompile Include="Hydra\Render\Pipeline\DX11\UIRendererDX11.cpp" />
     <ClCompile Include="Hydra\Render\PostProcess\PostEffect.cpp" />
     <ClCompile Include="Hydra\Render\RenderStage.cpp" />
     <ClCompile Include="Hydra\Render\RenderStage\RenderStagePostProcess.cpp" />
     <ClCompile Include="Hydra\Render\Shader.cpp" />
     <ClCompile Include="Hydra\Render\Technique.cpp" />
     <ClCompile Include="Hydra\Render\TextureLayoutDef.cpp" />
+    <ClCompile Include="Hydra\Render\UI\UIRenderer.cpp" />
     <ClCompile Include="MainYamlTest.cpp" />
     <ClCompile Include="Hydra\Render\Material.cpp" />
     <ClCompile Include="Hydra\Render\RenderManager.cpp" />
@@ -282,6 +292,7 @@
     <ClCompile Include="ImGui\imgui_draw.cpp" />
     <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />
     <ClCompile Include="MainOld.cpp" />
+    <ClCompile Include="NanoVG\nanovg.c" />
     <ClCompile Include="Yaml\src\binary.cpp" />
     <ClCompile Include="Yaml\src\contrib\graphbuilder.cpp" />
     <ClCompile Include="Yaml\src\contrib\graphbuilderadapter.cpp" />

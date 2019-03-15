@@ -4,7 +4,6 @@
 
 #include "Hydra/Engine.h"
 #include "Hydra/Render/Pipeline/DDS/DDSTextureLoader.h"
-#include "NanoVG/stb_image.h"
 
 namespace Hydra
 {
@@ -13,7 +12,7 @@ namespace Hydra
 	NVRHI::TextureHandle TextureImporter::Import(const File& file)
 	{
 		IRendererInterface renderInterface = Engine::GetRenderInterface();
-		
+		/*
 		if (file.GetExtension() == "png")
 		{
 			int x, y, bytesPerPixel;
@@ -86,7 +85,7 @@ namespace Hydra
 			Log("TextureImporter::Import(" + file.GetPath() + ")", "Loaded.");
 
 			return handle;
-		}
+		}*/
 
 		if (file.GetExtension() != "dds")
 		{

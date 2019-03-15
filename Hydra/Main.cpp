@@ -30,6 +30,8 @@
 #include "Hydra/Core/Random.h"
 #include "Hydra/Terrain/Erosion.h"
 
+#include "Hydra/Render/Pipeline/DX11/UIRendererDX11.h"
+
 /* Set the better graphic card for notebooks ( ͡° ͜ʖ ͡°)
 *  http://developer.download.nvidia.com/devzone/devcenter/gamegraphics/files/OptimusRenderingPolicies.pdf
 *  http://stevendebock.blogspot.com/2013/07/nvidia-optimus.html
@@ -69,12 +71,61 @@ RendererErrorCallback g_ErrorCallback;
 
 using namespace Hydra;
 
-static SharedPtr<DeviceManager> _deviceManager;
+static SharedPtr<DeviceManager> _deviceManager = nullptr;
+static SharedPtr<NVRHI::RendererInterfaceD3D11> _renderInterface;
+
+class UIRenderView : public IVisualController
+{
+private:
+	NVGcontext* _Context = nullptr;
+	UIRendererDX11* _UIRenderer;
+public:
+	inline HRESULT DeviceCreated() override
+	{
+		Log("UIRenderView::DeviceCreated");
+
+		if (_renderInterface == nullptr)
+		{
+			_renderInterface = MakeShared<NVRHI::RendererInterfaceD3D11>(&g_ErrorCallback, _deviceManager->GetImmediateContext());
+		}
+
+		_UIRenderer = new UIRendererDX11(_deviceManager->GetDevice());
+		_UIRenderer->Create();
+
+		return S_OK;
+	}
+
+	inline void DeviceDestroyed() override
+	{
+		_UIRenderer->Destroy();
+		delete _UIRenderer;
+	}
+
+	void Render(RenderTargetView RTV) override
+	{
+		ID3D11Resource* pMainResource = NULL;
+		RTV->GetResource(&pMainResource);
+		NVRHI::TextureHandle mainRenderTarget = _renderInterface->getHandleForTexture(pMainResource);
+		pMainResource->Release();
+
+		_UIRenderer->Begin();
+
+		_UIRenderer->DrawRect(100, 100, 100, 25, MakeRGB(255, 255, 255));
+		_UIRenderer->DrawString("Yoooo", 110, 100, 20, MakeRGB(0, 0, 0));
+
+		_UIRenderer->End();
+
+		_renderInterface->forgetAboutTexture(pMainResource);
+	}
+
+	inline void BackBufferResized(uint32_t width, uint32_t height, uint32_t sampleCount) override
+	{
+		Engine::ScreenSize = Vector2(width, height);
+	}
+};
 
 class MainRenderView : public IVisualController
 {
-private:
-	SharedPtr<NVRHI::RendererInterfaceD3D11> _renderInterface;
 public:
 	WindowsInputManagerPtr _InputManager;
 
@@ -254,7 +305,10 @@ public:
 
 		//_InputManager->SetMouseCapture(true);
 
-		_renderInterface = MakeShared<NVRHI::RendererInterfaceD3D11>(&g_ErrorCallback, _deviceManager->GetImmediateContext());
+		if (_renderInterface == nullptr)
+		{
+			_renderInterface = MakeShared<NVRHI::RendererInterfaceD3D11>(&g_ErrorCallback, _deviceManager->GetImmediateContext());
+		}
 
 		Engine::SetRenderInterface(_renderInterface);
 		Engine::SetDeviceManager(_deviceManager);
@@ -271,11 +325,11 @@ public:
 		cameraObj->AddComponent<FirstPersonController>();
 		rm->MainScene->AddChild(cameraObj);
 
-		SpatialPtr testModel = Meshimporter::Import("Assets/Sponza/SponzaNoFlag.obj", MeshImportOptions());
+		/*SpatialPtr testModel = Meshimporter::Import("Assets/Sponza/SponzaNoFlag.obj", MeshImportOptions());
 		testModel->Scale = Vector3(0.01f, 0.01f, 0.01f);
 		testModel->AddComponent<LodGroup>();
 		testModel->SetStatic(true);
-		rm->MainScene->AddChild(testModel);
+		rm->MainScene->AddChild(testModel);*/
 
 		Material* mat = new Material("Test", nullptr);
 
@@ -351,9 +405,9 @@ public:
 		NVRHI::TextureHandle mainRenderTarget = _renderInterface->getHandleForTexture(pMainResource);
 		pMainResource->Release();
 
-		rsd->Render(rm);
+		//rsd->Render(rm);
 
-		Graphics::Blit(rsd->GetOutputName(), mainRenderTarget);
+		//Graphics::Blit(rsd->GetOutputName(), mainRenderTarget);
 
 		_renderInterface->forgetAboutTexture(pMainResource);
 	}
@@ -384,8 +438,11 @@ int main()
 
 	Engine::ScreenSize = Vector2(deviceParams.backBufferWidth, deviceParams.backBufferHeight);
 
-	MainRenderView mainRenderView;
-	_deviceManager->AddControllerToFront(&mainRenderView);
+	//MainRenderView mainRenderView;
+	//_deviceManager->AddControllerToFront(&mainRenderView);
+
+	UIRenderView uiRenderView;
+	_deviceManager->AddControllerToFront(&uiRenderView);
 
 	//GuiVisualController guiView(_deviceManager);
 	//_deviceManager->AddControllerToFront(&guiView);

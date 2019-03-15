@@ -192,13 +192,15 @@ namespace Hydra
 	SharedPtr<Material> Hydra::Material::CreateOrGet(const String & name, const File & source, bool doNotPreCompile)
 	{
 		//TODO: Material loading
-		return nullptr;
+		SharedPtr<Technique> tech = nullptr;
+		return MakeShared<Material>("0", tech);
 	}
 
 	SharedPtr<Material> Hydra::Material::CreateOrGet(const File & source, bool doNotPreCompile)
 	{
 		//TODO: Material loading
-		return nullptr;
+		SharedPtr<Technique> tech = nullptr;
+		return MakeShared<Material>("0", tech);
 	}
 
 	bool Hydra::Material::SetVariable(const String & name, const VarType::Type & type, const void* data, size_t size)
