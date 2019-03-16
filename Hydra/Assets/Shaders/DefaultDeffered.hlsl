@@ -58,7 +58,7 @@ PBROutput OnMainPS(in PS_Input input)
 		//output.Emission = (1.0).xxx;
 	}
 
-	//clip(albedo.a - 0.5);
+	clip(albedo.a - 0.5);
 
 	return output;
 }

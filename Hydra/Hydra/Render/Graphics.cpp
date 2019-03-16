@@ -35,8 +35,8 @@ namespace Hydra
 
 	void Graphics::Create()
 	{
-		_BlitMaterial = Material::CreateOrGet("Blit", "Assets/Shaders/Blit.hlsl");
-		_BlurMaterial = Material::CreateOrGet("GaussianBlur", "Assets/Shaders/PostProcess/GaussianBlur.hlsl");
+		_BlitMaterial = Material::CreateOrGet("Assets/Shaders/blit.hlsl");
+		_BlurMaterial = Material::CreateOrGet("Assets/Shaders/PostProcess/GaussianBlur.hlsl");
 	}
 
 	void Graphics::AllocateViewDependentResources(uint32 width, uint32 height, uint32 sampleCount)
@@ -205,9 +205,9 @@ namespace Hydra
 	void Graphics::SetMaterialShaders(NVRHI::DrawCallState& state, MaterialPtr material)
 	{
 		state.VS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_VERTEX);
-		state.HS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_HULL);
-		state.DS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_DOMAIN);
-		state.GS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_GEOMETRY);
+		//state.HS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_HULL);
+		//state.DS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_DOMAIN);
+		//state.GS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_GEOMETRY);
 		state.PS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_PIXEL);
 	}
 
@@ -449,13 +449,13 @@ namespace Hydra
 
 	InputLayoutPtr Graphics::CreateInputLayout(const String& name, const NVRHI::VertexAttributeDesc * d, uint32_t attributeCount, MaterialPtr material)
 	{
-		return nullptr;
 		if (_InputLayouts.find(name) != _InputLayouts.end())
 		{
 			return _InputLayouts[name];
 		}
 
 		ID3DBlob* blob = material->GetShader(NVRHI::ShaderType::SHADER_VERTEX)->GetBlob();
+
 		InputLayoutPtr layout = Engine::GetRenderInterface()->createInputLayout(d, attributeCount, blob->GetBufferPointer(), blob->GetBufferSize());
 
 		_InputLayouts[name] = layout;

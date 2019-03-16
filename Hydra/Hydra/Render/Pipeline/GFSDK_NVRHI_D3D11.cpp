@@ -1410,6 +1410,7 @@ namespace NVRHI
                     desc11.Texture2D.MipSlice = mipLevel;
                 }
             }
+
             CHECK_ERROR(SUCCEEDED(device->CreateRenderTargetView(texture->resource.Get(), &desc11, &rtvPtr)), "Creating the view failed");
         }
         return rtvPtr.Get();
@@ -2670,6 +2671,7 @@ namespace NVRHI
 
     void RendererInterfaceD3D11::signalError(const char* file, int line, const char* errorDesc)
     {
+		std::cerr << errorDesc << std::endl;
         if (errorCB)
             errorCB->signalError(file, line, errorDesc);
         else

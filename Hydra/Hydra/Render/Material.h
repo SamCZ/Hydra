@@ -11,6 +11,7 @@ namespace Hydra
 {
 	class Technique;
 	class Shader;
+	struct ShaderVars;
 
 	struct VarType
 	{
@@ -66,6 +67,11 @@ namespace Hydra
 		Map<NVRHI::ShaderType::Enum, Shader*> _ActiveShaders;
 		Map<String, String> _Defines;
 
+		Map<uint32, Map<NVRHI::ShaderType::Enum, ShaderVars*>> _ShaderVarsForVaryingShaders;
+		Map<NVRHI::ShaderType::Enum, ShaderVars*> _ActiveShaderVars;
+
+		List<Var*> _VarsToMarkClean;
+
 	public:
 		Material(const String& name, SharedPtr<Technique> technique);
 		~Material();
@@ -118,6 +124,10 @@ namespace Hydra
 		static SharedPtr<Material> CreateOrGet(const File& source, bool precompile = true);
 
 	private:
+
+		NVRHI::PipelineStageBindings& GetPipelineStageBindingsForShaderType(NVRHI::DrawCallState& state, const NVRHI::ShaderType::Enum& type);
+
+		void SetActiveShaderVars(List<Shader*>& shaders, uint32 packId);
 
 		bool SetVariable(const String& name, const VarType::Type& type, const void* data, size_t size);
 

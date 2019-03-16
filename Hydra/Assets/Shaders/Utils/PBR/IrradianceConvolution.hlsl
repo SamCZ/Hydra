@@ -28,8 +28,8 @@ PS_Input MainVS(VS_Input input)
 	return output;
 }
 
-TextureCube EnvMap : register(t0);
-SamplerState basicSampler	: register(s0);
+TextureCube _Texture : register(t0);
+SamplerState _DefaultSampler	: register(s0);
 
 static float PI = 3.14159265359;
 
@@ -55,7 +55,7 @@ float4 MainPS(PS_Input input) : SV_TARGET
 			// tangent space to world
 			float3 sampleVec = tangentSample.x * right + tangentSample.y * up + tangentSample.z * N;
 
-			irradiance += EnvMap.Sample(basicSampler, sampleVec).rgb * cos(theta) * sin(theta);
+			irradiance += _Texture.Sample(_DefaultSampler, sampleVec).rgb * cos(theta) * sin(theta);
 			nrSamples++;
 		}
 	}

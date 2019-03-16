@@ -6,6 +6,50 @@
 
 namespace Hydra
 {
+	struct RawShaderVariable
+	{
+		unsigned int ByteOffset;
+		unsigned int Size;
+		unsigned int ConstantBufferIndex;
+	};
+
+	struct RawShaderConstantBuffer
+	{
+		String Name;
+		unsigned int Size;
+		unsigned int BindIndex;
+		NVRHI::ConstantBufferHandle ConstantBuffer;
+		unsigned char* LocalDataBuffer;
+		List<RawShaderVariable> Variables;
+		bool MarkUpdate;
+	};
+
+	struct RawShaderTextureDefine
+	{
+		unsigned int Index;
+		unsigned int BindIndex;
+		NVRHI::TextureHandle TextureHandle;
+	};
+
+	struct RawShaderSamplerDefine
+	{
+		unsigned int Index;
+		unsigned int BindIndex;
+		NVRHI::SamplerHandle SamplerHandle;
+	};
+
+	struct ShaderVars
+	{
+		NVRHI::ShaderType::Enum ShaderType;
+
+		RawShaderConstantBuffer* ConstantBuffers;
+		int ConstantBufferCount;
+
+		FastMap<String, RawShaderTextureDefine> TextureDefines;
+		FastMap<String, RawShaderSamplerDefine> SamplerDefines;
+		FastMap<String, RawShaderVariable> Variables;
+	};
+
 	class Shader
 	{
 	private:
@@ -13,6 +57,8 @@ namespace Hydra
 		NVRHI::ShaderType::Enum _Type;
 		NVRHI::ShaderHandle _Handle;
 		ID3DBlob* _Blob;
+
+		ShaderVars* _LocalShaderVarCache;
 
 	public:
 		Shader(const String& name, const NVRHI::ShaderType::Enum& type, NVRHI::ShaderHandle shaderHandle, ID3DBlob* shaderBlob);
@@ -22,6 +68,8 @@ namespace Hydra
 		ID3DBlob* GetBlob();
 		
 		NVRHI::ShaderType::Enum GetType();
+
+		ShaderVars* CreateShaderVars();
 
 	private:
 		void Initialize();

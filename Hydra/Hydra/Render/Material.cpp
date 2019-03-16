@@ -1,7 +1,9 @@
 #include "Hydra/Render/Material.h"
-#include "Hydra/Render/Technique.h"
 
+#include "Hydra/Render/Pipeline/BindingHelpers.h"
+#include "Hydra/Render/Technique.h"
 #include "Hydra/Render/Shader.h"
+#include "Hydra/Engine.h"
 
 namespace Hydra
 {
@@ -14,6 +16,8 @@ namespace Hydra
 			Map<String, String> emptyDefs;
 
 			List<Shader*> newShaders = _Technique->GetShaders(emptyDefs, false);
+
+			SetActiveShaderVars(newShaders, 0);
 
 			for (Shader* shader : newShaders)
 			{
@@ -201,7 +205,11 @@ namespace Hydra
 		{
 			_ActiveShaders.clear();
 
+			uint32 shadersId = _Technique->GetDefinesHash(_Defines);
+
 			List<Shader*> newShaders = _Technique->GetShaders(_Defines, false);
+
+			SetActiveShaderVars(newShaders, shadersId);
 
 			for (Shader* shader : newShaders)
 			{
@@ -236,6 +244,89 @@ namespace Hydra
 
 	void Material::ApplyParams(NVRHI::DrawCallState& state)
 	{
+		//TODO: Optimize this method
+
+		// Prepare constant buffers
+		_VarsToMarkClean.clear();
+
+		for(Map<NVRHI::ShaderType::Enum, ShaderVars*>::iterator it0 = _ActiveShaderVars.begin(); it0 != _ActiveShaderVars.end(); it0++)
+		{
+			ShaderVars* vars = it0->second;
+
+			// Write variable data to constant buffer
+			for(FastMap<String, RawShaderVariable>::iterator it1 = vars->Variables.begin(); it1 != vars->Variables.end(); it1++)
+			{
+				String name = it1->first;
+				RawShaderVariable& var = it1->second;
+
+				if (_Variables.find(name) != _Variables.end())
+				{
+					Var* localVar = _Variables[name];
+
+					if (localVar->HasChnaged)
+					{
+						_VarsToMarkClean.push_back(localVar);
+
+						if (var.Size != localVar->DataSize)
+						{
+							LogError("Variable size is not coresponding with source size !");
+							continue;
+						}
+
+						memcpy(vars->ConstantBuffers[var.ConstantBufferIndex].LocalDataBuffer + var.ByteOffset, localVar->Data, localVar->DataSize);
+
+						vars->ConstantBuffers[var.ConstantBufferIndex].MarkUpdate = true;
+					}
+				}
+			}
+
+			for (int i = 0; i < vars->ConstantBufferCount; i++)
+			{
+				if (vars->ConstantBuffers[i].MarkUpdate)
+				{
+					Engine::GetRenderInterface()->writeConstantBuffer(vars->ConstantBuffers[i].ConstantBuffer, vars->ConstantBuffers[i].LocalDataBuffer, vars->ConstantBuffers[i].Size);
+					vars->ConstantBuffers[i].MarkUpdate = false;
+				}
+			}
+
+			NVRHI::PipelineStageBindings& bindigs = GetPipelineStageBindingsForShaderType(state, vars->ShaderType);
+
+			for (int i = 0; i < vars->ConstantBufferCount; i++)
+			{
+				NVRHI::BindConstantBuffer(bindigs, vars->ConstantBuffers[i].BindIndex, vars->ConstantBuffers[i].ConstantBuffer);
+			}
+
+
+			for(FastMap<String, RawShaderTextureDefine>::iterator it = vars->TextureDefines.begin(); it != vars->TextureDefines.end(); it++)
+			{
+				RawShaderTextureDefine& texDefine = it->second;
+
+				if (_TextureVariables.find(it->first) != _TextureVariables.end())
+				{
+					texDefine.TextureHandle = _TextureVariables[it->first].Handle;
+				}
+
+				NVRHI::BindTexture(bindigs, texDefine.BindIndex, texDefine.TextureHandle);
+			}
+
+			for (FastMap<String, RawShaderSamplerDefine>::iterator it = vars->SamplerDefines.begin(); it != vars->SamplerDefines.end(); it++)
+			{
+				RawShaderSamplerDefine& samDefine = it->second;
+
+				if (_SamplerVariables.find(it->first) != _SamplerVariables.end())
+				{
+					samDefine.SamplerHandle = _SamplerVariables[it->first].Handle;
+				}
+
+				NVRHI::BindSampler(bindigs, it->second.BindIndex, it->second.SamplerHandle);
+			}
+		}
+
+		for (Var* var : _VarsToMarkClean)
+		{
+			var->HasChnaged = false;
+		}
+
 
 	}
 
@@ -259,6 +350,61 @@ namespace Hydra
 	SharedPtr<Material> Material::CreateOrGet(const File & source, bool precompile)
 	{
 		return CreateOrGet(source.GetPath(), source, precompile);
+	}
+
+	NVRHI::PipelineStageBindings& Material::GetPipelineStageBindingsForShaderType(NVRHI::DrawCallState& state, const NVRHI::ShaderType::Enum & type)
+	{
+		switch (type)
+		{
+		case NVRHI::ShaderType::SHADER_VERTEX:
+			return state.VS;
+			break;
+		case NVRHI::ShaderType::SHADER_HULL:
+			return state.HS;
+			break;
+		case NVRHI::ShaderType::SHADER_DOMAIN:
+			return state.DS;
+			break;
+		case NVRHI::ShaderType::SHADER_GEOMETRY:
+			return state.GS;
+			break;
+		case NVRHI::ShaderType::SHADER_PIXEL:
+			return state.PS;
+			break;
+		default:
+			LogError("Material::GetPipelineStageBindingsForShaderType", "Cannot find pipeline stage bindings for shader type : " + ToString((int)type));
+		}
+	}
+
+	void Material::SetActiveShaderVars(List<Shader*>& shaders, uint32 packId)
+	{
+		if (_ShaderVarsForVaryingShaders.find(packId) != _ShaderVarsForVaryingShaders.end())
+		{
+			_ActiveShaderVars = _ShaderVarsForVaryingShaders[packId];
+		}
+		else
+		{
+			_ActiveShaderVars.clear();
+
+			for (Shader* shader : shaders)
+			{
+				ShaderVars* vars = shader->CreateShaderVars();
+
+				for (int i = 0; i < vars->ConstantBufferCount; i++)
+				{
+					RawShaderConstantBuffer& cbuffer = vars->ConstantBuffers[i];
+
+					cbuffer.LocalDataBuffer = new unsigned char[cbuffer.Size];
+					ZeroMemory(cbuffer.LocalDataBuffer, cbuffer.Size);
+
+					cbuffer.ConstantBuffer = Engine::GetRenderInterface()->createConstantBuffer(NVRHI::ConstantBufferDesc(cbuffer.Size, cbuffer.Name.c_str()), nullptr);
+				}
+
+				_ActiveShaderVars[shader->GetType()] = vars;
+			}
+
+			_ShaderVarsForVaryingShaders[packId] = _ActiveShaderVars;
+		}
 	}
 
 	bool Material::SetVariable(const String & name, const VarType::Type & type, const void* data, size_t size)

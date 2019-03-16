@@ -25,5 +25,5 @@ Texture2D _Texture : register(t0);
 
 float4 MainPS(FullScreenQuadOutput IN) : SV_Target
 {
-	return t_SourceTexture[IN.position.xy];
+	return _Texture[IN.position.xy];
 }

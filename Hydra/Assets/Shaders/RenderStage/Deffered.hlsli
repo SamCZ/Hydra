@@ -20,9 +20,6 @@ cbuffer GlobalConstants : register(b0)
 cbuffer ModelConstants : register(b1)
 {
 	float4x4 g_ModelMatrix;
-	float3x3 g_NormalMatrix;
-	float pad;
-	float g_Opacity;
 }
 
 static float4x4 Identity = {

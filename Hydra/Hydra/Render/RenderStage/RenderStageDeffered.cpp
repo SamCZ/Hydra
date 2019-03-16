@@ -27,7 +27,7 @@ namespace Hydra {
 
 	RenderStageDeffered::RenderStageDeffered()
 	{
-		MaterialPtr basicInputMaterial = Material::CreateOrGet("InputLayout", "Assets/Shaders/Input/DefferedInput.hlsl");
+		MaterialPtr basicInputMaterial = Material::CreateOrGet("Assets/Shaders/Input/DefferedInput.hlsl");
 
 		const NVRHI::VertexAttributeDesc SceneLayout[] = {
 			{ "POSITION", 0, NVRHI::Format::RGB32_FLOAT, 0, offsetof(VertexBufferEntry, position), false },
@@ -44,7 +44,7 @@ namespace Hydra {
 
 		_InputLayout = Graphics::CreateInputLayout("Deffered", SceneLayout, _countof(SceneLayout), basicInputMaterial);
 
-		_DefaultMaterial = Material::CreateOrGet("DefaultDeffered", "Assets/Shaders/DefaultDeffered.hlsl");
+		_DefaultMaterial = Material::CreateOrGet("Assets/Shaders/DefaultDeffered.hlsl");
 		_CompositeMaterial = Material::CreateOrGet("Assets/Shaders/DefferedComposite.hlsl");
 		
 		Graphics::CreateSampler("DefaultSampler");

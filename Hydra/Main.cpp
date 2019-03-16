@@ -74,7 +74,7 @@ RendererErrorCallback g_ErrorCallback;
 using namespace Hydra;
 
 static SharedPtr<DeviceManager> _deviceManager = nullptr;
-static SharedPtr<NVRHI::RendererInterfaceD3D11> _renderInterface;
+static SharedPtr<NVRHI::RendererInterfaceD3D11> _renderInterface = nullptr;
 
 class UIRenderView : public IVisualController
 {
@@ -329,11 +329,11 @@ public:
 		cameraObj->AddComponent<FirstPersonController>();
 		rm->MainScene->AddChild(cameraObj);
 
-		/*SpatialPtr testModel = Meshimporter::Import("Assets/Sponza/SponzaNoFlag.obj", MeshImportOptions());
+		SpatialPtr testModel = Meshimporter::Import("Assets/Sponza/SponzaNoFlag.obj", MeshImportOptions());
 		testModel->Scale = Vector3(0.01f, 0.01f, 0.01f);
 		testModel->AddComponent<LodGroup>();
 		testModel->SetStatic(true);
-		rm->MainScene->AddChild(testModel);*/
+		rm->MainScene->AddChild(testModel);
 
 
 		/*SpatialPtr testModel = New(Spatial);
@@ -344,7 +344,7 @@ public:
 		rm->MainScene->AddChild(testModel);*/
 
 
-		SpatialPtr box = MakeShared<Spatial>();
+		/*SpatialPtr box = MakeShared<Spatial>();
 		RendererPtr r = box->AddComponent<Renderer>();
 		r->SetMesh(Mesh::CreatePrimitive(PrimitiveType::Box));
 		r->Mat.Albedo = TextureImporter::Import("Assets/Textures/Rock2.dds");
@@ -364,7 +364,7 @@ public:
 				Parent->Scale = Vector3(cos(Parent->Rotation.x * 0.1f) + 0.5f, sin(Parent->Rotation.y * 0.1f) + 0.5f, cos(Parent->Rotation.z * 0.1f) + 0.5f);
 			}
 		};
-		box->AddComponent<TestRotationComponent>();
+		box->AddComponent<TestRotationComponent>();*/
 
 		texLayout = MakeShared<TextureLayoutDef>();
 
@@ -406,9 +406,9 @@ public:
 		NVRHI::TextureHandle mainRenderTarget = _renderInterface->getHandleForTexture(pMainResource);
 		pMainResource->Release();
 
-		//rsd->Render(rm);
+		rsd->Render(rm);
 
-		//Graphics::Blit(rsd->GetOutputName(), mainRenderTarget);
+		Graphics::Blit(rsd->GetOutputName(), mainRenderTarget);
 
 		_renderInterface->forgetAboutTexture(pMainResource);
 	}
@@ -442,12 +442,8 @@ int main()
 	MainRenderView mainRenderView;
 	_deviceManager->AddControllerToFront(&mainRenderView);
 
-	UIRenderView uiRenderView;
-	_deviceManager->AddControllerToFront(&uiRenderView);
-
-	//GuiVisualController guiView(_deviceManager);
-	//_deviceManager->AddControllerToFront(&guiView);
-
+	//UIRenderView uiRenderView;
+	//_deviceManager->AddControllerToFront(&uiRenderView);
 
 	std::string title = "Hydra | DX11";
 

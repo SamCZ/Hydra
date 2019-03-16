@@ -17,6 +17,8 @@
 #include <set>
 #include <mutex>
 
+#include "Hydra/Core/Log.h"
+
 namespace NVRHI
 {
   using namespace Microsoft::WRL;
