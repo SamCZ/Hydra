@@ -21,6 +21,11 @@ namespace Hydra
 		std::cout << funcName << "(" << argument << "): " << message << std::endl;
 	}
 
+	inline static void LogError(const String& funcName)
+	{
+		std::cerr << funcName << std::endl;
+	}
+
 	inline static void LogError(const String& funcName, const String& message)
 	{
 		std::cerr << funcName << ": " << message << std::endl;

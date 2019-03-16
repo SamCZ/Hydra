@@ -3,7 +3,7 @@
 
 #include "Hydra/Render/Pipeline/BindingHelpers.h"
 
-#include "Hydra/Import/ShaderImporter.h"
+#include "Hydra/Render/Shader.h"
 
 namespace Hydra
 {
@@ -204,18 +204,16 @@ namespace Hydra
 
 	void Graphics::SetMaterialShaders(NVRHI::DrawCallState& state, MaterialPtr material)
 	{
-		/*state.VS.shader = shader->GetRawShader(NVRHI::ShaderType::SHADER_VERTEX);
-		state.HS.shader = shader->GetRawShader(NVRHI::ShaderType::SHADER_HULL);
-		state.DS.shader = shader->GetRawShader(NVRHI::ShaderType::SHADER_DOMAIN);
-		state.GS.shader = shader->GetRawShader(NVRHI::ShaderType::SHADER_GEOMETRY);
-		state.PS.shader = shader->GetRawShader(NVRHI::ShaderType::SHADER_PIXEL);*/
-
-		//TODO: Set sehaders from material
+		state.VS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_VERTEX);
+		state.HS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_HULL);
+		state.DS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_DOMAIN);
+		state.GS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_GEOMETRY);
+		state.PS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_PIXEL);
 	}
 
 	void Graphics::ApplyMaterialParameters(NVRHI::DrawCallState & state, MaterialPtr mateiral)
 	{
-		//TODO: Set mateiral parameters
+		mateiral->ApplyParams(state);
 	}
 
 	void Graphics::SetClearFlags(NVRHI::DrawCallState& state, const ColorRGBA& color)
@@ -449,20 +447,20 @@ namespace Hydra
 		}
 	}
 
-	InputLayoutPtr Graphics::CreateInputLayout(const String & name, const NVRHI::VertexAttributeDesc * d, uint32_t attributeCount, MaterialPtr material)
+	InputLayoutPtr Graphics::CreateInputLayout(const String& name, const NVRHI::VertexAttributeDesc * d, uint32_t attributeCount, MaterialPtr material)
 	{
 		return nullptr;
-		/*if (_InputLayouts.find(name) != _InputLayouts.end())
+		if (_InputLayouts.find(name) != _InputLayouts.end())
 		{
 			return _InputLayouts[name];
 		}
 
-		ID3DBlob* blob = shader->GetShaderBlob(NVRHI::ShaderType::SHADER_VERTEX);
+		ID3DBlob* blob = material->GetShader(NVRHI::ShaderType::SHADER_VERTEX)->GetBlob();
 		InputLayoutPtr layout = Engine::GetRenderInterface()->createInputLayout(d, attributeCount, blob->GetBufferPointer(), blob->GetBufferSize());
 
 		_InputLayouts[name] = layout;
 
-		return layout;*/
+		return layout;
 	}
 
 	InputLayoutPtr Graphics::GetInputLayout(const String & name)

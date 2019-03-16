@@ -1,10 +1,25 @@
 #include "Hydra/Render/Material.h"
 #include "Hydra/Render/Technique.h"
 
+#include "Hydra/Render/Shader.h"
+
 namespace Hydra
 {
-	Material::Material(const String & name, SharedPtr<Technique> technique) : _Name(name), _Technique(technique), _CurrentShaderHash(0)
+	Map<String, SharedPtr<Technique>> Material::_TechniqueCache;
+
+	Material::Material(const String & name, SharedPtr<Technique> technique) : _Name(name), _Technique(technique)
 	{
+		if (_Technique->IsPrecompiled())
+		{
+			Map<String, String> emptyDefs;
+
+			List<Shader*> newShaders = _Technique->GetShaders(emptyDefs, false);
+
+			for (Shader* shader : newShaders)
+			{
+				_ActiveShaders[shader->GetType()] = shader;
+			}
+		}
 	}
 
 	Material::~Material()
@@ -162,48 +177,91 @@ namespace Hydra
 		return nullptr;
 	}
 
-
-	void Material::SetKeyword(const String& name, bool value)
-	{
-		auto it = Find(_EnabledKeywords, name);
-
-		bool existInArr = it != _EnabledKeywords.end();
-
-		if (existInArr && value == false)
-		{
-			_EnabledKeywords.erase(it);
-
-			UpdateHashAndData();
-		}
-
-		if (!existInArr && value)
-		{
-			_EnabledKeywords.emplace_back(name);
-
-			UpdateHashAndData();
-		}
-	}
-
 	void Material::SetDefine(const String& name, const String& value)
 	{
+		bool updateShader = false;
 
+		auto it = _Defines.find(name);
+
+		if (it != _Defines.end())
+		{
+			if (_Defines[name] != value)
+			{
+				updateShader = true;
+			}
+			_Defines[name] = value;
+		}
+		else
+		{
+			updateShader = true;
+			_Defines[name] = value;
+		}
+
+		if (updateShader)
+		{
+			_ActiveShaders.clear();
+
+			List<Shader*> newShaders = _Technique->GetShaders(_Defines, false);
+
+			for (Shader* shader : newShaders)
+			{
+				_ActiveShaders[shader->GetType()] = shader;
+			}
+		}
 	}
 
-	SharedPtr<Material> Hydra::Material::CreateOrGet(const String & name, const File & source, bool doNotPreCompile)
+	Shader* Material::GetShader(const NVRHI::ShaderType::Enum & type)
 	{
-		//TODO: Material loading
-		SharedPtr<Technique> tech = nullptr;
-		return MakeShared<Material>("0", tech);
+		auto it = _ActiveShaders.find(type);
+
+		if (it != _ActiveShaders.end())
+		{
+			return it->second;
+		}
+
+		return nullptr;
 	}
 
-	SharedPtr<Material> Hydra::Material::CreateOrGet(const File & source, bool doNotPreCompile)
+	NVRHI::ShaderHandle Material::GetRawShader(const NVRHI::ShaderType::Enum & type)
 	{
-		//TODO: Material loading
-		SharedPtr<Technique> tech = nullptr;
-		return MakeShared<Material>("0", tech);
+		Shader* shader = GetShader(type);
+
+		if (shader != nullptr)
+		{
+			return shader->GetRaw();
+		}
+
+		return nullptr;
 	}
 
-	bool Hydra::Material::SetVariable(const String & name, const VarType::Type & type, const void* data, size_t size)
+	void Material::ApplyParams(NVRHI::DrawCallState& state)
+	{
+
+	}
+
+	SharedPtr<Material> Material::CreateOrGet(const String & name, const File & source, bool precompile)
+	{
+		SharedPtr<Technique> tech = nullptr;
+
+		if (_TechniqueCache.find(name) != _TechniqueCache.end())
+		{
+			tech = _TechniqueCache[name];
+		}
+		else
+		{
+			tech = MakeShared<Technique>(source, precompile);
+			_TechniqueCache[name] = tech;
+		}
+
+		return MakeShared<Material>(name, tech);
+	}
+
+	SharedPtr<Material> Material::CreateOrGet(const File & source, bool precompile)
+	{
+		return CreateOrGet(source.GetPath(), source, precompile);
+	}
+
+	bool Material::SetVariable(const String & name, const VarType::Type & type, const void* data, size_t size)
 	{
 		Var* var = nullptr;
 
@@ -241,8 +299,4 @@ namespace Hydra
 		return true;
 	}
 
-	void Material::UpdateHashAndData()
-	{
-		//_CurrentShaderHash = _Technique->GetKeywordHash(_EnabledKeywords);
-	}
 }

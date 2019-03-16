@@ -5,6 +5,8 @@
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
 #include "Hydra/Render/Technique.h"
 
+#include <d3d11.h>
+
 namespace Hydra
 {
 	class Technique;
@@ -52,14 +54,17 @@ namespace Hydra
 	class Material
 	{
 	private:
+		static Map<String, SharedPtr<Technique>> _TechniqueCache;
+
 		String _Name;
 		SharedPtr<Technique> _Technique;
-		List<String> _EnabledKeywords;
-		uint32 _CurrentShaderHash;
 
 		Map<String, Var*> _Variables;
 		Map<String, TextureVar> _TextureVariables;
 		Map<String, SamplerVar> _SamplerVariables;
+
+		Map<NVRHI::ShaderType::Enum, Shader*> _ActiveShaders;
+		Map<String, String> _Defines;
 
 	public:
 		Material(const String& name, SharedPtr<Technique> technique);
@@ -101,11 +106,16 @@ namespace Hydra
 		void SetSampler(const String& name, NVRHI::SamplerHandle sampler);
 		NVRHI::SamplerHandle GetSampler(const String& name);
 
-		void SetKeyword(const String& name, bool value);
+
 		void SetDefine(const String& name, const String& value);
 
-		static SharedPtr<Material> CreateOrGet(const String& name, const File& source, bool doNotPreCompile = false);
-		static SharedPtr<Material> CreateOrGet(const File& source, bool doNotPreCompile = false);
+		Shader* GetShader(const NVRHI::ShaderType::Enum& type);
+		NVRHI::ShaderHandle GetRawShader(const NVRHI::ShaderType::Enum& type);
+
+		void ApplyParams(NVRHI::DrawCallState& state);
+
+		static SharedPtr<Material> CreateOrGet(const String& name, const File& source, bool precompile = true);
+		static SharedPtr<Material> CreateOrGet(const File& source, bool precompile = true);
 
 	private:
 
@@ -153,8 +163,6 @@ namespace Hydra
 
 			return SetVariable(name, type, rawData, size);
 		}
-
-		void UpdateHashAndData();
 	};
 
 	DEFINE_PTR(Material)

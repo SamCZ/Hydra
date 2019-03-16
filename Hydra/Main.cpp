@@ -32,6 +32,8 @@
 
 #include "Hydra/Render/Pipeline/DX11/UIRendererDX11.h"
 
+#include <functional>
+
 /* Set the better graphic card for notebooks ( ͡° ͜ʖ ͡°)
 *  http://developer.download.nvidia.com/devzone/devcenter/gamegraphics/files/OptimusRenderingPolicies.pdf
 *  http://stevendebock.blogspot.com/2013/07/nvidia-optimus.html
@@ -91,6 +93,8 @@ public:
 
 		_UIRenderer = new UIRendererDX11(_deviceManager->GetDevice());
 		_UIRenderer->Create();
+
+
 
 		return S_OK;
 	}
@@ -331,9 +335,6 @@ public:
 		testModel->SetStatic(true);
 		rm->MainScene->AddChild(testModel);*/
 
-		Material* mat = new Material("Test", nullptr);
-
-
 
 		/*SpatialPtr testModel = New(Spatial);
 		RendererPtr voxelRender = testModel->AddComponent<Renderer>();
@@ -343,7 +344,7 @@ public:
 		rm->MainScene->AddChild(testModel);*/
 
 
-		/*SpatialPtr box = MakeShared<Spatial>();
+		SpatialPtr box = MakeShared<Spatial>();
 		RendererPtr r = box->AddComponent<Renderer>();
 		r->SetMesh(Mesh::CreatePrimitive(PrimitiveType::Box));
 		r->Mat.Albedo = TextureImporter::Import("Assets/Textures/Rock2.dds");
@@ -363,7 +364,7 @@ public:
 				Parent->Scale = Vector3(cos(Parent->Rotation.x * 0.1f) + 0.5f, sin(Parent->Rotation.y * 0.1f) + 0.5f, cos(Parent->Rotation.z * 0.1f) + 0.5f);
 			}
 		};
-		box->AddComponent<TestRotationComponent>();*/
+		box->AddComponent<TestRotationComponent>();
 
 		texLayout = MakeShared<TextureLayoutDef>();
 
@@ -438,8 +439,8 @@ int main()
 
 	Engine::ScreenSize = Vector2(deviceParams.backBufferWidth, deviceParams.backBufferHeight);
 
-	//MainRenderView mainRenderView;
-	//_deviceManager->AddControllerToFront(&mainRenderView);
+	MainRenderView mainRenderView;
+	_deviceManager->AddControllerToFront(&mainRenderView);
 
 	UIRenderView uiRenderView;
 	_deviceManager->AddControllerToFront(&uiRenderView);
