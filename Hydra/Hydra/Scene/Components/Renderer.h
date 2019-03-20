@@ -20,6 +20,7 @@ namespace Hydra
 	};
 
 	class Mesh;
+	class Material;
 
 	class Renderer : public Component
 	{
@@ -44,6 +45,7 @@ namespace Hydra
 
 		glm::vec3 TestColor;
 		MaterialRaw Mat;
+		SharedPtr<Material> Material;
 
 		virtual void Start();
 		virtual void Update();

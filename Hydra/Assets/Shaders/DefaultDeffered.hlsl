@@ -21,6 +21,11 @@ Texture2D _EmissionMap : register(t5);
 
 SamplerState DefaultSampler	: register(s0);
 
+cbuffer ModelData : register(b0)
+{
+	float3 _Color;
+}
+
 PS_Input OnMainVS(in VS_Input input, in PS_Input output)
 {
 	return output;
@@ -43,12 +48,17 @@ PBROutput OnMainPS(in PS_Input input)
 
 	float4 albedo = _AlbedoMap.Sample(DefaultSampler, input.texCoord);
 	//float4 albedo = TriplanarTexturing(_AlbedoMap, DefaultSampler, input.positionLS, input.normal, 1.0);
+	//float4 albedo = float4(_Color, 1.0);
 
 	output.Albedo = albedo.rgb;
-	output.Normal = normalize(input.normal);
+	output.Normal = normal;
 	output.Metallic = _MetallicMap.Sample(DefaultSampler, input.texCoord).r;
 	output.Roughness = _RoughnessMap.Sample(DefaultSampler, input.texCoord).r;
 	output.AO = 0.5;
+
+	//output.Albedo = (1.0).xxx;
+	//output.Metallic = 0.0;
+	//output.Roughness = 0.8;
 	//output.Emission = ((1.0).xxx - albedo.r) * 2;
 
 	//output.Emission = float3(0.0, 0.0, 0.0);
@@ -58,7 +68,7 @@ PBROutput OnMainPS(in PS_Input input)
 		//output.Emission = (1.0).xxx;
 	}
 
-	clip(albedo.a - 0.5);
+	//clip(albedo.a - 0.5);
 
 	return output;
 }

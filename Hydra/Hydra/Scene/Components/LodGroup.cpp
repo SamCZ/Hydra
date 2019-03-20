@@ -5,7 +5,7 @@ namespace Hydra
 {
 	void LodGroup::Start()
 	{
-		List<SpatialPtr> objectLods = Parent->FindAllApprox("L_LOD");
+		List<SpatialPtr> objectLods = GameObject->FindAllApprox("L_LOD");
 
 		for (int i = 0; i < 6; i++)
 		{
@@ -25,12 +25,12 @@ namespace Hydra
 
 	void LodGroup::Update()
 	{
-		const Vector3& objPos = Parent->Position;
+		const Vector3& objPos = GameObject->Position;
 		CameraPtr camera = Camera::MainCamera;
 
 		if (camera)
 		{
-			const Vector3& cameraPos = camera->Parent->Position;
+			const Vector3& cameraPos = camera->GameObject->Position;
 			float frustumSizeZ = camera->GetZFar() - camera->GetZNear();
 
 			float distanceToObj = glm::abs(glm::distance(cameraPos, objPos));

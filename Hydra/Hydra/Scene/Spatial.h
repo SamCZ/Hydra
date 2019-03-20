@@ -17,7 +17,7 @@ namespace Hydra
 
 	class Spatial : public Transformable
 	{
-	private:
+	protected:
 		List<SpatialPtr> _Childs;
 		List<ComponentPtr> _Components;
 		bool _Enabled;
@@ -43,8 +43,8 @@ namespace Hydra
 
 		SpatialPtr GetChild(int index);
 
-		void Start();
-		void Update();
+		virtual void Start();
+		virtual void Update();
 
 		void PrintHiearchy(int depth = 0) const;
 
@@ -62,6 +62,8 @@ namespace Hydra
 		bool IsStatic();
 
 		Matrix4& GetStaticModelMatrix();
+
+		Vector3 GetDirection();
 
 		template<class T> FORCEINLINE SharedPtr<T> GetComponent()
 		{
@@ -89,7 +91,7 @@ namespace Hydra
 			if (component == nullptr)
 			{
 				component = New(T);
-				component->Parent = this;
+				component->GameObject = this;
 				_Components.push_back(component);
 
 				if (T_IS(T, Camera))

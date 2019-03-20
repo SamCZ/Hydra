@@ -32,8 +32,8 @@ HullInputType ColorVertexShader(VS_Input input)
 
 cbuffer TessellationBuffer : register(b0)
 {
-	float tessellationAmount;
-	float3 padding;
+	//float tessellationAmount;
+	//float3 padding;
 };
 
 struct ConstantOutputType
@@ -51,6 +51,8 @@ struct HullOutputType
 ConstantOutputType ColorPatchConstantFunction(InputPatch<HullInputType, 3> inputPatch, uint patchId : SV_PrimitiveID)
 {
 	ConstantOutputType output;
+
+	float tessellationAmount = 20.0;
 
 	// Set the tessellation factors for the three edges of the triangle.
 	output.edges[0] = tessellationAmount;
@@ -91,9 +93,6 @@ cbuffer GlobalConstants : register(b0)
 	float4x4 g_ProjectionMatrix;
 	float4x4 g_ViewMatrix;
 	float4x4 g_ModelMatrix;
-	float3x3 g_NormalMatrix;
-	float2 space0;
-	float3 g_TestColor;
 }
 
 struct PixelInputType
@@ -133,5 +132,5 @@ PixelInputType ColorDomainShader(ConstantOutputType input, float3 uvwCoord : SV_
 
 float4 ColorPixelShader(PixelInputType input) : SV_TARGET
 {
-	return input.color;
+	return (1.0).xxxx;
 }

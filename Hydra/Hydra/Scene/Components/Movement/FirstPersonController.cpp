@@ -7,7 +7,7 @@ namespace Hydra
 {
 	void FirstPersonController::Start()
 	{
-		_Camera = Parent->GetComponent<Camera>();
+		_Camera = GameObject->GetComponent<Camera>();
 
 		if (_Camera.expired())
 		{
@@ -42,7 +42,7 @@ namespace Hydra
 
 		if (auto camera = _Camera.lock())
 		{
-			camera->Parent->Position += camera->GetForward() * val * -0.01f;
+			camera->GameObject->Position += camera->GetForward() * val * -0.01f;
 		}
 	}
 
@@ -52,7 +52,7 @@ namespace Hydra
 
 		if (auto camera = _Camera.lock())
 		{
-			camera->Parent->Position += camera->GetLeft() * val * -0.01f;
+			camera->GameObject->Position += camera->GetLeft() * val * -0.01f;
 		}
 	}
 
@@ -62,7 +62,7 @@ namespace Hydra
 
 		if (auto camera = _Camera.lock())
 		{
-			float& RotX = camera->Parent->Rotation.x;
+			float& RotX = camera->GameObject->Rotation.x;
 
 			RotX += val;
 
@@ -83,7 +83,7 @@ namespace Hydra
 
 		if (auto camera = _Camera.lock())
 		{
-			float& RotY = camera->Parent->Rotation.y;
+			float& RotY = camera->GameObject->Rotation.y;
 
 			RotY += val;
 

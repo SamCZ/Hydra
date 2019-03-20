@@ -84,8 +84,8 @@ namespace Hydra
 
 		NVRHI::TextureDesc desc = pDest->GetDesc();
 
-		float width = Engine::ScreenSize.x;
-		float height = Engine::ScreenSize.y;
+		float width = (float)Engine::ScreenSize.x;
+		float height = (float)Engine::ScreenSize.y;
 
 		// Horizontal blur
 		Composite(_BlurMaterial, [pSource, width, height](NVRHI::DrawCallState& state) {
@@ -205,9 +205,9 @@ namespace Hydra
 	void Graphics::SetMaterialShaders(NVRHI::DrawCallState& state, MaterialPtr material)
 	{
 		state.VS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_VERTEX);
-		//state.HS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_HULL);
-		//state.DS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_DOMAIN);
-		//state.GS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_GEOMETRY);
+		state.HS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_HULL);
+		state.DS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_DOMAIN);
+		state.GS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_GEOMETRY);
 		state.PS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_PIXEL);
 	}
 
@@ -342,7 +342,7 @@ namespace Hydra
 		gbufferDesc.width = width;
 		gbufferDesc.height = height;
 		gbufferDesc.isRenderTarget = true;
-		gbufferDesc.useClearValue = false;
+		gbufferDesc.useClearValue = true;
 		gbufferDesc.sampleCount = sampleCount;
 		gbufferDesc.disableGPUsSync = true;
 
@@ -490,6 +490,28 @@ namespace Hydra
 		samplerDesc.anisotropy = 16;
 
 		SamplerPtr sampler = Engine::GetRenderInterface()->createSampler(samplerDesc);
+
+		_Samplers[name] = sampler;
+
+		return sampler;
+	}
+
+	SamplerPtr Hydra::Graphics::CreateShadowCompareSampler(const String & name)
+	{
+		if (_Samplers.find(name) != _Samplers.end())
+		{
+			return _Samplers[name];
+		}
+
+		NVRHI::SamplerDesc samplerComparisonDesc;
+		samplerComparisonDesc.wrapMode[0] = NVRHI::SamplerDesc::WRAP_MODE_BORDER;
+		samplerComparisonDesc.wrapMode[1] = NVRHI::SamplerDesc::WRAP_MODE_BORDER;
+		samplerComparisonDesc.wrapMode[2] = NVRHI::SamplerDesc::WRAP_MODE_BORDER;
+		samplerComparisonDesc.minFilter = samplerComparisonDesc.magFilter = true;
+		samplerComparisonDesc.shadowCompare = true;
+		samplerComparisonDesc.borderColor = NVRHI::Color(0.f);
+
+		SamplerPtr sampler = Engine::GetRenderInterface()->createSampler(samplerComparisonDesc);
 
 		_Samplers[name] = sampler;
 

@@ -26,4 +26,31 @@ namespace Hydra
 
 		return tranform;*/
 	}
+
+	Vector3 Transformable::GetRotationColumn(Matrix4& mat, int i)
+	{
+		Matrix4 trns = glm::transpose(mat);
+
+		Vector3 store;
+
+		store.x = trns[i][0];
+		store.y = trns[i][1];
+		store.z = trns[i][2];
+		return store;
+	}
+
+	Vector3 Transformable::GetForward(Matrix4 & mat)
+	{
+		return GetRotationColumn(mat, 2);
+	}
+
+	Vector3 Transformable::GetLeft(Matrix4 & mat)
+	{
+		return GetRotationColumn(mat, 0);
+	}
+
+	Vector3 Transformable::GetUp(Matrix4 & mat)
+	{
+		return GetRotationColumn(mat, 1);
+	}
 }

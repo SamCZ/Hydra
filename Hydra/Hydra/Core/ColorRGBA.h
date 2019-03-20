@@ -23,4 +23,11 @@ namespace Hydra
 	ColorRGBA MakeRGBf(float r, float g, float b);
 	ColorRGBA MakeRGBAf(float r, float g, float b, float a);
 	ColorRGBA MakeHEX(const char* hex);
+
+	struct Colors
+	{
+		static ColorRGBA Red;
+		static ColorRGBA Green;
+		static ColorRGBA Blue;
+	};
 }

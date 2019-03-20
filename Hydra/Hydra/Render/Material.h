@@ -12,6 +12,11 @@ namespace Hydra
 	class Technique;
 	class Shader;
 	struct ShaderVars;
+	
+	struct StorageStruct
+	{
+
+	};
 
 	struct VarType
 	{
@@ -27,7 +32,9 @@ namespace Hydra
 			Matrix3,
 			Matrix4,
 
-			Vector4Array
+			Vector4Array,
+			StorageStruct,
+			StorageStructArray
 		};
 	};
 
@@ -106,6 +113,9 @@ namespace Hydra
 		void SetMatrix4(const String& name, const Matrix4& mat);
 		bool GetMatrix4(const String& name, Matrix4* outMat);
 
+		void SetStruct(const String& name, StorageStruct& s, size_t size);
+		void SetStructArray(const String& name, void* s, size_t size);
+
 		void SetTexture(const String& name, NVRHI::TextureHandle texture);
 		NVRHI::TextureHandle GetTexture(const String& name);
 
@@ -125,7 +135,7 @@ namespace Hydra
 
 	private:
 
-		NVRHI::PipelineStageBindings& GetPipelineStageBindingsForShaderType(NVRHI::DrawCallState& state, const NVRHI::ShaderType::Enum& type);
+		NVRHI::PipelineStageBindings* GetPipelineStageBindingsForShaderType(NVRHI::DrawCallState& state, const NVRHI::ShaderType::Enum& type);
 
 		void SetActiveShaderVars(List<Shader*>& shaders, uint32 packId);
 

@@ -10,7 +10,7 @@ namespace Hydra
 	CameraPtr Camera::MainCamera;
 	List<CameraPtr> Camera::AllCameras;
 
-	Camera::Camera() : _FovY(75.0f), _Znear(0.1f), _Zfar(1000.0f)
+	Camera::Camera() : _FovY(75.0f), _Znear(0.05f), _Zfar(1000.0f)
 	{
 
 	}
@@ -24,8 +24,8 @@ namespace Hydra
 
 	void Camera::Update()
 	{
-		Vector3 location = Parent->Position;
-		Vector3 rotation = Parent->Rotation;
+		Vector3 location = GameObject->Position;
+		Vector3 rotation = GameObject->Rotation;
 
 		_ViewMatrix = glm::mat4();
 		// define your up vector
@@ -90,31 +90,19 @@ namespace Hydra
 		return _ViewProjectionMatrix;
 	}
 
-	Vector3 GetRotationColumn(Matrix4 mat, int i)
-	{
-		Matrix4 trns = glm::transpose(mat);
-
-		Vector3 store;
-
-		store.x = trns[i][0];
-		store.y = trns[i][1];
-		store.z = trns[i][2];
-		return store;
-	}
-
 	Vector3 Camera::GetForward()
 	{
-		return GetRotationColumn(GetViewMatrix(), 2);
+		return Transformable::GetForward(GetViewMatrix());
 	}
 
 	Vector3 Camera::GetLeft()
 	{
-		return GetRotationColumn(GetViewMatrix(), 0);
+		return Transformable::GetLeft(GetViewMatrix());
 	}
 
 	Vector3 Camera::GetUp()
 	{
-		return GetRotationColumn(GetViewMatrix(), 1);
+		return Transformable::GetUp(GetViewMatrix());
 	}
 
 	float Camera::GetZNear()

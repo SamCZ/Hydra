@@ -23,6 +23,7 @@
 #include "Hydra/Scene/Components/Camera.h"
 #include "Hydra/Scene/Components/Movement/FirstPersonController.h"
 #include "Hydra/Scene/Components/LodGroup.h"
+#include "Hydra/Scene/Components/Light.h"
 
 #include "Hydra/Input/Windows/WindowsInputManager.h"
 
@@ -32,7 +33,20 @@
 
 #include "Hydra/Render/Pipeline/DX11/UIRendererDX11.h"
 
+#include "ImGui/imgui.h"
+#include "ImGui/ImGuizmo.h"
+//#include "ImGui/imgui_helper.h"
+
+#include "ImGui/imgui_impl_dx11.h"
+#include "ImGui/imgui_style.h"
+
 #include <functional>
+
+#include "Hydra/Render/TestVars.h"
+
+#include "Hydra/Terrain/Terrain.h"
+
+
 
 /* Set the better graphic card for notebooks ( ͡° ͜ʖ ͡°)
 *  http://developer.download.nvidia.com/devzone/devcenter/gamegraphics/files/OptimusRenderingPolicies.pdf
@@ -75,6 +89,8 @@ using namespace Hydra;
 
 static SharedPtr<DeviceManager> _deviceManager = nullptr;
 static SharedPtr<NVRHI::RendererInterfaceD3D11> _renderInterface = nullptr;
+static SpatialPtr lightObj = nullptr;
+
 
 class UIRenderView : public IVisualController
 {
@@ -114,12 +130,62 @@ public:
 
 		_UIRenderer->Begin();
 
-		_UIRenderer->DrawRect(100, 100, 100, 25, MakeRGB(255, 255, 255));
-		_UIRenderer->DrawString("Yoooo", 110, 100, 20, MakeRGB(0, 0, 0));
+		_UIRenderer->DrawImage(Graphics::GetRenderTarget("DirLight_ShadowMa_ColorTest"), 0, 0, 100, 100, 0.0f);
 
 		_UIRenderer->End();
 
 		_renderInterface->forgetAboutTexture(pMainResource);
+	}
+
+	inline void BackBufferResized(uint32_t width, uint32_t height, uint32_t sampleCount) override
+	{
+		Engine::ScreenSize = Vector2(width, height);
+	}
+};
+
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+class ImGuiRenderView : public IVisualController
+{
+private:
+
+public:
+	inline HRESULT DeviceCreated() override
+	{
+		ImGui_ImplDX11_Init(_deviceManager->GetHWND(), _deviceManager->GetDevice(), _deviceManager->GetImmediateContext());
+
+		ImGui::StyleColorsClassic();
+		ImGui_CustomStyle();
+		return S_OK;
+	}
+
+	inline void DeviceDestroyed() override
+	{
+		ImGui_ImplDX11_Shutdown();
+	}
+
+	virtual LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override
+	{
+		ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
+		return 1;
+	}
+
+	void Render(RenderTargetView RTV) override
+	{
+		(void)RTV;
+		ImGui_ImplDX11_NewFrame();
+
+		ImGui::DragFloat("Left", &Test::OR_LEFT, 0.1f);
+		ImGui::DragFloat("Right", &Test::OR_RIGHT, 0.1f);
+		ImGui::DragFloat("Bottom", &Test::OR_BOTTOM, 0.1f);
+		ImGui::DragFloat("Top", &Test::OR_TOP, 0.1f);
+
+		ImGui::DragFloat("Near", &Test::OR_NEAR, 0.1f);
+		ImGui::DragFloat("Far", &Test::OR_FAR, 0.1f);
+
+		ImGui::DragFloat("Bias", &lightObj->GetComponent<Light>()->DepthBias, 0.0001f);
+
+		ImGui::Render();
 	}
 
 	inline void BackBufferResized(uint32_t width, uint32_t height, uint32_t sampleCount) override
@@ -136,6 +202,8 @@ public:
 	RenderManagerPtr rm;
 	RenderStageDefferedPtr rsd;
 	TextureLayoutDefPtr texLayout;
+
+	
 
 	inline LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
@@ -267,6 +335,8 @@ public:
 
 		mesh->GenerateNormals();
 
+		mesh->UpdateBuffers();
+
 		Log("GenerateTerrain", "yo...");
 
 		return mesh;
@@ -284,15 +354,45 @@ public:
 		Graphics::GetTechnique("SSAO")->Recompile(true);*/
 	}
 
+	inline void RotX(float val)
+	{
+		lightObj->Rotation.x += val * 0.1f;
+	}
+
+	inline void RotY(float val)
+	{
+		lightObj->Rotation.y += val * 0.1f;
+	}
+
+	inline void AddPointLight()
+	{
+		SpatialPtr pl = MakeShared<Spatial>("Light");
+		pl->Position = Camera::MainCamera->GameObject->Position;
+
+		LightPtr light = pl->AddComponent<Light>();
+
+		light->Type = LightType::Point;
+		light->Range = 2;
+		light->Color = MakeRGB(20, 100, 200);
+
+		rm->MainScene->AddChild(pl);
+	}
+
 	inline HRESULT DeviceCreated() override
 	{
 		Log("MainRenderView::DeviceCreated");
 
 		_InputManager = MakeShared<WindowsInputManager>();
 
+		_InputManager->AddAxisMapping("RotX", Keys::I, 1.0f);
+		_InputManager->AddAxisMapping("RotX", Keys::K, -1.0f);
+
+		_InputManager->AddAxisMapping("RotY", Keys::J, 1.0f);
+		_InputManager->AddAxisMapping("RotY", Keys::L, -1.0f);
+
+
 		_InputManager->AddAxisMapping("MoveForwardBackward", Keys::W, 1.0f);
 		_InputManager->AddAxisMapping("MoveForwardBackward", Keys::S, -1.0f);
-
 		_InputManager->AddAxisMapping("MoveLeftRight", Keys::A, 1.0f);
 		_InputManager->AddAxisMapping("MoveLeftRight", Keys::D, -1.0f);
 
@@ -304,6 +404,13 @@ public:
 
 		_InputManager->AddActionMapping("F5", Keys::F5);
 		_InputManager->BindAction("F5", IE_Pressed, this, &MainRenderView::RecompileDefaultShader);
+
+		_InputManager->BindAxis("RotX", this, &MainRenderView::RotX);
+		_InputManager->BindAxis("RotY", this, &MainRenderView::RotY);
+
+
+		_InputManager->AddActionMapping("Space", Keys::SpaceBar);
+		_InputManager->BindAction("Space", IE_Pressed, this, &MainRenderView::AddPointLight);
 
 		Engine::SetInputManager(_InputManager);
 
@@ -329,11 +436,24 @@ public:
 		cameraObj->AddComponent<FirstPersonController>();
 		rm->MainScene->AddChild(cameraObj);
 
+		{
+			lightObj = MakeShared<Spatial>("Light");
+			//lightObj->Position = Vector3(-50.0f, 1300.0f, -40.0f);
+			lightObj->Position = Vector3(0, 10, 0);
+			lightObj->Rotation = Vector3(-90, 0, 0.0f);
+			LightPtr light = lightObj->AddComponent<Light>();
+			light->ShadowType = ShadowType::Soft;
+			light->Intensity = 1.0f;
+			rm->MainScene->AddChild(lightObj);
+		}
+
 		SpatialPtr testModel = Meshimporter::Import("Assets/Sponza/SponzaNoFlag.obj", MeshImportOptions());
+		//SpatialPtr testModel = Meshimporter::Import("Assets/IndustryEmpire/Models/BrickFactory.fbx", MeshImportOptions());
 		testModel->Scale = Vector3(0.01f, 0.01f, 0.01f);
-		testModel->AddComponent<LodGroup>();
+		//testModel->AddComponent<LodGroup>();
 		testModel->SetStatic(true);
 		rm->MainScene->AddChild(testModel);
+
 
 
 		/*SpatialPtr testModel = New(Spatial);
@@ -442,8 +562,11 @@ int main()
 	MainRenderView mainRenderView;
 	_deviceManager->AddControllerToFront(&mainRenderView);
 
-	//UIRenderView uiRenderView;
-	//_deviceManager->AddControllerToFront(&uiRenderView);
+	UIRenderView uiRenderView;
+	_deviceManager->AddControllerToFront(&uiRenderView);
+
+	ImGuiRenderView imGuiRenderView;
+	_deviceManager->AddControllerToFront(&imGuiRenderView);
 
 	std::string title = "Hydra | DX11";
 

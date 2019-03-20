@@ -5,11 +5,15 @@
 
 namespace Hydra
 {
+	class Renderer;
+	class Light;
+
 	class RenderStageDeffered : public RenderStage
 	{
 	private:
 		InputLayoutPtr _InputLayout;
 		MaterialPtr _DefaultMaterial;
+		MaterialPtr _ShadowMaterial;
 		MaterialPtr _CompositeMaterial;
 
 		MaterialPtr _PostEmissionPreMaterial;
@@ -24,6 +28,8 @@ namespace Hydra
 	public:
 		RenderStageDeffered();
 		~RenderStageDeffered();
+
+		void RenderLights(List<SharedPtr<Renderer>>& renderers, List<SharedPtr<Light>>& lights);
 
 		virtual void Render(RenderManagerPtr rm) override;
 

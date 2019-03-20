@@ -5,6 +5,7 @@
 #include "Hydra/Core/File.h"
 #include "Hydra/Scene/Components/Renderer.h"
 #include "Hydra/Scene/Components/Camera.h"
+#include "Hydra/Scene/Components/Light.h"
 #include "Hydra/Scene/Spatial.h"
 #include "Hydra/Render/Mesh.h"
 #include "Hydra/Import/TextureImporter.h"
@@ -13,6 +14,8 @@
 #include <algorithm>
 #include <random>
 
+#include "Hydra/Render/TestVars.h"
+
 namespace Hydra {
 
 	static float AO_Radius = 0.085f;
@@ -20,10 +23,39 @@ namespace Hydra {
 	static float AO_Intensity = 1.0f;
 	static bool AO_Preview = true;
 
+	static const UINT ShadowMapSize = 2048;
+
 	float lerp(float a, float b, float f)
 	{
 		return a + f * (b - a);
 	}
+
+	struct alignas(16) DirLight : public StorageStruct
+	{
+		Vector4 Color;
+		Vector3 Direction;
+		float Intensity;
+		float DepthBias;
+		float ShadowType;
+		Vector2 _Pad0;
+	};
+
+	struct alignas(16) PointLight
+	{
+		alignas(16)
+		Vector4 DiffuseColor;
+		//------------------------
+		alignas(16)
+		Vector3 Position;
+		float Range;
+		//-----------------------
+		alignas(16)
+		Vector3 Attenuate;
+		float pad;
+		//-----------------------
+	};
+
+	static PointLight PointLights[64];
 
 	RenderStageDeffered::RenderStageDeffered()
 	{
@@ -193,20 +225,119 @@ namespace Hydra {
 		_PostSSAOMaterial = Material::CreateOrGet("SSAO", "Assets/Shaders/PostProcess/SSAO.hlsl");
 
 		_MultMaterial = Material::CreateOrGet("Assets/Shaders/Mult.hlsl");
+
+		_ShadowMaterial = Material::CreateOrGet("Assets/Shaders/RenderStage/Shadow.hlsl");
+
+		Graphics::CreateShadowCompareSampler("ShadowSampler");
 	}
 
 	RenderStageDeffered::~RenderStageDeffered()
 	{
 	}
 
+	Matrix4 Transform(const Vector3& location, const Vector3& rotation)
+	{
+		Matrix4 ViewMatrix = glm::mat4();
+		// define your up vector
+		glm::vec3 upVector = glm::vec3(0, 1, 0);
+		// rotate around to a given bearing: yaw
+		glm::mat4 camera = glm::rotate(glm::mat4(), glm::radians(rotation.y), upVector);
+		// Define the 'look up' axis, should be orthogonal to the up axis
+		glm::vec3 pitchVector = glm::vec3(1, 0, 0);
+		// rotate around to the required head tilt: pitch
+		camera = glm::rotate(camera, glm::radians(rotation.x), pitchVector);
+
+		glm::vec3 rollVector = glm::vec3(0, 0, 1);
+		camera = glm::rotate(camera, glm::radians(rotation.z), rollVector);
+
+		// now get the view matrix by taking the camera inverse
+		return glm::inverse(camera) * glm::translate(glm::vec3(-location.x, -location.y, -location.z));
+	}
+
+	void RenderStageDeffered::RenderLights(List<SharedPtr<Renderer>>& renderers, List<SharedPtr<Light>>& lights)
+	{
+		LightPtr dirLight = nullptr;
+		for (LightPtr light : lights)
+		{
+			if (light->Type == LightType::Directional)
+			{
+				dirLight = light;
+			}
+		}
+
+		static float r = 0;
+		
+		Matrix4 viewMatrix = Transform(Vector3(0, 15, 0), dirLight->GameObject->Rotation);
+		Matrix4 projMatrix = glm::ortho(Test::OR_LEFT, Test::OR_RIGHT, Test::OR_BOTTOM, Test::OR_TOP, Test::OR_NEAR, Test::OR_FAR);
+		
+		NVRHI::DrawCallState state;
+		state.renderState.targetCount = 1;
+		state.renderState.targets[0] = Graphics::GetRenderTarget("DirLight_ShadowMa_ColorTest");
+		state.renderState.depthTarget = Graphics::GetRenderTarget("DirLight_ShadowMap");
+		state.renderState.clearDepthTarget = true;
+		state.renderState.clearColorTarget = true;
+		state.renderState.viewportCount = 1;
+		state.renderState.viewports[0] = NVRHI::Viewport(float(ShadowMapSize), float(ShadowMapSize));
+		state.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_NONE;
+		state.renderState.rasterState.depthBias = 16;
+		state.renderState.rasterState.slopeScaledDepthBias = 4.0f;
+
+		state.inputLayout = _InputLayout;
+		state.VS.shader = _ShadowMaterial->GetRawShader(NVRHI::ShaderType::SHADER_VERTEX);
+		state.PS.shader = _ShadowMaterial->GetRawShader(NVRHI::ShaderType::SHADER_PIXEL);
+
+		_ShadowMaterial->SetMatrix4("g_ProjectionMatrix", projMatrix);
+		_ShadowMaterial->SetMatrix4("g_ViewMatrix", viewMatrix);
+
+		for (int i = 0; i < renderers.size(); i++)
+		{
+			RendererPtr& r = renderers[i];
+
+			r->WriteDataToState(state);
+
+
+			if (r->GameObject->IsStatic())
+			{
+				_ShadowMaterial->SetMatrix4("g_ModelMatrix", r->GameObject->GetStaticModelMatrix());
+			}
+			else
+			{
+				_ShadowMaterial->SetMatrix4("g_ModelMatrix", r->GameObject->GetModelMatrix());
+			}
+
+			Graphics::ApplyMaterialParameters(state, _ShadowMaterial);
+
+
+
+			Engine::GetRenderInterface()->drawIndexed(state, &r->GetDrawArguments(), 1);
+
+			state.renderState.clearColorTarget = false;
+			state.renderState.clearDepthTarget = false;
+		}
+
+
+	}
+
 	void RenderStageDeffered::Render(RenderManagerPtr rm)
 	{
 		List<RendererPtr> activeRenderers = rm->GetRenderersForStage(GetName());
+		List<LightPtr> lights = rm->GetLights(GetName());
+		 
+		LightPtr dirLight = nullptr;
+		for (LightPtr light : lights)
+		{
+			if (light->Type == LightType::Directional)
+			{
+				dirLight = light;
+			}
+		}
 
+		
+		RenderLights(activeRenderers, lights);
+
+		//if (true) return;
 
 		CameraPtr camera = Camera::MainCamera;
-
-		Engine::GetRenderInterface()->beginRenderingPass();
 
 		NVRHI::DrawCallState state;
 		Graphics::SetClearFlags(state, MakeRGBAf(0.0f, 0.0f, 0.0f, 0.0f));
@@ -226,6 +357,7 @@ namespace Hydra {
 
 		state.renderState.depthStencilState.depthEnable = true;
 		state.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_NONE;
+		//state.renderState.rasterState.fillMode = NVRHI::RasterState::FILL_LINE;
 
 		_DefaultMaterial->SetSampler("DefaultSampler", Graphics::GetSampler("DefaultSampler"));
 
@@ -236,8 +368,22 @@ namespace Hydra {
 		{
 			RendererPtr& r = activeRenderers[i];
 
-			//if (r->Enabled == false || r->Parent->IsEnabled() == false) continue;
+			if (r->Enabled == false || r->GameObject->IsEnabled() == false) continue;
 
+			MaterialPtr material = _DefaultMaterial;
+
+			if (r->Material != nullptr)
+			{
+				material = r->Material;
+			}
+
+			if (material != _DefaultMaterial)
+			{
+				Graphics::SetMaterialShaders(state, material);
+
+				material->SetMatrix4("g_ProjectionMatrix", camera->GetProjectionMatrix());
+				material->SetMatrix4("g_ViewMatrix", camera->GetViewMatrix());
+			}
 			
 
 			_DefaultMaterial->SetTexture("_AlbedoMap", r->Mat.Albedo);
@@ -261,18 +407,18 @@ namespace Hydra {
 			r->WriteDataToState(state);
 			
 
-			if (r->Parent->IsStatic())
+			if (r->GameObject->IsStatic())
 			{
-				_DefaultMaterial->SetMatrix4("g_ModelMatrix", r->Parent->GetStaticModelMatrix());
+				material->SetMatrix4("g_ModelMatrix", r->GameObject->GetStaticModelMatrix());
 			}
 			else
 			{
-				_DefaultMaterial->SetMatrix4("g_ModelMatrix", r->Parent->GetModelMatrix());
+				material->SetMatrix4("g_ModelMatrix", r->GameObject->GetModelMatrix());
 			}
 
+			material->SetVector3("_Color", r->TestColor);
 
-
-			Graphics::ApplyMaterialParameters(state, _DefaultMaterial);
+			Graphics::ApplyMaterialParameters(state, material);
 
 
 
@@ -282,13 +428,53 @@ namespace Hydra {
 			state.renderState.clearDepthTarget = false;
 		}
 
-		Engine::GetRenderInterface()->endRenderingPass();
 
 		//Composite data
 
-		Graphics::Composite(_CompositeMaterial, [this, camera](NVRHI::DrawCallState& state)
+		Graphics::Composite(_CompositeMaterial, [this, camera, dirLight, lights](NVRHI::DrawCallState& state)
 		{
 			_CompositeMaterial->SetSampler("DefaultSampler", Graphics::GetSampler("DefaultSampler"));
+
+			//Shadow begin
+			Matrix4 viewMatrix = Transform(Vector3(0, 15, 0), dirLight->GameObject->Rotation);
+			Matrix4 projMatrix = glm::ortho(Test::OR_LEFT, Test::OR_RIGHT, Test::OR_BOTTOM, Test::OR_TOP, Test::OR_NEAR, Test::OR_FAR);
+
+			_CompositeMaterial->SetSampler("ShadowSampler", Graphics::GetSampler("ShadowSampler"));
+			_CompositeMaterial->SetTexture("DirLight_ShadowMap", Graphics::GetRenderTarget("DirLight_ShadowMap"));
+			
+			_CompositeMaterial->SetFloat("g_rShadowMapSize", 1.0f / ShadowMapSize);
+			_CompositeMaterial->SetMatrix4("g_LightViewProjMatrix", projMatrix * viewMatrix);
+			_CompositeMaterial->SetFloat("g_Bias", dirLight->DepthBias);
+
+			DirLight lightStorage = {};
+			lightStorage.Color = dirLight->Color.toVec4();
+			lightStorage.Direction = glm::normalize(Transformable::GetForward(dirLight->GameObject->GetModelMatrix()));
+			lightStorage.Intensity = dirLight->Intensity;
+			lightStorage.DepthBias = dirLight->DepthBias;
+			lightStorage.ShadowType = (int)dirLight->ShadowType;
+
+			_CompositeMaterial->SetStruct("g_DirLight", lightStorage, sizeof(DirLight));
+
+			int nextPointLightIndex = 0;
+			for (LightPtr light : lights)
+			{
+				if (light->Type == LightType::Point)
+				{
+					PointLight& pl = PointLights[nextPointLightIndex];
+
+					pl.DiffuseColor = light->Color.toVec4();
+					pl.Range = light->Range;
+					pl.Position = light->GameObject->Position;
+
+					nextPointLightIndex++;
+				}
+			}
+
+			_CompositeMaterial->SetStructArray("g_PointLights", PointLights, sizeof(PointLight) * 64);
+			_CompositeMaterial->SetFloat("g_PointLightCount", nextPointLightIndex);
+
+
+			//Shadow end
 
 			_CompositeMaterial->SetTexture("AlbedoMetallic", Graphics::GetRenderTarget("DPBR_AlbedoMetallic"));
 			_CompositeMaterial->SetTexture("NormalRoughness", Graphics::GetRenderTarget("DPBR_NormalRoughness"));
@@ -300,7 +486,7 @@ namespace Hydra {
 			_CompositeMaterial->SetTexture("skyPrefilter", Graphics::GetRenderTarget("EnvMap"));
 			_CompositeMaterial->SetTexture("brdfLUT", Graphics::GetRenderTarget("DPBR_BrdfLut"));
 
-			_CompositeMaterial->SetVector3("ViewPos", camera->Parent->Position);
+			_CompositeMaterial->SetVector3("ViewPos", camera->GameObject->Position);
 
 			Graphics::ApplyMaterialParameters(state, _CompositeMaterial);
 
@@ -397,7 +583,13 @@ namespace Hydra {
 		Graphics::ReleaseRenderTarget("DPBR_POST_SSAO");
 		Graphics::ReleaseRenderTarget("DPBR_POST_SSAOBlurred");
 
+		Graphics::ReleaseRenderTarget("DirLight_ShadowMap");
+		Graphics::ReleaseRenderTarget("DirLight_ShadowMa_ColorTest");
+
 		// WARNING CLEAR VALUE DOEST WORK ! TARGET IS CLEARED BY DrawCallArguments clear color value !
+		
+		Graphics::CreateRenderTarget("DirLight_ShadowMap", NVRHI::Format::D24S8, ShadowMapSize, ShadowMapSize, NVRHI::Color(1.f, 0.f, 0.f, 0.f), 1);
+		Graphics::CreateRenderTarget("DirLight_ShadowMa_ColorTest", NVRHI::Format::RGBA8_UNORM, ShadowMapSize, ShadowMapSize, NVRHI::Color(0.f, 0.f, 0.f, 1.f), 1);
 
 		TexturePtr albedoMetallic = Graphics::CreateRenderTarget("DPBR_AlbedoMetallic", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(0.f), sampleCount);
 		TexturePtr normalRoughness = Graphics::CreateRenderTarget("DPBR_NormalRoughness", NVRHI::Format::RGBA16_FLOAT, width, height, NVRHI::Color(0.f), sampleCount);

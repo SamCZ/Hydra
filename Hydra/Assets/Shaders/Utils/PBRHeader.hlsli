@@ -15,7 +15,9 @@ struct DirectionalLight
 	float3 Direction;
 	float Intensity;
 	//------------------------
-
+	float DepthBias;
+	float ShadowType;
+	float2 _Pad0;
 };
 
 struct AmbientLight
@@ -26,40 +28,40 @@ struct AmbientLight
 
 struct PointLight
 {
-	float4 diffuseColor;
+	float4 DiffuseColor;
 	//------------------------
-	float3 position;
-	float range;
+	float3 Position;
+	float Range;
 	//-----------------------
-	float3 attenuate;
+	float3 Attenuate;
 	float pad;
 	//-----------------------
 };
 
 struct SpotLight
 {
-	float4 diffuseColor;
+	float4 DiffuseColor;
 	//-------------------------
-	float3 position;
-	float range;
+	float3 Position;
+	float Range;
 	//-------------------------
-	float3 direction;
-	float spot;
+	float3 Direction;
+	float Spot;
 	//-------------------------
-	float3 attenuate;
+	float3 Attenuate;
 	float pad;
 	//-------------------------
 };
 
-cbuffer ExternalData : register(b1)
+cbuffer ExternalData : register(b0)
 {
-	/*DirectionalLight dirLight_1;
+	DirectionalLight g_DirLight;
 	AmbientLight ambientLight;
 	SpotLight spotLight;
-	float3 cameraPosition;
-	float pointLightCount;
+	float3 _Pad0001;
+	float g_PointLightCount;
 	
-	PointLight pointLights[64];*/
+	PointLight g_PointLights[64];
 };
 
 float NormalDistributionGGXTR(float3 normalVec, float3 halfwayVec, float roughness)

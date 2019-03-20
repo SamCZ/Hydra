@@ -34,6 +34,26 @@ namespace Hydra
 		}
 
 		_Variables.clear();
+
+		ITER(_ShaderVarsForVaryingShaders, it0)
+		{
+			ITER(it0->second, it1)
+			{
+				ShaderVars* vars = it1->second;
+
+				for (int i = 0; i < vars->ConstantBufferCount; i++)
+				{
+					RawShaderConstantBuffer& cbuffer = vars->ConstantBuffers[i];
+
+					delete[] cbuffer.LocalDataBuffer;
+
+					Engine::GetRenderInterface()->destroyConstantBuffer(cbuffer.ConstantBuffer);
+				}
+
+				delete[] vars->ConstantBuffers;
+				delete vars;
+			}
+		}
 	}
 
 	void Material::SetInt(const String& name, const int& i)
@@ -136,6 +156,15 @@ namespace Hydra
 		return GetVariable<Matrix4>(name, VarType::Matrix4, outMat);
 	}
 
+	void Material::SetStruct(const String & name, StorageStruct & s, size_t size)
+	{
+		SetVariable(name, VarType::StorageStruct, (void*)(&s), size);
+	}
+
+	void Hydra::Material::SetStructArray(const String & name, void* s, size_t size)
+	{
+		SetVariable(name, VarType::StorageStructArray, s, size);
+	}
 
 	void Material::SetTexture(const String& name, NVRHI::TextureHandle texture)
 	{
@@ -215,6 +244,21 @@ namespace Hydra
 			{
 				_ActiveShaders[shader->GetType()] = shader;
 			}
+
+			ITER(_Variables, it)
+			{
+				it->second->HasChnaged = true;
+			}
+
+			ITER(_TextureVariables, it)
+			{
+				it->second.HasChnaged = true;
+			}
+
+			ITER(_SamplerVariables, it)
+			{
+				it->second.HasChnaged = true;
+			}
 		}
 	}
 
@@ -269,7 +313,7 @@ namespace Hydra
 
 						if (var.Size != localVar->DataSize)
 						{
-							LogError("Variable size is not coresponding with source size !");
+							LogError("Variable(" + ToString(localVar->DataSize) + ") size is not coresponding with source size(" + ToString(var.Size) + ") !");
 							continue;
 						}
 
@@ -289,11 +333,13 @@ namespace Hydra
 				}
 			}
 
-			NVRHI::PipelineStageBindings& bindigs = GetPipelineStageBindingsForShaderType(state, vars->ShaderType);
+			NVRHI::PipelineStageBindings* bindigs = GetPipelineStageBindingsForShaderType(state, vars->ShaderType);
+
+			if (bindigs == nullptr) continue;
 
 			for (int i = 0; i < vars->ConstantBufferCount; i++)
 			{
-				NVRHI::BindConstantBuffer(bindigs, vars->ConstantBuffers[i].BindIndex, vars->ConstantBuffers[i].ConstantBuffer);
+				NVRHI::BindConstantBuffer(*bindigs, vars->ConstantBuffers[i].BindIndex, vars->ConstantBuffers[i].ConstantBuffer);
 			}
 
 
@@ -306,7 +352,7 @@ namespace Hydra
 					texDefine.TextureHandle = _TextureVariables[it->first].Handle;
 				}
 
-				NVRHI::BindTexture(bindigs, texDefine.BindIndex, texDefine.TextureHandle);
+				NVRHI::BindTexture(*bindigs, texDefine.BindIndex, texDefine.TextureHandle);
 			}
 
 			for (FastMap<String, RawShaderSamplerDefine>::iterator it = vars->SamplerDefines.begin(); it != vars->SamplerDefines.end(); it++)
@@ -318,7 +364,7 @@ namespace Hydra
 					samDefine.SamplerHandle = _SamplerVariables[it->first].Handle;
 				}
 
-				NVRHI::BindSampler(bindigs, it->second.BindIndex, it->second.SamplerHandle);
+				NVRHI::BindSampler(*bindigs, it->second.BindIndex, it->second.SamplerHandle);
 			}
 		}
 
@@ -352,27 +398,28 @@ namespace Hydra
 		return CreateOrGet(source.GetPath(), source, precompile);
 	}
 
-	NVRHI::PipelineStageBindings& Material::GetPipelineStageBindingsForShaderType(NVRHI::DrawCallState& state, const NVRHI::ShaderType::Enum & type)
+	NVRHI::PipelineStageBindings* Material::GetPipelineStageBindingsForShaderType(NVRHI::DrawCallState& state, const NVRHI::ShaderType::Enum & type)
 	{
 		switch (type)
 		{
 		case NVRHI::ShaderType::SHADER_VERTEX:
-			return state.VS;
+			return &state.VS;
 			break;
 		case NVRHI::ShaderType::SHADER_HULL:
-			return state.HS;
+			return &state.HS;
 			break;
 		case NVRHI::ShaderType::SHADER_DOMAIN:
-			return state.DS;
+			return &state.DS;
 			break;
 		case NVRHI::ShaderType::SHADER_GEOMETRY:
-			return state.GS;
+			return &state.GS;
 			break;
 		case NVRHI::ShaderType::SHADER_PIXEL:
-			return state.PS;
+			return &state.PS;
 			break;
 		default:
 			LogError("Material::GetPipelineStageBindingsForShaderType", "Cannot find pipeline stage bindings for shader type : " + ToString((int)type));
+			return nullptr;
 		}
 	}
 

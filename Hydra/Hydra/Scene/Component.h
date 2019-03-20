@@ -9,7 +9,7 @@ namespace Hydra
 	class Component
 	{
 	public:
-		Spatial* Parent;
+		Spatial* GameObject;
 		bool Enabled;
 
 		Component();

@@ -7,7 +7,7 @@
 namespace Hydra
 {
 
-	Renderer::Renderer() : _RenderInterface(nullptr), _InstBuffer(nullptr), _Mesh(nullptr), _IsInstanced(false), _LastInstanceCount(0), _NeedsUpdate(true), _NeedsUpdateInstances(true)
+	Renderer::Renderer() : _RenderInterface(nullptr), _InstBuffer(nullptr), _Mesh(nullptr), _IsInstanced(false), _LastInstanceCount(0), _NeedsUpdate(true), _NeedsUpdateInstances(true), Material(nullptr)
 	{
 		Mat.Albedo = nullptr;
 		Mat.Normal = nullptr;

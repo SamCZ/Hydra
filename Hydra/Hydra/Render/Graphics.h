@@ -101,6 +101,7 @@ namespace Hydra
 		static InputLayoutPtr GetInputLayout(const String& name);
 
 		static SamplerPtr CreateSampler(const String& name, const WrapMode& wrapX = WrapMode::WRAP_MODE_WRAP, const WrapMode& wrapY = WrapMode::WRAP_MODE_WRAP, const WrapMode& wrapZ = WrapMode::WRAP_MODE_WRAP, bool minFilter = true, bool magFilter = true, bool mipFilter = true, int anisotropy = 16);
+		static SamplerPtr CreateShadowCompareSampler(const String& name);
 		static SamplerPtr GetSampler(const String& name);
 		static void BindSampler(NVRHI::DrawCallState& state, const String& name, int slot);
 	};

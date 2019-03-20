@@ -74,12 +74,18 @@ namespace Hydra
 	{
 		for (ComponentPtr cmp : _Components)
 		{
-			cmp->Update();
+			if (cmp->Enabled)
+			{
+				cmp->Update();
+			}
 		}
 
 		for (SpatialPtr child : _Childs)
 		{
-			child->Update();
+			if (child->IsEnabled())
+			{
+				child->Update();
+			}
 		}
 	}
 
@@ -268,5 +274,12 @@ namespace Hydra
 		}
 
 		return _StaticModelMatrix;
+	}
+
+	Vector3 Spatial::GetDirection()
+	{
+		Matrix4 mat = Transformable::GetModelMatrix();
+
+		return Transformable::GetForward(mat);
 	}
 }
