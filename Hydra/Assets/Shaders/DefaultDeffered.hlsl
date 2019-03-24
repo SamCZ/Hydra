@@ -50,7 +50,7 @@ PBROutput OnMainPS(in PS_Input input)
 	//float4 albedo = TriplanarTexturing(_AlbedoMap, DefaultSampler, input.positionLS, input.normal, 1.0);
 	//float4 albedo = float4(_Color, 1.0);
 
-	output.Albedo = albedo.rgb;
+	output.Albedo = albedo.rgb + _Color;
 	output.Normal = normal;
 	output.Metallic = _MetallicMap.Sample(DefaultSampler, input.texCoord).r;
 	output.Roughness = _RoughnessMap.Sample(DefaultSampler, input.texCoord).r;

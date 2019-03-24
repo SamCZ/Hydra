@@ -35,7 +35,7 @@ namespace Hydra
 
 	void Graphics::Create()
 	{
-		_BlitMaterial = Material::CreateOrGet("Assets/Shaders/blit.hlsl");
+		_BlitMaterial = Material::CreateOrGet("Assets/Shaders/Blit.hlsl");
 		_BlurMaterial = Material::CreateOrGet("Assets/Shaders/PostProcess/GaussianBlur.hlsl");
 	}
 

@@ -107,7 +107,7 @@ namespace Hydra {
 		};
 
 
-		TexturePtr envMap = TextureImporter::Import("Assets/Textures/skybox3.dds");
+		TexturePtr envMap = TextureImporter::Import("Assets/Textures/skybox1.dds");
 		//_IrrConv = TextureImporter::Import("Assets/Textures/skybox2IR.dds");
 
 		Renderer* cubeRenderer = new Renderer();
@@ -597,7 +597,7 @@ namespace Hydra {
 		TexturePtr worldPos = Graphics::CreateRenderTarget("DPBR_WorldPos", NVRHI::Format::RGBA16_FLOAT, width, height, NVRHI::Color(0.f), sampleCount);
 		TexturePtr depth = Graphics::CreateRenderTarget("DPBR_Depth", NVRHI::Format::D24S8, width, height, NVRHI::Color(1.f, 0.f, 0.f, 0.f), sampleCount);
 
-		Graphics::CreateRenderTarget("DPBR_Output", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(0.f), sampleCount);
+		Graphics::CreateRenderTarget("DPBR_Output", NVRHI::Format::RGBA16_FLOAT, width, height, NVRHI::Color(0.f), sampleCount);
 		Graphics::CreateRenderTarget("DPBR_POST_Output", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(0.f), sampleCount);
 
 		Graphics::CreateRenderTarget("DPBR_POST_Emission_Output", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(0.f), sampleCount);

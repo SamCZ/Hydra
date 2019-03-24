@@ -3,6 +3,7 @@
 struct PS_Input
 {
 	float4 position : SV_Position;
+	float clip : SV_ClipDistance0;
 	float2 texCoord : TEXCOORD;
 	float3 normal : NORMAL;
 	float3 tangent : TANGENT;
@@ -45,6 +46,8 @@ PS_Input MainVS(VS_Input input, unsigned int InstanceID : SV_InstanceID)
 	}
 	float4x4 modelMatrix = mul(instanceMatrix, g_ModelMatrix);
 	output.position = float4(input.position.xyz, 1.0f);
+
+	output.clip = 0.0;
 
 	output = OnMainVS(input, output);
 

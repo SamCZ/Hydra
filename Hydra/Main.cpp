@@ -46,7 +46,10 @@
 
 #include "Hydra/Terrain/Terrain.h"
 
+#include "Hydra/Terrain/Marching/MarchingCubes.h"
+#include "Hydra/Terrain/Marching/MarchingTertrahedron.h"
 
+#include "Hydra/Terrain/Voxel/VoxelTerrain.h"
 
 /* Set the better graphic card for notebooks ( ͡° ͜ʖ ͡°)
 *  http://developer.download.nvidia.com/devzone/devcenter/gamegraphics/files/OptimusRenderingPolicies.pdf
@@ -203,7 +206,7 @@ public:
 	RenderStageDefferedPtr rsd;
 	TextureLayoutDefPtr texLayout;
 
-	
+	MaterialPtr _SkyMaterial;
 
 	inline LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
@@ -443,26 +446,88 @@ public:
 			lightObj->Rotation = Vector3(-90, 0, 0.0f);
 			LightPtr light = lightObj->AddComponent<Light>();
 			light->ShadowType = ShadowType::Soft;
-			light->Intensity = 1.0f;
+			light->Intensity = 2.0f;
 			rm->MainScene->AddChild(lightObj);
 		}
 
-		SpatialPtr testModel = Meshimporter::Import("Assets/Sponza/SponzaNoFlag.obj", MeshImportOptions());
+		/*SpatialPtr testModel = Meshimporter::Import("Assets/Sponza/SponzaNoFlag.obj", MeshImportOptions());
 		//SpatialPtr testModel = Meshimporter::Import("Assets/IndustryEmpire/Models/BrickFactory.fbx", MeshImportOptions());
 		testModel->Scale = Vector3(0.01f, 0.01f, 0.01f);
 		//testModel->AddComponent<LodGroup>();
 		testModel->SetStatic(true);
-		rm->MainScene->AddChild(testModel);
-
-
-
-		/*SpatialPtr testModel = New(Spatial);
-		RendererPtr voxelRender = testModel->AddComponent<Renderer>();
-		voxelRender->TestColor = MakeRGB(200, 200, 200).toVec3();
-		Mesh* mesh2 = GenerateTerrain();
-		voxelRender->SetMesh(mesh2);
 		rm->MainScene->AddChild(testModel);*/
 
+		/*MarchingCubes mCubes;
+		MarchingTertrahedron mTetrahedron;
+
+		Marching* marching = &mTetrahedron;
+
+		int width = 32;
+		int height = 32;
+		int length = 32;
+
+		int numErosionIterations = 1000;
+
+		float* noiseMap = GenerateNoiseMap(width);
+
+		Erosion erosion;
+		erosion.Erode(noiseMap, width, numErosionIterations);
+
+		FastNoise noise;
+		noise.SetNoiseType(FastNoise::NoiseType::Simplex);
+
+		VoxelChunk chunk(width, height, length);
+
+		for (int x = 0; x < width; x++)
+		{
+			for (int y = 0; y < height; y++)
+			{
+				for (int z = 0; z < length; z++)
+				{
+					float noiseVal = noiseMap[x + z * width] * 2.0f + 1.0;
+					noiseVal *= 10;
+
+					//std::cout << noiseVal << std::endl;
+
+					if (noiseVal > y)
+					{
+						chunk.SetVoxel(x, y, z, 1);
+					}
+					else
+					{
+						chunk.SetVoxel(x, y, z, 0);
+					}
+
+					/*float fx = x / (width - 1.0f);
+					float fy = y / (height - 1.0f);
+					float fz = z / (length - 1.0f);
+
+					float noiseVal = noise.GetNoise(fx * 400, fy * 400, fz * 400) * 1;
+
+					chunk.SetVoxel(x, y, z, noiseVal);
+				}
+			}
+		}
+
+		Mesh* voxelMesh = marching->Generate(chunk.GetVoxelData(), width, height, length);
+
+		MaterialPtr terrainMat = Material::CreateOrGet("Assets/Shaders/VoxelTerrain.hlsl");
+
+
+		SpatialPtr testModel = New(Spatial);
+		testModel->Position.y = -32;
+
+		RendererPtr voxelRender = testModel->AddComponent<Renderer>();
+		voxelRender->TestColor = MakeRGB(200, 200, 200).toVec3();
+		//Mesh* mesh2 = GenerateTerrain();
+		voxelRender->Material = terrainMat;
+		voxelRender->SetMesh(voxelMesh);
+		rm->MainScene->AddChild(testModel);*/
+
+		VoxelTerrainPtr terrain = MakeShared<VoxelTerrain>();
+		rm->MainScene->AddChild(terrain);
+
+		_SkyMaterial = Material::CreateOrGet("Assets/Shaders/Sky.hlsl");
 
 		/*SpatialPtr box = MakeShared<Spatial>();
 		RendererPtr r = box->AddComponent<Renderer>();
@@ -485,6 +550,7 @@ public:
 			}
 		};
 		box->AddComponent<TestRotationComponent>();*/
+
 
 		texLayout = MakeShared<TextureLayoutDef>();
 
@@ -510,11 +576,16 @@ public:
 		rsd->AllocateViewDependentResources(width, height, sampleCount);
 
 		Graphics::AllocateViewDependentResources(width, height, sampleCount);
+
+		Graphics::ReleaseRenderTarget("Sky");
+		Graphics::CreateRenderTarget("Sky", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(0.0f), sampleCount);
 	}
 
 	inline void DeviceDestroyed() override
 	{
 		Log("MainRenderView::DeviceDestroyed");
+
+		_SkyMaterial.reset();
 
 		Graphics::Destroy();
 	}
@@ -528,6 +599,22 @@ public:
 
 		rsd->Render(rm);
 
+		Graphics::Composite(_SkyMaterial, [this](NVRHI::DrawCallState& state) {
+			_SkyMaterial->SetVector2("g_ViewPort", Engine::ScreenSize);
+			_SkyMaterial->SetMatrix4("g_InvProjection", glm::inverse(Camera::MainCamera->GetProjectionMatrix()));
+			_SkyMaterial->SetMatrix4("g_InvView", glm::inverse(Camera::MainCamera->GetViewMatrix()));
+			_SkyMaterial->SetVector3("g_ViewPos", Camera::MainCamera->GameObject->Position);
+
+			Vector3 dir = glm::normalize(Transformable::GetForward(lightObj->GetModelMatrix()));
+
+			_SkyMaterial->SetVector3("g_LightDir", -dir);
+
+			_SkyMaterial->ApplyParams(state);
+		}, "Sky");
+
+		
+
+		Graphics::Blit("Sky", mainRenderTarget);
 		Graphics::Blit(rsd->GetOutputName(), mainRenderTarget);
 
 		_renderInterface->forgetAboutTexture(pMainResource);

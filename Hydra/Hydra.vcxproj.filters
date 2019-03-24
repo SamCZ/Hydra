@@ -345,6 +345,36 @@
     <ClInclude Include="Hydra\Terrain\Voxel\VoxelTerrain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Hydra\Terrain\Marching\Marching.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Terrain\Marching\MarchingCubes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Terrain\Marching\MarchingCubesTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Terrain\Marching\MarchingTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Terrain\Marching\MarchingTertrahedron.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Terrain\Marching\MarchingTertrahedronTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Terrain\Voxel\World\VoxelWorld.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Terrain\Voxel\World\VoxelChunk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Terrain\Generator\MeshBuilder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Terrain\Render\VoxelChunkRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Hydra.rc">
@@ -611,6 +641,24 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Terrain\Voxel\VoxelTerrain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Terrain\Marching\Marching.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Terrain\Marching\MarchingCubes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Terrain\Marching\MarchingTertrahedron.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Terrain\Voxel\World\VoxelWorld.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Terrain\Voxel\World\VoxelChunk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Terrain\Generator\MeshBuilder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

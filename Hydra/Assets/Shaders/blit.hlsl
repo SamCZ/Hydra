@@ -25,5 +25,9 @@ Texture2D _Texture : register(t0);
 
 float4 MainPS(FullScreenQuadOutput IN) : SV_Target
 {
-	return _Texture[IN.position.xy];
+	float4 color = _Texture[IN.position.xy];
+
+	clip(color.a - 0.01);
+
+	return color;
 }

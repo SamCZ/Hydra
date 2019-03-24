@@ -37,6 +37,8 @@ namespace Hydra
 		void UpdateBounds();
 		void GenerateNormals();
 
+		void SmoothMesh();
+
 		void UpdateBuffers();
 
 		static Mesh* CreatePrimitive(const PrimitiveType::Enum& type, const Vector3& scale = Vector3(1.0f, 1.0f, 1.0f));
@@ -46,6 +48,7 @@ namespace Hydra
 
 	private:
 		Vector3 ComputeTriangleNormal(const Vector3& p1, const Vector3& p2, const Vector3& p3);
+		Vector3 ComputeNormalFromMultiplePoints(List<Vector3>& points);
 	};
 
 	DEFINE_PTR(Mesh)

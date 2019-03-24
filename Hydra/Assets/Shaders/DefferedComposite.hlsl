@@ -141,11 +141,11 @@ float4 MainPS(FullScreenQuadOutput IN) : SV_Target
 	GBUFFER_DATA data = DecodeGBuffer(IN);
 
 	AmbientLight Ambient;
-	Ambient.Color = (1.0).xxxx;
+	Ambient.Color = (0.0).xxxx;
 
 	if (data.WorldPos.z == 0)
 	{
-		return float4(0.0, 0.0, 0.0, 1.0);
+		return float4(0.0, 0.0, 0.0, 0.0);
 	}
 
 	float3 albedo = data.Albedo;

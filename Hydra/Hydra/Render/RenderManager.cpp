@@ -15,7 +15,7 @@ namespace Hydra
 			YO = new List<SharedPtr<Renderer>>(MainScene->FindComponents<Renderer>());
 		}
 
-		return *YO;
+		return MainScene->FindComponents<Renderer>();
 	}
 
 	List<SharedPtr<Light>> RenderManager::GetLights(const String & stage)
