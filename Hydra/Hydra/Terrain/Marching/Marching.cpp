@@ -12,7 +12,7 @@ namespace Hydra
 
 	}
 
-	Mesh* Marching::Generate(float* voxels, int width, int height, int depth)
+	Mesh* Marching::Generate(int* voxels, int width, int height, int depth)
 	{
 		if (_SurfaceThreshold > 0.0f)
 		{

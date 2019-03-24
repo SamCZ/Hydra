@@ -141,7 +141,7 @@ float4 MainPS(FullScreenQuadOutput IN) : SV_Target
 	GBUFFER_DATA data = DecodeGBuffer(IN);
 
 	AmbientLight Ambient;
-	Ambient.Color = (0.0).xxxx;
+	Ambient.Color = (0.25).xxxx;
 
 	if (data.WorldPos.z == 0)
 	{

@@ -8,22 +8,22 @@ namespace Hydra
 		int _Height;
 		int _Depth;
 
-		float* _VoxelData;
+		int* _VoxelData;
 		int* _Metadata;
 		float* _MaxHeightData;
 	public:
 		VoxelChunk(int width, int height, int depth);
 		~VoxelChunk();
 
-		float GetVoxel(int x, int y, int z);
-		void SetVoxel(int x, int y, int z, float data);
+		int GetVoxel(int x, int y, int z);
+		void SetVoxel(int x, int y, int z, int data);
 
 		int GetMeta(int x, int y, int z);
 		void SetMeta(int x, int y, int z, int meta);
 
 		float GetMaxHeight(int x, int z);
 
-		float* GetVoxelData();
+		int* GetVoxelData();
 		int* GetMetaData();
 
 		int GetWidth();

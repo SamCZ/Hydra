@@ -1,12 +1,20 @@
 #include "Hydra/Terrain/Voxel/World/VoxelChunk.h"
 
+#include <iostream>
+
 namespace Hydra
 {
 	VoxelChunk::VoxelChunk(int width, int height, int depth) : _Width(width), _Height(height), _Depth(depth)
 	{
-		_VoxelData = new float[width * height * depth];
-		_Metadata = new int[width * height * depth];
+		int size = width * height * depth;
+
+		_VoxelData = new int[size];
+		_Metadata = new int[size];
 		_MaxHeightData = new float[width * height];
+
+		memset(_VoxelData, 0, size * sizeof(int));
+		memset(_Metadata, 0, size * sizeof(int));
+		memset(_MaxHeightData, 0, width * height * sizeof(float));
 	}
 
 	VoxelChunk::~VoxelChunk()
@@ -16,7 +24,7 @@ namespace Hydra
 		delete[] _MaxHeightData;
 	}
 
-	float VoxelChunk::GetVoxel(int x, int y, int z)
+	int VoxelChunk::GetVoxel(int x, int y, int z)
 	{
 		if (InRange(x, y, z))
 		{
@@ -26,7 +34,7 @@ namespace Hydra
 		return 0.0f;
 	}
 
-	void VoxelChunk::SetVoxel(int x, int y, int z, float data)
+	void VoxelChunk::SetVoxel(int x, int y, int z, int data)
 	{
 		if (InRange(x, y, z))
 		{
@@ -57,7 +65,7 @@ namespace Hydra
 		return _MaxHeightData[x + z * _Width];
 	}
 
-	float* VoxelChunk::GetVoxelData()
+	int* VoxelChunk::GetVoxelData()
 	{
 		return _VoxelData;
 	}
