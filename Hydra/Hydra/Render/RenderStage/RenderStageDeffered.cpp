@@ -241,7 +241,7 @@ namespace Hydra {
 		// define your up vector
 		glm::vec3 upVector = glm::vec3(0, 1, 0);
 		// rotate around to a given bearing: yaw
-		glm::mat4 camera = glm::rotate(glm::mat4(), glm::radians(rotation.y), upVector);
+		glm::mat4 camera = glm::rotate(glm::mat4(), glm::radians(rotation.y - 180), upVector);
 		// Define the 'look up' axis, should be orthogonal to the up axis
 		glm::vec3 pitchVector = glm::vec3(1, 0, 0);
 		// rotate around to the required head tilt: pitch
@@ -278,7 +278,7 @@ namespace Hydra {
 		state.renderState.clearColorTarget = true;
 		state.renderState.viewportCount = 1;
 		state.renderState.viewports[0] = NVRHI::Viewport(float(ShadowMapSize), float(ShadowMapSize));
-		state.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_NONE;
+		state.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_FRONT;
 		state.renderState.rasterState.depthBias = 16;
 		state.renderState.rasterState.slopeScaledDepthBias = 4.0f;
 

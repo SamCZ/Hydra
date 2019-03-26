@@ -42,7 +42,7 @@ namespace Hydra
 
 		if (auto camera = _Camera.lock())
 		{
-			camera->GameObject->Position += camera->GetForward() * val * -0.1f;
+			camera->GameObject->Position += camera->GetForward() * val * -0.5f;
 		}
 	}
 
@@ -52,7 +52,7 @@ namespace Hydra
 
 		if (auto camera = _Camera.lock())
 		{
-			camera->GameObject->Position += camera->GetLeft() * val * -0.1f;
+			camera->GameObject->Position += camera->GetLeft() * val * -0.5f;
 		}
 	}
 

@@ -50,59 +50,32 @@ namespace Hydra
 
 	inline float* GenerateNoiseMapYo(int mapSize, float xOff, float yOff)
 	{
-		int seed = 0;
-		bool randomizeSeed = true;
-
-		int numOctaves = 7;
-		float persistence = .5f;
-		float lacunarity = 2;
-		float initialScale = 100.0f;
-
 		auto map = new float[mapSize * mapSize];
-		auto prng = Random(seed);
-
-		Vector2* offsets = new Vector2[numOctaves];
-		for (int i = 0; i < numOctaves; i++)
-		{
-			offsets[i] = Vector2(prng.GetFloat(-1000, 1000), prng.GetFloat(-1000, 1000));
-		}
-
-		float minValue = 999999.999f;
-		float maxValue = -999999.999f;
-
 		FastNoise noise;
-		noise.SetNoiseType(FastNoise::NoiseType::Perlin);
+		noise.SetNoiseType(FastNoise::NoiseType::SimplexFractal);
+
+		float scale = 1.0;
 
 		for (int y = 0; y < mapSize; y++)
 		{
 			for (int x = 0; x < mapSize; x++)
 			{
-				float noiseValue = 0;
-				float scale = initialScale;
-				float weight = 1;
-				for (int i = 0; i < numOctaves; i++)
+				float noiseValue = 0.0f;
+
+				float xx = x + xOff;
+				float yy = y + yOff;
+
+				noiseValue += noise.GetNoise(xx * scale, yy * scale);
+				
+				if (noise.GetNoise(xx * 0.1f, yy * 0.1f) > 0.0)
 				{
-					Vector2 p = offsets[i] + Vector2((x + xOff) * 0.01f, (y + yOff) * 0.01f) * scale;
-					noiseValue += noise.GetNoise(p.x, p.y) * weight;
-					weight *= persistence;
-					scale *= lacunarity;
+					noiseValue *= 5.0f;
 				}
+
 				map[y * mapSize + x] = noiseValue;
-				minValue = std::min(noiseValue, minValue);
-				maxValue = std::max(noiseValue, maxValue);
 			}
 		}
 
-		delete[] offsets;
-
-		// Normalize
-		/*if (maxValue != minValue)
-		{
-			for (int i = 0; i < mapSize * mapSize; i++)
-			{
-				map[i] = (map[i] - minValue) / (maxValue - minValue);
-			}
-		}*/
 
 		return map;
 	}
@@ -112,20 +85,33 @@ namespace Hydra
 		SpatialPtr spatial = MakeShared<Spatial>();
 		spatial->Position = Vector3(pos.x * 16, -16, pos.y * 16);
 
-		float* noiseMap = GenerateNoiseMapYo(16, pos.x * 16, pos.y * 16);
+		float* noiseMap = GenerateNoiseMapYo(16, pos.x * 15, pos.y * 15);
 
 		Erosion erosion;
 		//erosion.Erode(noiseMap, 16, 500);
 
-		VoxelChunk chunk(16, 16, 16);
+		VoxelChunk chunk(16, 64, 16);
 
 		for (int x = 0; x < 16; x++)
 		{
-			for (int y = 0; y < 16; y++)
+			for (int y = 0; y < 64; y++)
 			{
 				for (int z = 0; z < 16; z++)
 				{
+					if (y == 0)
+					{
+						chunk.SetVoxel(x, y, z, 1);
+						continue;
+					}
+
+					float scale = 0.1f;
 					float noiseVal = noiseMap[x + z * 16] * 2.0f + 1.0;
+
+					/*float xx = x + pos.x * 15;
+					float zz = z + pos.y * 15;
+
+					float noiseVal = glm::cos(xx * scale) * glm::sin(zz * scale);
+					noiseVal = noiseVal * 0.5f + 0.5f;*/
 					noiseVal *= 5;
 
 					//std::cout << noiseVal << std::endl;
@@ -144,7 +130,33 @@ namespace Hydra
 
 		delete[] noiseMap;
 
-		int topBlock = 0;
+		MarchingCubes mCubes;
+		MarchingTertrahedron mTetrahedron;
+
+		Marching* marching = &mCubes;
+
+		Mesh* voxelMesh = marching->Generate(chunk.GetVoxelData(), 16, 64, 16);
+
+		//voxelMesh->SmoothMesh();
+		//voxelMesh->SmoothMesh();
+
+		voxelMesh->GenerateNormals();
+		voxelMesh->UpdateBuffers();
+
+		MaterialPtr terrainMat = Material::CreateOrGet("Assets/Shaders/VoxelTerrain.hlsl");
+
+		SpatialPtr chunkObj = MakeShared<Spatial>();
+
+		chunkObj->Position = Vector3(pos.x * 15, -16, pos.y * 15);
+
+		RendererPtr voxelRender = chunkObj->AddComponent<Renderer>();
+		voxelRender->TestColor = MakeRGB(200, 200, 200).toVec3();
+		voxelRender->Material = terrainMat;
+		voxelRender->SetMesh(voxelMesh);
+
+		return chunkObj;
+
+		/*int topBlock = 0;
 		int bottomBlock = 0;
 		int leftBlock = 0;
 		int rightBlock = 0;
@@ -248,7 +260,7 @@ namespace Hydra
 
 		builder.Apply(spatial);
 
-		return spatial;
+		return spatial;*/
 	}
 
 	void VoxelTerrain::Update()
@@ -267,11 +279,7 @@ namespace Hydra
 
 				if (Hydra::Find(_Chunks, chunkPos) == _Chunks.end())
 				{
-					
-					std::cout << glm::to_string(chunkPos) << std::endl;
 					AddChild(CreateVoxel(chunkPos));
-
-
 					_Chunks.push_back(chunkPos);
 				}
 			}

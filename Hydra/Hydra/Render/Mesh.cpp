@@ -72,11 +72,6 @@ namespace Hydra
 		Vector3 P2;
 	};
 
-	int comp(const Vector3& left, const Vector3& right)
-	{
-
-	}
-
 	size_t HashV3(const Vector3& vec)
 	{
 		return std::hash<Vector3>()(vec);
@@ -126,20 +121,15 @@ namespace Hydra
 			VerticesNormals[it->first] = ComputeNormalFromMultiplePoints(it->second);
 		}*/
 
-		for (int i = 0; i < VertexData.size() / 3; i++)
+		for (int i = 0; i < VertexData.size(); i++)
 		{
-			Vector3 p0 = VertexData[i * 3 + 0].position;
-			Vector3 p1 = VertexData[i * 3 + 1].position;
-			Vector3 p2 = VertexData[i * 3 + 2].position;
+			Vector3 p = VertexData[i].position;
+			if (p.x > 0.0f && p.z > 0.0f && p.x < 15.0f && p.z < 15.0f)
+			{
+				VertexData[i].position = SummedVertices[HashV3(p)];
+			}
 
-
-			VertexData[i * 3 + 0].position = SummedVertices[HashV3(p0)];
-			VertexData[i * 3 + 1].position = SummedVertices[HashV3(p1)];
-			VertexData[i * 3 + 2].position = SummedVertices[HashV3(p2)];
-
-			/*VertexData[i * 3 + 0].normal = VerticesNormals[HashV3(p0)];
-			VertexData[i * 3 + 1].normal = VerticesNormals[HashV3(p1)];
-			VertexData[i * 3 + 2].normal = VerticesNormals[HashV3(p2)];*/
+			/*VertexData[i * 3 + 0].normal = VerticesNormals[HashV3(p0)];*/
 		}
 	}
 
@@ -752,13 +742,13 @@ namespace Hydra
 
 	Vector3 Hydra::Mesh::ComputeNormalFromMultiplePoints(List<Vector3>& points)
 	{
-		if (true)
+		/*if (true)
 		{
 			float error;
 			Plane p = FitToPoints(points, error);
 
 			return p.Origin;
-		}
+		}*/
 
 		int n = (int)points.size();
 

@@ -425,6 +425,9 @@ public:
 	{
 		_InputManager->Update();
 		rm->MainScene->Update();
+
+
+		//lightObj->Rotation.x += 0.1f;
 	}
 };
 
