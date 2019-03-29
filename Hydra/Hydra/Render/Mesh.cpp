@@ -44,8 +44,29 @@ namespace Hydra
 		Bounds.Extent = maxBounds - Bounds.Origin;
 	}
 
+	void Mesh::GenerateUVs()
+	{
+		for (int i = 0; i < Indices.size() / 3; i++)
+		{
+			int n0 = Indices[i * 3 + 0];
+			int n1 = Indices[i * 3 + 1];
+			int n2 = Indices[i * 3 + 2];
+
+			VertexBufferEntry& vb0 = VertexData[n0];
+			VertexBufferEntry& vb1 = VertexData[n1];
+			VertexBufferEntry& vb2 = VertexData[n2];
+
+			vb0.texCoord = Vector2(0, 0);
+			vb1.texCoord = Vector2(0, 1);
+			vb2.texCoord = Vector2(1, 1);
+		}
+	}
+
 	void Mesh::GenerateNormals()
 	{
+		Vector2 uv1 = Vector2(0, 0);
+		Vector2 uv2 = Vector2(0, 1);
+		Vector2 uv3 = Vector2(1, 1);
 		
 		for (int i = 0; i < Indices.size() / 3; i++)
 		{
@@ -57,11 +78,64 @@ namespace Hydra
 			VertexBufferEntry& vb1 = VertexData[n1];
 			VertexBufferEntry& vb2 = VertexData[n2];
 
+			// TANGENT SPACE
+			glm::vec3 deltaPos1 = vb1.position - vb0.position;
+			glm::vec3 deltaPos2 = vb2.position - vb0.position;
+
+			glm::vec2 deltaUV1 = uv2 - uv1;
+			glm::vec2 deltaUV2 = uv3 - uv1;
+
+			float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
+			glm::vec3 tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y) * r;
+			glm::vec3 bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x) * r;
+
+			vb0.tangent = tangent;
+			vb1.tangent = tangent;
+			vb2.tangent = tangent;
+
+			vb0.bitangent = bitangent;
+			vb1.bitangent = bitangent;
+			vb2.bitangent = bitangent;
+
+			// NORMAL
 			Vector3 normal = ComputeTriangleNormal(vb0.position, vb1.position, vb2.position);
 
 			vb0.normal = normal;
 			vb1.normal = normal;
 			vb2.normal = normal;
+		}
+	}
+
+	void Mesh::GenerateTangentsAndBiTangents()
+	{
+		for (int i = 0; i < Indices.size() / 3; i++)
+		{
+			int n0 = Indices[i * 3 + 0];
+			int n1 = Indices[i * 3 + 1];
+			int n2 = Indices[i * 3 + 2];
+
+			VertexBufferEntry& vb0 = VertexData[n0];
+			VertexBufferEntry& vb1 = VertexData[n1];
+			VertexBufferEntry& vb2 = VertexData[n2];
+
+			// TANGENT SPACE
+			glm::vec3 deltaPos1 = vb1.position - vb0.position;
+			glm::vec3 deltaPos2 = vb2.position - vb0.position;
+
+			glm::vec2 deltaUV1 = vb1.texCoord - vb0.texCoord;
+			glm::vec2 deltaUV2 = vb2.texCoord - vb0.texCoord;
+
+			float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
+			glm::vec3 tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y) * r;
+			glm::vec3 bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x) * r;
+
+			vb0.tangent = tangent;
+			vb1.tangent = tangent;
+			vb2.tangent = tangent;
+
+			vb0.bitangent = bitangent;
+			vb1.bitangent = bitangent;
+			vb2.bitangent = bitangent;
 		}
 	}
 

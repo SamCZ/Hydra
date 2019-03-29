@@ -41,7 +41,7 @@ PBROutput OnMainPS(in PS_Input input)
 	if (pixelNormal.z)
 	{
 		float3 tangent = normalize(input.tangent);
-		float3 binormal = normalize(input.binormal);
+		float3 binormal = normalize(input.bitangent);
 		float3x3 TangentMatrix = float3x3(tangent, binormal, normal);
 		normal = normalize(mul(pixelNormal * 2 - 1, TangentMatrix));
 	}

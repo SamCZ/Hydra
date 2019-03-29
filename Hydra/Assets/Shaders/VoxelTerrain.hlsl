@@ -12,7 +12,8 @@
 #pragma hydra kw:pixel:USE_AO_TEX
 #pragma hydra kw:pixel:USE_EMISSION_TEX
 
-//Texture2D _AlbedoMap : register(t0);
+Texture2D _GrassTex : register(t0);
+Texture2D _GrassNormalTex : register(t1);
 
 SamplerState DefaultSampler	: register(s0);
 
@@ -33,8 +34,9 @@ PBROutput OnMainPS(in PS_Input input)
 {
 	PBROutput output;
 
-	output.Albedo = _Color;
-	output.Normal = input.normal;
+	output.Albedo = TriplanarTexturing(_GrassTex, DefaultSampler, input.positionWS, input.normal, 1.0).rgb;
+	//output.Albedo = _Color;
+	output.Normal = TriplanarTexturingNormal(input, _GrassNormalTex, DefaultSampler, 1.0);//GetNormalFromNormalMap(input, _GrassNormalTex, DefaultSampler, input.positionWS.xz);
 	output.Metallic = 0.0;
 	output.Roughness = 1.0;
 	output.AO = 0.0;

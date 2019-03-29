@@ -7,7 +7,7 @@ struct PS_Input
 	float2 texCoord : TEXCOORD;
 	float3 normal : NORMAL;
 	float3 tangent : TANGENT;
-	float3 binormal : BINORMAL;
+	float3 bitangent : BINORMAL;
 	float3 positionWS : WSPOSITION0;
 	float3 positionLS : WSPOSITION1;
 };
@@ -56,9 +56,9 @@ PS_Input MainVS(VS_Input input, unsigned int InstanceID : SV_InstanceID)
 	output.positionLS = input.position.xyz;
 
 	output.texCoord = input.texCoord;
-	output.normal = mul(modelMatrix, float4(input.normal, 0.0)).xyz;
-	output.tangent = mul(modelMatrix, float4(input.tangent, 0.0)).xyz;
-	output.binormal = mul(modelMatrix, float4(input.binormal, 0.0)).xyz;
+	output.normal = mul((float3x3)modelMatrix, input.normal);
+	output.tangent = mul((float3x3)modelMatrix, input.tangent);
+	output.bitangent = mul((float3x3)modelMatrix, input.binormal);
 
 	return output;
 }

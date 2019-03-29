@@ -35,7 +35,10 @@ namespace Hydra
 		NVRHI::PrimitiveType::Enum PrimitiveType;
 
 		void UpdateBounds();
+
+		void GenerateUVs();
 		void GenerateNormals();
+		void GenerateTangentsAndBiTangents();
 
 		void SmoothMesh();
 

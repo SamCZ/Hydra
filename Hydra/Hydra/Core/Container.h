@@ -5,6 +5,8 @@
 #include <map>
 #include <unordered_map>
 
+#include "Hydra/Core/Array.h"
+
 namespace Hydra
 {
 	template <typename A>

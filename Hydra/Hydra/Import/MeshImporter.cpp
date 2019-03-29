@@ -275,7 +275,7 @@ namespace Hydra
 				aiVector3D bit = mesh->mBitangents[vertIdx];
 
 				entry.tangent = aiVecToGlm(tan);
-				entry.binormal = aiVecToGlm(bit);
+				entry.bitangent = aiVecToGlm(bit);
 			}
 
 			entry.position = aiVecToGlm(vert);

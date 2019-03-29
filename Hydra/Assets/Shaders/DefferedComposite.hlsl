@@ -98,7 +98,7 @@ static const float2 g_SamplePositions[] = {
 	float2(0.08265103f, -0.8939569f)
 };
 
-float GetShadow(float3 fragmentPos)
+float GetShadow(GBUFFER_DATA data, float3 fragmentPos)
 {
 	float4 clipPos = mul(g_LightViewProjMatrix, float4(fragmentPos, 1.0f));
 
@@ -111,9 +111,26 @@ float GetShadow(float3 fragmentPos)
 	clipPos.x = clipPos.x * 0.5 + 0.5;
 	clipPos.y = 0.5 - clipPos.y * 0.5;
 
+	float pixelDepth = clipPos.z;
+
+	/*
+	float3 N = data.Normal;
+	float3 L = normalize(g_DirLight.Direction);
+	float NdotL = max(dot(N, L), 0.0);
+
+	float margin = acos(saturate(NdotL));
+#ifdef LINEAR
+	// The offset can be slightly smaller with smoother shadow edges.
+	float epsilon = 0.0005 / margin;
+#else
+	float epsilon = 0.001 / margin;
+#endif
+	// Clamp epsilon to a fixed range so it doesn't go overboard.
+	epsilon = clamp(epsilon, 0, 0.1);*/
+
 	if (g_DirLight.ShadowType < 2.0)
 	{
-		return DirLight_ShadowMap.SampleCmpLevelZero(ShadowSampler, clipPos.xy, clipPos.z);
+		return DirLight_ShadowMap.SampleCmpLevelZero(ShadowSampler, clipPos.xy, pixelDepth);
 	}
 
 	float shadow = 0;
@@ -124,7 +141,7 @@ float GetShadow(float3 fragmentPos)
 		float2 offset = g_SamplePositions[nSample];
 		float weight = 1.0;
 		offset *= 2 * g_rShadowMapSize;
-		float smpl = DirLight_ShadowMap.SampleCmpLevelZero(ShadowSampler, clipPos.xy + offset, clipPos.z);
+		float smpl = DirLight_ShadowMap.SampleCmpLevelZero(ShadowSampler, clipPos.xy + offset, pixelDepth);
 
 		shadow += smpl * weight;
 		totalWeight += weight;
@@ -156,13 +173,41 @@ float4 MainPS(FullScreenQuadOutput IN) : SV_Target
 	float shadowValue = 1.0;
 	if (g_DirLight.ShadowType > 0.0)
 	{
-		shadowValue = GetShadow(data.WorldPos.xyz);
-		shadowValue = max(shadowValue, 0.2);
+		shadowValue = GetShadow(data, data.WorldPos.xyz);
+		//shadowValue = max(shadowValue, 0.5);
 	}
 
 	float3 N = data.Normal;
 	float3 V = normalize(ViewPos - data.WorldPos);
 	float3 R = reflect(V, N);
+
+	{
+		float3 lighting = albedo * Ambient.Color;
+
+		{
+			float3 lightDir = normalize(-g_DirLight.Direction);
+			float diff = max(dot(N, lightDir), 0.0);
+
+			float3 reflectDir = reflect(-lightDir, N);
+			float spec = pow(max(dot(V, reflectDir), 0.0), metallic);
+
+			lighting += albedo * diff * shadowValue;
+			//lighting += albedo * spec;
+		}
+
+		for (int i = 0; i < (int)g_PointLightCount; ++i)
+		{
+			float3 lightDir = normalize(g_PointLights[i].Position - data.WorldPos);
+			float distance = length(g_PointLights[i].Position - data.WorldPos);
+			float attenuation = 1.0 / (distance * distance);
+
+			float diff = max(dot(N, lightDir), 0.0);
+
+			lighting += g_PointLights[i].DiffuseColor * attenuation * g_PointLights[i].Range * diff;
+		}
+
+		return float4(lighting, 1.0);
+	}
 
 	float3 F0 = (0.04).xxx;
 	F0 = lerp(F0, albedo, metallic);
@@ -239,7 +284,7 @@ float4 MainPS(FullScreenQuadOutput IN) : SV_Target
 	float3 ambient = (kD * diffuse + specular) * (Ambient.Color.xyz + ao.xxx);
 
 	float globalIntensity = saturate(dot(float3(0.0, 1.0, 0.0), -g_DirLight.Direction)).xxx;
-	//float globalIntensity = 1.0;
+	globalIntensity = 1.0;
 	float3 color = Lo + (ambient * globalIntensity);
 
 	return float4(color, 1.0);

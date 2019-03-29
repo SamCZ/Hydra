@@ -66,7 +66,7 @@ namespace Hydra {
 			{ "TEXCOORD", 0, NVRHI::Format::RG32_FLOAT,  0, offsetof(VertexBufferEntry, texCoord), false },
 			{ "NORMAL",   0, NVRHI::Format::RGB32_FLOAT, 0, offsetof(VertexBufferEntry, normal),   false },
 			{ "TANGENT",  0, NVRHI::Format::RGB32_FLOAT, 0, offsetof(VertexBufferEntry, tangent),  false },
-			{ "BINORMAL", 0, NVRHI::Format::RGB32_FLOAT, 0, offsetof(VertexBufferEntry, binormal), false },
+			{ "BINORMAL", 0, NVRHI::Format::RGB32_FLOAT, 0, offsetof(VertexBufferEntry, bitangent), false },
 
 			{ "WORLD",    0,    NVRHI::Format::RGBA32_FLOAT, 1, 0, true },
 			{ "WORLD",    1,    NVRHI::Format::RGBA32_FLOAT, 1, 16, true },

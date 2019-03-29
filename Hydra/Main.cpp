@@ -27,10 +27,6 @@
 
 #include "Hydra/Input/Windows/WindowsInputManager.h"
 
-#include "Hydra/Core/FastNoise.h"
-#include "Hydra/Core/Random.h"
-#include "Hydra/Terrain/Erosion.h"
-
 #include "Hydra/Render/Pipeline/DX11/UIRendererDX11.h"
 
 #include "ImGui/imgui.h"
@@ -44,12 +40,8 @@
 
 #include "Hydra/Render/TestVars.h"
 
-#include "Hydra/Terrain/Terrain.h"
-
-#include "Hydra/Terrain/Marching/MarchingCubes.h"
-#include "Hydra/Terrain/Marching/MarchingTertrahedron.h"
-
-#include "Hydra/Terrain/Voxel/VoxelTerrain.h"
+#include "Hydra/Terrain/Generator/Noise/NoiseMap.h"
+#include "Hydra/Terrain/Generator/MeshGenerator.h"
 
 /* Set the better graphic card for notebooks ( ͡° ͜ʖ ͡°)
 *  http://developer.download.nvidia.com/devzone/devcenter/gamegraphics/files/OptimusRenderingPolicies.pdf
@@ -324,11 +316,35 @@ public:
 			light->Intensity = 2.0f;
 			rm->MainScene->AddChild(lightObj);
 		}
-
-		VoxelTerrainPtr terrain = MakeShared<VoxelTerrain>();
-		rm->MainScene->AddChild(terrain);
+		 
+		/*VoxelTerrainPtr terrain = MakeShared<VoxelTerrain>();
+		rm->MainScene->AddChild(terrain);*/
 
 		_SkyMaterial = Material::CreateOrGet("Assets/Shaders/Sky.hlsl");
+
+		MaterialPtr terrainMat = Material::CreateOrGet("Assets/Shaders/VoxelTerrain.hlsl");
+		terrainMat->SetTexture("_GrassTex", TextureImporter::Import("Assets/IndustryEmpire/Textures/TilePatine_D.TGA"));
+		terrainMat->SetTexture("_GrassNormalTex", TextureImporter::Import("Assets/IndustryEmpire/Textures/TilePatine_N.TGA"));
+		terrainMat->SetSampler("DefaultSampler", Graphics::CreateSampler("TerrainSampler"));
+
+		MeshSettings meshSettings = {};
+		meshSettings.UseFlatShading = false;
+		meshSettings.MeshScale = 2.5f;
+		meshSettings.ChunkSizeIndex = 0;
+
+		HeightMap* hMap = NoiseMap::GenerateHeightMap(meshSettings);
+
+		MeshData* meshData = MeshGenerator::GenerateTerrainMesh(hMap, meshSettings, 0);
+
+		delete hMap;
+
+		SpatialPtr testModel = New(Spatial);
+		RendererPtr voxelRender = testModel->AddComponent<Renderer>();
+		voxelRender->TestColor = MakeRGB(200, 200, 200).toVec3();
+		voxelRender->Material = terrainMat;
+		Mesh* mesh2 = meshData->CreateMesh();
+		voxelRender->SetMesh(mesh2);
+		rm->MainScene->AddChild(testModel);
 
 		/*SpatialPtr box = MakeShared<Spatial>();
 		RendererPtr r = box->AddComponent<Renderer>();

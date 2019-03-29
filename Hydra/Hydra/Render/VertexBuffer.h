@@ -10,6 +10,6 @@ namespace Hydra
 		Vector2 texCoord;
 		Vector3 normal;
 		Vector3 tangent;
-		Vector3 binormal;
+		Vector3 bitangent;
 	};
 }
