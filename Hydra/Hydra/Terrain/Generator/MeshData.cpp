@@ -22,7 +22,7 @@ namespace Hydra
 		_OutOfMeshTriangles = List<int>(24 * (numVertsPerLine - 2));
 	}
 
-	void MeshData::AddVertex(const Vector3& vertexPosition, const Vector2& uv, int vertexIndex)
+	void MeshData::AddVertex(const Vector3& vertexPosition, const Vector2& uv, const Vector2& uv2, int vertexIndex)
 	{
 		if (vertexIndex < 0)
 		{
@@ -32,6 +32,7 @@ namespace Hydra
 		{
 			_Vertices[vertexIndex].position = vertexPosition;
 			_Vertices[vertexIndex].texCoord = uv;
+			_Vertices[vertexIndex].texCoord2 = uv2;
 		}
 	}
 

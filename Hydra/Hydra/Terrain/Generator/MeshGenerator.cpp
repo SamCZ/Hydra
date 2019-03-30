@@ -62,6 +62,8 @@ namespace Hydra
 					Vector2 vertexPosition2D = topLeft + Vector2(percent.x, -percent.y) * meshWorldSize;
 					float height = heightMap[x + y * heightWidth];
 
+					Vector2 heightMapTexCoord = Vector2(x, y);
+
 					if (isEdgeConnectionVertex)
 					{
 						bool isVertical = x == 2 || x == numVertsPerLine - 3;
@@ -75,7 +77,12 @@ namespace Hydra
 						height = heightMainVertexA * (1 - dstPercentFromAToB) + heightMainVertexB * dstPercentFromAToB;
 					}
 
-					meshData->AddVertex(Vector3(vertexPosition2D.x, height, vertexPosition2D.y), percent, vertexIndex);
+					if (meshSettings.UseGPUTexturing)
+					{
+						//height = 0;
+					}
+
+					meshData->AddVertex(Vector3(vertexPosition2D.x, height, vertexPosition2D.y), percent, heightMapTexCoord, vertexIndex);
 
 					bool createTriangle = x < numVertsPerLine - 1 && y < numVertsPerLine - 1 && (!isEdgeConnectionVertex || (x != 2 && y != 2));
 

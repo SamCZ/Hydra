@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{0600F8C5-A252-4546-8982-0EF976413165}</ProjectGuid>
     <RootNamespace>Hydra</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.10240.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -91,7 +91,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;assimp-vc140-mt.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)nvapi-public\amd64;$(ProjectDir)assimp-c4d\lib;$(ProjectDir)FreeImage\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)nvapi-public\amd64;$(ProjectDir)assimp-c4d\lib;$(ProjectDir)FreeImage\Win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -122,7 +122,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(ProjectDir)nvapi-public\amd64;$(ProjectDir)assimp-c4d\lib;$(ProjectDir)FreeImage\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)nvapi-public\amd64;$(ProjectDir)assimp-c4d\lib;$(ProjectDir)FreeImage\Win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;assimp-vc140-mt.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -143,7 +143,6 @@
     <ClInclude Include="Hydra\Engine.h" />
     <ClInclude Include="Hydra\HydraEngine.h" />
     <ClInclude Include="Hydra\Import\MeshImporter.h" />
-    <ClInclude Include="Hydra\Import\ShaderImporter.h" />
     <ClInclude Include="Hydra\Import\TextureImporter.h" />
     <ClInclude Include="Hydra\Import\UnityAssetManager.h" />
     <ClInclude Include="Hydra\Input\GenericPlatformInput.h" />
@@ -272,6 +271,7 @@
     <ClCompile Include="Hydra\Render\TextureLayoutDef.cpp" />
     <ClCompile Include="Hydra\Render\UI\UIRenderer.cpp" />
     <ClCompile Include="Hydra\Scene\Components\Light.cpp" />
+    <ClCompile Include="Hydra\Terrain\Generator\HeightMap.cpp" />
     <ClCompile Include="Hydra\Terrain\Generator\MeshBuilder.cpp" />
     <ClCompile Include="Hydra\Terrain\Generator\MeshData.cpp" />
     <ClCompile Include="Hydra\Terrain\Generator\MeshGenerator.cpp" />
@@ -297,7 +297,6 @@
     <ClCompile Include="Hydra\Core\Timing.cpp" />
     <ClCompile Include="Hydra\Engine.cpp" />
     <ClCompile Include="Hydra\Import\MeshImporter.cpp" />
-    <ClCompile Include="Hydra\Import\ShaderImporter.cpp" />
     <ClCompile Include="Hydra\Import\TextureImporter.cpp" />
     <ClCompile Include="Hydra\Input\GenericPlatformInput.cpp" />
     <ClCompile Include="Hydra\Input\InputCoreTypes.cpp" />

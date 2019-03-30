@@ -23,7 +23,7 @@ namespace Hydra
 	public:
 		MeshData(int numVertsPerLine, int skipIncrement, bool useFlatShading);
 
-		void AddVertex(const Vector3& vertexPosition, const Vector2& uv, int vertexIndex);
+		void AddVertex(const Vector3& vertexPosition, const Vector2& uv, const Vector2& uv2, int vertexIndex);
 		void AddTriangle(int a, int b, int c);
 		
 		void ProcessMesh();

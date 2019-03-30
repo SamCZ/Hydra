@@ -66,6 +66,8 @@ namespace Hydra
 		List<Var*> _VarsToMarkClean;
 	public:
 		static Map<String, MaterialPtr> AllMaterials;
+
+		bool IsInternalMaterial;
 	public:
 		Material(const String& name, SharedPtr<Technique> technique);
 		~Material();
@@ -121,8 +123,8 @@ namespace Hydra
 
 		void ApplyParams(NVRHI::DrawCallState& state);
 
-		static SharedPtr<Material> CreateOrGet(const String& name, const File& source, bool precompile = true);
-		static SharedPtr<Material> CreateOrGet(const File& source, bool precompile = true);
+		static SharedPtr<Material> CreateOrGet(const String& name, const File& source, bool precompile = true, bool isInternalMaterial = false);
+		static SharedPtr<Material> CreateOrGet(const File& source, bool precompile = true, bool isInternalMaterial = false);
 
 	private:
 

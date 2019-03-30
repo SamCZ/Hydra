@@ -1,7 +1,6 @@
 #include "Hydra/Render/RenderStage/RenderStageDeffered.h"
 
 #include "Hydra/Engine.h"
-#include "Hydra/Import/ShaderImporter.h"
 #include "Hydra/Core/File.h"
 #include "Hydra/Scene/Components/Renderer.h"
 #include "Hydra/Scene/Components/Camera.h"
@@ -59,11 +58,12 @@ namespace Hydra {
 
 	RenderStageDeffered::RenderStageDeffered()
 	{
-		MaterialPtr basicInputMaterial = Material::CreateOrGet("Assets/Shaders/Input/DefferedInput.hlsl");
+		MaterialPtr basicInputMaterial = Material::CreateOrGet("Assets/Shaders/Input/DefferedInput.hlsl", true, true);
 
 		const NVRHI::VertexAttributeDesc SceneLayout[] = {
 			{ "POSITION", 0, NVRHI::Format::RGB32_FLOAT, 0, offsetof(VertexBufferEntry, position), false },
 			{ "TEXCOORD", 0, NVRHI::Format::RG32_FLOAT,  0, offsetof(VertexBufferEntry, texCoord), false },
+			{ "TEXCOORD", 1, NVRHI::Format::RG32_FLOAT,  0, offsetof(VertexBufferEntry, texCoord2), false },
 			{ "NORMAL",   0, NVRHI::Format::RGB32_FLOAT, 0, offsetof(VertexBufferEntry, normal),   false },
 			{ "TANGENT",  0, NVRHI::Format::RGB32_FLOAT, 0, offsetof(VertexBufferEntry, tangent),  false },
 			{ "BINORMAL", 0, NVRHI::Format::RGB32_FLOAT, 0, offsetof(VertexBufferEntry, bitangent), false },
@@ -76,8 +76,8 @@ namespace Hydra {
 
 		_InputLayout = Graphics::CreateInputLayout("Deffered", SceneLayout, _countof(SceneLayout), basicInputMaterial);
 
-		_DefaultMaterial = Material::CreateOrGet("Assets/Shaders/DefaultDeffered.hlsl");
-		_CompositeMaterial = Material::CreateOrGet("Assets/Shaders/DefferedComposite.hlsl");
+		_DefaultMaterial = Material::CreateOrGet("Assets/Shaders/DefaultDeffered.hlsl", true, true);
+		_CompositeMaterial = Material::CreateOrGet("Assets/Shaders/DefferedComposite.hlsl", true, true);
 		
 		Graphics::CreateSampler("DefaultSampler");
 
@@ -85,7 +85,7 @@ namespace Hydra {
 		_BrdfLutTexture = Graphics::CreateRenderTarget("DPBR_BrdfLut", NVRHI::Format::RG16_FLOAT, 512, 512, NVRHI::Color(0.f), 1);
 		_BrdfLutSampler = Graphics::CreateSampler("DPBR_BrdfLut", WrapMode::WRAP_MODE_CLAMP, WrapMode::WRAP_MODE_CLAMP, WrapMode::WRAP_MODE_CLAMP);
 
-		MaterialPtr brdfLutMaterial = Material::CreateOrGet("Assets/Shaders/Utils/PBR/BrdfLUT.hlsl");
+		MaterialPtr brdfLutMaterial = Material::CreateOrGet("Assets/Shaders/Utils/PBR/BrdfLUT.hlsl", true, true);
 
 		Graphics::Composite(brdfLutMaterial, [](NVRHI::DrawCallState& state) {}, "DPBR_BrdfLut");
 
@@ -139,7 +139,7 @@ namespace Hydra {
 		}*/
 
 
-		MaterialPtr diffuseIBLMaterial = Material::CreateOrGet("Assets/Shaders/Utils/Skybox.hlsl");
+		MaterialPtr diffuseIBLMaterial = Material::CreateOrGet("Assets/Shaders/Utils/Skybox.hlsl", true, true);
 
 		Graphics::CreateRenderTargetCubeMap("DiffuseIBL", NVRHI::Format::RGBA16_FLOAT, 64, 64, NVRHI::Color(0.6f, 0.6f, 0.6f, 1.0f));
 
@@ -164,7 +164,7 @@ namespace Hydra {
 #pragma region Prefilter EnvMap
 		unsigned int maxMipLevels = 5;
 
-		MaterialPtr preFilterMaterial = Material::CreateOrGet("Assets/Shaders/Utils/PBR/PreFilter.hlsl");
+		MaterialPtr preFilterMaterial = Material::CreateOrGet("Assets/Shaders/Utils/PBR/PreFilter.hlsl", true, true);
 
 		Graphics::CreateRenderTargetCubeMap("EnvMap", NVRHI::Format::RGBA16_FLOAT, 256, 256, NVRHI::Color(0.6f, 0.6f, 0.6f, 1.0f), maxMipLevels);
 
@@ -195,7 +195,7 @@ namespace Hydra {
 #pragma endregion
 
 #pragma region IrradianceConvolution
-		MaterialPtr irrConvMaterial = Material::CreateOrGet("Assets/Shaders/Utils/PBR/IrradianceConvolution.hlsl");
+		MaterialPtr irrConvMaterial = Material::CreateOrGet("Assets/Shaders/Utils/PBR/IrradianceConvolution.hlsl", true, true);
 
 		Graphics::CreateRenderTargetCubeMap("IrradianceConvolution", NVRHI::Format::RGBA16_FLOAT, 128, 128, NVRHI::Color(0.6f, 0.6f, 0.6f, 1.0f));
 
@@ -219,14 +219,14 @@ namespace Hydra {
 		delete cubeRenderer;
 
 
-		_PostEmissionPreMaterial = Material::CreateOrGet("Assets/Shaders/PostProcess/EmissionPre.hlsl");
-		_PostEmissionMaterial = Material::CreateOrGet("Assets/Shaders/PostProcess/Emission.hlsl");
+		_PostEmissionPreMaterial = Material::CreateOrGet("Assets/Shaders/PostProcess/EmissionPre.hlsl", true, true);
+		_PostEmissionMaterial = Material::CreateOrGet("Assets/Shaders/PostProcess/Emission.hlsl", true, true);
 
-		_PostSSAOMaterial = Material::CreateOrGet("SSAO", "Assets/Shaders/PostProcess/SSAO.hlsl");
+		_PostSSAOMaterial = Material::CreateOrGet("SSAO", "Assets/Shaders/PostProcess/SSAO.hlsl", true, true);
 
-		_MultMaterial = Material::CreateOrGet("Assets/Shaders/Mult.hlsl");
+		_MultMaterial = Material::CreateOrGet("Assets/Shaders/Mult.hlsl", true, true);
 
-		_ShadowMaterial = Material::CreateOrGet("Assets/Shaders/RenderStage/Shadow.hlsl");
+		_ShadowMaterial = Material::CreateOrGet("Assets/Shaders/RenderStage/Shadow.hlsl", true, true);
 
 		Graphics::CreateShadowCompareSampler("ShadowSampler");
 	}

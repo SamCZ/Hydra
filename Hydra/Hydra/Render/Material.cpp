@@ -10,7 +10,7 @@ namespace Hydra
 	Map<String, SharedPtr<Technique>> Material::_TechniqueCache;
 	Map<String, MaterialPtr> Material::AllMaterials;
 
-	Material::Material(const String & name, SharedPtr<Technique> technique) : _Name(name), _Technique(technique)
+	Material::Material(const String & name, SharedPtr<Technique> technique) : _Name(name), _Technique(technique), IsInternalMaterial(false)
 	{
 		if (_Technique->IsPrecompiled())
 		{
@@ -409,7 +409,7 @@ namespace Hydra
 
 	}
 
-	SharedPtr<Material> Material::CreateOrGet(const String & name, const File & source, bool precompile)
+	SharedPtr<Material> Material::CreateOrGet(const String & name, const File & source, bool precompile, bool isInternalMaterial)
 	{
 		SharedPtr<Technique> tech = nullptr;
 
@@ -425,14 +425,16 @@ namespace Hydra
 
 		MaterialPtr material = MakeShared<Material>(name, tech);
 
+		material->IsInternalMaterial = isInternalMaterial;
+
 		AllMaterials[name] = material;
 
 		return material;
 	}
 
-	SharedPtr<Material> Material::CreateOrGet(const File & source, bool precompile)
+	SharedPtr<Material> Material::CreateOrGet(const File & source, bool precompile, bool isInternalMaterial)
 	{
-		return CreateOrGet(source.GetPath(), source, precompile);
+		return CreateOrGet(source.GetPath(), source, precompile, isInternalMaterial);
 	}
 
 	NVRHI::PipelineStageBindings* Material::GetPipelineStageBindingsForShaderType(NVRHI::DrawCallState& state, const NVRHI::ShaderType::Enum & type)

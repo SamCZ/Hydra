@@ -35,8 +35,8 @@ namespace Hydra
 
 	void Graphics::Create()
 	{
-		_BlitMaterial = Material::CreateOrGet("Assets/Shaders/Blit.hlsl");
-		_BlurMaterial = Material::CreateOrGet("Assets/Shaders/PostProcess/GaussianBlur.hlsl");
+		_BlitMaterial = Material::CreateOrGet("Assets/Shaders/Blit.hlsl", true, true);
+		_BlurMaterial = Material::CreateOrGet("Assets/Shaders/PostProcess/GaussianBlur.hlsl", true, true);
 	}
 
 	void Graphics::AllocateViewDependentResources(uint32 width, uint32 height, uint32 sampleCount)

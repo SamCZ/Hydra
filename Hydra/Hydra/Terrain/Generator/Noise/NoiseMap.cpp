@@ -54,7 +54,7 @@ namespace Hydra
 			{
 				float noiseValue = Noise(noise, x + rndOffset.x, y + rndOffset.y, scale, octaves, persistance, lacunarity);
 
-				map[y * width + x] = noiseValue;
+				map[x + y * width] = noiseValue;
 
 				minValue = glm::min(noiseValue, minValue);
 				maxValue = glm::max(noiseValue, maxValue);

@@ -25,16 +25,53 @@ Texture2D _LayerTex6 : register(t8);
 
 SamplerState DefaultSampler	: register(s0);
 
+Texture2D _HeightMap : register(t0);
+
 cbuffer ModelData : register(b0)
 {
 	float3 _Color;
 	float _TexScale;
 }
 
+cbuffer VertexBufferVars
+{
+	int g_numVertsPerLine;
+	int g_skipIncrement;
+}
+
 PS_Input OnMainVS(in VS_Input input, in PS_Input output)
 {
 	//float4 clipPlane = float4(0, 10, 0, -1);
 	//output.clip = dot(mul(g_ModelMatrix, input.position), clipPlane);
+	uint2 pos_xy = (uint2)input.texCoord2;
+
+	float x = pos_xy.x;
+	float y = pos_xy.y;
+
+	float height = _HeightMap[pos_xy];
+
+	int numVertsPerLine = g_numVertsPerLine;
+	int skipIncrement = g_skipIncrement;
+
+	bool isOutOfMeshVertex = y == 0 || y == numVertsPerLine - 1 || x == 0 || x == numVertsPerLine - 1;
+	bool isMeshEdgeVertex = (y == 1 || y == numVertsPerLine - 2 || x == 1 || x == numVertsPerLine - 2) && !isOutOfMeshVertex;
+	bool isMainVertex = (x - 2) % skipIncrement == 0 && (y - 2) % skipIncrement == 0 && !isOutOfMeshVertex && !isMeshEdgeVertex;
+	bool isEdgeConnectionVertex = (y == 2 || y == numVertsPerLine - 3 || x == 2 || x == numVertsPerLine - 3) && !isOutOfMeshVertex && !isMeshEdgeVertex && !isMainVertex;
+
+	if (isEdgeConnectionVertex)
+	{
+		bool isVertical = x == 2 || x == numVertsPerLine - 3;
+		int dstToMainVertexA = ((isVertical) ? y - 2 : x - 2) % skipIncrement;
+		int dstToMainVertexB = skipIncrement - dstToMainVertexA;
+		float dstPercentFromAToB = dstToMainVertexA / (float)skipIncrement;
+
+		float heightMainVertexA = _HeightMap[uint2((isVertical) ? x : x - dstToMainVertexA, (isVertical) ? y - dstToMainVertexA : y)];
+		float heightMainVertexB = _HeightMap[uint2((isVertical) ? x : x + dstToMainVertexB, (isVertical) ? y + dstToMainVertexB : y)];
+
+		height = heightMainVertexA * (1 - dstPercentFromAToB) + heightMainVertexB * dstPercentFromAToB;
+	}
+
+	output.position.y = height;
 
 	return output;
 }

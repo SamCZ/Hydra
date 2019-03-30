@@ -10,6 +10,7 @@ namespace Hydra
 		bool UseFlatShading;
 		int ChunkSizeIndex;
 		int FlatshadedChunkSizeIndex;
+		bool UseGPUTexturing;
 
 		inline int GetNumVertsPerLine() const
 		{

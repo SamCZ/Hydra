@@ -86,7 +86,6 @@ static SharedPtr<DeviceManager> _deviceManager = nullptr;
 static SharedPtr<NVRHI::RendererInterfaceD3D11> _renderInterface = nullptr;
 static SpatialPtr lightObj = nullptr;
 
-
 class UIRenderView : public IVisualController
 {
 private:
@@ -187,10 +186,12 @@ public:
 		ImGui::Begin("Material params");
 		ITER(Material::AllMaterials, it1)
 		{
+			MaterialPtr mat = it1->second;
+
+			if (mat->IsInternalMaterial) continue;
 
 			if (CollapsingHeader(it1->first))
 			{
-				MaterialPtr mat = it1->second;
 				for (auto& kv : mat->GetVarTypes())
 				{
 					Var* var = mat->GetRawVar(kv.first);
@@ -201,7 +202,7 @@ public:
 						{
 							if (var == nullptr)
 							{
-								mat->SetFloat(kv.first, 0.0f);
+								mat->SetFloat(kv.first, 1.0f);
 								var = mat->GetRawVar(kv.first);
 							}
 
@@ -216,7 +217,7 @@ public:
 						{
 							if (var == nullptr)
 							{
-								mat->SetVector2(kv.first, Vector2());
+								mat->SetVector2(kv.first, Vector2(1));
 								var = mat->GetRawVar(kv.first);
 							}
 
@@ -232,7 +233,7 @@ public:
 						{
 							if (var == nullptr)
 							{
-								mat->SetVector3(kv.first, Vector3());
+								mat->SetVector3(kv.first, Vector3(1));
 								var = mat->GetRawVar(kv.first);
 							}
 
@@ -247,7 +248,7 @@ public:
 						{
 							if (var == nullptr)
 							{
-								mat->SetVector4(kv.first, Vector4());
+								mat->SetVector4(kv.first, Vector4(1));
 								var = mat->GetRawVar(kv.first);
 							}
 
@@ -404,7 +405,9 @@ public:
 		/*VoxelTerrainPtr terrain = MakeShared<VoxelTerrain>();
 		rm->MainScene->AddChild(terrain);*/
 
-		_SkyMaterial = Material::CreateOrGet("Assets/Shaders/Sky.hlsl");
+		
+
+		_SkyMaterial = Material::CreateOrGet("Assets/Shaders/Sky.hlsl", true, true);
 
 		MaterialPtr terrainMat = Material::CreateOrGet("Assets/Shaders/VoxelTerrain.hlsl");
 		terrainMat->SetTexture("_GrassTex", TextureImporter::Import("Assets/IndustryEmpire/Textures/TilePatine_D.TGA"));
@@ -423,8 +426,11 @@ public:
 		meshSettings.UseFlatShading = false;
 		meshSettings.MeshScale = 1.0f;
 		meshSettings.ChunkSizeIndex = 8;
+		meshSettings.UseGPUTexturing = true;
 
-		for (int x = -5; x <= 5; x++)
+		AddChunk(meshSettings, terrainMat, 0, 0, 0);
+
+		/*for (int x = -5; x <= 5; x++)
 		{
 			for (int y = -5; y <= 5; y++)
 			{
@@ -433,7 +439,7 @@ public:
 
 				AddChunk(meshSettings, terrainMat, meshSettings.GetMeshWorldSize() * x, meshSettings.GetMeshWorldSize() * y, distance);
 			}
-		}
+		}*/
 		/*SpatialPtr box = MakeShared<Spatial>();
 		RendererPtr r = box->AddComponent<Renderer>();
 		r->SetMesh(Mesh::CreatePrimitive(PrimitiveType::Box));
@@ -467,13 +473,23 @@ public:
 		return S_OK;
 	}
 
-	inline void AddChunk(const MeshSettings& meshSettings, MaterialPtr material, float x, float y, int lod)
+	inline void AddChunk(const MeshSettings& meshSettings, MaterialPtr material, float x, float y, int levelOfDetail)
 	{
 		HeightMap* hMap = NoiseMap::GenerateHeightMap(meshSettings, Vector2(x, -y));
+		hMap->InitalizeTexture();
+		hMap->UploadTextureData();
 
-		MeshData* meshData = MeshGenerator::GenerateTerrainMesh(hMap, meshSettings, lod);
+		material->SetTexture("_HeightMap", hMap->Texture);
 
-		delete hMap;
+		int numVertsPerLine = meshSettings.GetNumVertsPerLine();
+		int skipIncrement = (levelOfDetail == 0) ? 1 : levelOfDetail * 2;
+
+		material->SetInt("g_numVertsPerLine", numVertsPerLine);
+		material->SetInt("g_skipIncrement", skipIncrement);
+
+		MeshData* meshData = MeshGenerator::GenerateTerrainMesh(hMap, meshSettings, levelOfDetail);
+
+		//delete hMap;
 
 		SpatialPtr testModel = New(Spatial);
 		testModel->Position = Vector3(x, 0, y);

@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Hydra/Core/Common.h"
+#include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
+
 namespace Hydra
 {
 	struct HeightMap
@@ -7,10 +10,11 @@ namespace Hydra
 		int Width;
 		int Height;
 		float* Data;
+		NVRHI::TextureHandle Texture;
 
-		~HeightMap()
-		{
-			delete[] Data;
-		}
+		~HeightMap();
+
+		void InitalizeTexture();
+		void UploadTextureData();
 	};
 }
