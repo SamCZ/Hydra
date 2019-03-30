@@ -13,8 +13,8 @@ namespace Hydra
 	public:
 		static float Noise(FastNoise& generator, float x, float y, float scale, int octaves, float persistance, float lacunarity);
 
-		static float* GenerateNoiseMap(int width, int height, int seed, float scale, int octaves, float persistance, float lacunarity);
+		static float* GenerateNoiseMap(int width, int height, int seed, const Vector2& offset, float scale, int octaves, float persistance, float lacunarity);
 
-		static HeightMap* GenerateHeightMap(const MeshSettings& meshSettings);
+		static HeightMap* GenerateHeightMap(const MeshSettings& meshSettings, const Vector2& offset);
 	};
 }

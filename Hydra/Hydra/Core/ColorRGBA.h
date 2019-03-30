@@ -26,6 +26,9 @@ namespace Hydra
 
 	struct Colors
 	{
+		static ColorRGBA White;
+		static ColorRGBA Black;
+
 		static ColorRGBA Red;
 		static ColorRGBA Green;
 		static ColorRGBA Blue;

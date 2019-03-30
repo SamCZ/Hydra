@@ -31,7 +31,7 @@
 
 #include "ImGui/imgui.h"
 #include "ImGui/ImGuizmo.h"
-//#include "ImGui/imgui_helper.h"
+#include "ImGui/imgui_helper.h"
 
 #include "ImGui/imgui_impl_dx11.h"
 #include "ImGui/imgui_style.h"
@@ -170,6 +170,9 @@ public:
 		(void)RTV;
 		ImGui_ImplDX11_NewFrame();
 
+		BeginIds();
+
+		ImGui::Begin("Debug##Default");
 		ImGui::DragFloat("Left", &Test::OR_LEFT, 0.1f);
 		ImGui::DragFloat("Right", &Test::OR_RIGHT, 0.1f);
 		ImGui::DragFloat("Bottom", &Test::OR_BOTTOM, 0.1f);
@@ -179,6 +182,87 @@ public:
 		ImGui::DragFloat("Far", &Test::OR_FAR, 0.1f);
 
 		ImGui::DragFloat("Bias", &lightObj->GetComponent<Light>()->DepthBias, 0.0001f);
+		ImGui::End();
+
+		ImGui::Begin("Material params");
+		ITER(Material::AllMaterials, it1)
+		{
+
+			if (CollapsingHeader(it1->first))
+			{
+				MaterialPtr mat = it1->second;
+				for (auto& kv : mat->GetVarTypes())
+				{
+					Var* var = mat->GetRawVar(kv.first);
+
+					switch (kv.second)
+					{
+						case VarType::Float:
+						{
+							if (var == nullptr)
+							{
+								mat->SetFloat(kv.first, 0.0f);
+								var = mat->GetRawVar(kv.first);
+							}
+
+							if (DragFloat(kv.first, (float*)mat->GetRawVarData(kv.first), 1.0))
+							{
+								var->HasChnaged = true;
+							}
+						}
+						break;
+
+						case VarType::Vector2:
+						{
+							if (var == nullptr)
+							{
+								mat->SetVector2(kv.first, Vector2());
+								var = mat->GetRawVar(kv.first);
+							}
+
+							if (DragFloat2(kv.first, (float*)mat->GetRawVarData(kv.first), 1.0))
+							{
+								var->HasChnaged = true;
+							}
+						}
+						break;
+						
+
+						case VarType::Vector3:
+						{
+							if (var == nullptr)
+							{
+								mat->SetVector3(kv.first, Vector3());
+								var = mat->GetRawVar(kv.first);
+							}
+
+							if (DragFloat3(kv.first, (float*)mat->GetRawVarData(kv.first), 1.0))
+							{
+								var->HasChnaged = true;
+							}
+						}
+						break;
+
+						case VarType::Vector4:
+						{
+							if (var == nullptr)
+							{
+								mat->SetVector4(kv.first, Vector4());
+								var = mat->GetRawVar(kv.first);
+							}
+
+							if (DragFloat4(kv.first, (float*)mat->GetRawVarData(kv.first), 1.0))
+							{
+								var->HasChnaged = true;
+							}
+						}
+						break;
+					}
+				}
+			}
+		}
+		ImGui::End();
+
 
 		ImGui::Render();
 	}
@@ -327,25 +411,29 @@ public:
 		terrainMat->SetTexture("_GrassNormalTex", TextureImporter::Import("Assets/IndustryEmpire/Textures/TilePatine_N.TGA"));
 		terrainMat->SetSampler("DefaultSampler", Graphics::CreateSampler("TerrainSampler"));
 
+		terrainMat->SetTexture("_LayerTex0", TextureImporter::Import("Assets/Textures/Terrain/Grass.png"));
+		terrainMat->SetTexture("_LayerTex1", TextureImporter::Import("Assets/Textures/Terrain/Rocks 1.png"));
+		terrainMat->SetTexture("_LayerTex2", TextureImporter::Import("Assets/Textures/Terrain/Rocks 2.png"));
+		terrainMat->SetTexture("_LayerTex3", TextureImporter::Import("Assets/Textures/Terrain/Sandy grass.png"));
+		terrainMat->SetTexture("_LayerTex4", TextureImporter::Import("Assets/Textures/Terrain/Snow.png"));
+		terrainMat->SetTexture("_LayerTex5", TextureImporter::Import("Assets/Textures/Terrain/Stony ground.png"));
+		terrainMat->SetTexture("_LayerTex6", TextureImporter::Import("Assets/Textures/Terrain/Water.png"));
+
 		MeshSettings meshSettings = {};
 		meshSettings.UseFlatShading = false;
-		meshSettings.MeshScale = 2.5f;
-		meshSettings.ChunkSizeIndex = 0;
+		meshSettings.MeshScale = 1.0f;
+		meshSettings.ChunkSizeIndex = 8;
 
-		HeightMap* hMap = NoiseMap::GenerateHeightMap(meshSettings);
+		for (int x = -5; x <= 5; x++)
+		{
+			for (int y = -5; y <= 5; y++)
+			{
+				int distance = (int)glm::abs(glm::distance(Vector2(x, y), Vector2(0, 0)));
+				if (distance > 4) distance = 4;
 
-		MeshData* meshData = MeshGenerator::GenerateTerrainMesh(hMap, meshSettings, 0);
-
-		delete hMap;
-
-		SpatialPtr testModel = New(Spatial);
-		RendererPtr voxelRender = testModel->AddComponent<Renderer>();
-		voxelRender->TestColor = MakeRGB(200, 200, 200).toVec3();
-		voxelRender->Material = terrainMat;
-		Mesh* mesh2 = meshData->CreateMesh();
-		voxelRender->SetMesh(mesh2);
-		rm->MainScene->AddChild(testModel);
-
+				AddChunk(meshSettings, terrainMat, meshSettings.GetMeshWorldSize() * x, meshSettings.GetMeshWorldSize() * y, distance);
+			}
+		}
 		/*SpatialPtr box = MakeShared<Spatial>();
 		RendererPtr r = box->AddComponent<Renderer>();
 		r->SetMesh(Mesh::CreatePrimitive(PrimitiveType::Box));
@@ -377,6 +465,25 @@ public:
 		rm->MainScene->Start();
 
 		return S_OK;
+	}
+
+	inline void AddChunk(const MeshSettings& meshSettings, MaterialPtr material, float x, float y, int lod)
+	{
+		HeightMap* hMap = NoiseMap::GenerateHeightMap(meshSettings, Vector2(x, -y));
+
+		MeshData* meshData = MeshGenerator::GenerateTerrainMesh(hMap, meshSettings, lod);
+
+		delete hMap;
+
+		SpatialPtr testModel = New(Spatial);
+		testModel->Position = Vector3(x, 0, y);
+
+		RendererPtr voxelRender = testModel->AddComponent<Renderer>();
+		voxelRender->TestColor = MakeRGB(200, 200, 200).toVec3();
+		voxelRender->Material = material;
+		Mesh* mesh2 = meshData->CreateMesh();
+		voxelRender->SetMesh(mesh2);
+		rm->MainScene->AddChild(testModel);
 	}
 
 	inline void BackBufferResized(uint32_t width, uint32_t height, uint32_t sampleCount) override

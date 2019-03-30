@@ -12,8 +12,8 @@ namespace Hydra
 		int heightWidth = heightMapDef->Width;
 		float* heightMap = heightMapDef->Data;
 
-		int numVertsPerLine = MeshSettings_SupportedChunkSizes[(meshSettings.UseFlatShading) ? meshSettings.FlatshadedChunkSizeIndex : meshSettings.ChunkSizeIndex] + 5;
-		float meshWorldSize = (numVertsPerLine - 3) * meshSettings.MeshScale;
+		int numVertsPerLine = meshSettings.GetNumVertsPerLine();
+		float meshWorldSize = meshSettings.GetMeshWorldSize();
 
 		int skipIncrement = (levelOfDetail == 0) ? 1 : levelOfDetail * 2;
 

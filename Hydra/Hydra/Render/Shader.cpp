@@ -93,6 +93,7 @@ namespace Hydra
 			for (unsigned int v = 0; v < bufferDesc.Variables; v++)
 			{
 				ID3D11ShaderReflectionVariable* var = cb->GetVariableByIndex(v);
+				ID3D11ShaderReflectionType* type = var->GetType();
 
 				D3D11_SHADER_VARIABLE_DESC varDesc;
 				var->GetDesc(&varDesc);
@@ -101,6 +102,38 @@ namespace Hydra
 				varStruct.ConstantBufferIndex = i;
 				varStruct.ByteOffset = varDesc.StartOffset;
 				varStruct.Size = varDesc.Size;
+				
+				D3D11_SHADER_TYPE_DESC typeDesc;
+				type->GetDesc(&typeDesc);
+
+				String typeName = typeDesc.Name;
+
+				if (typeName == "int")
+				{
+					_LocalShaderVarCache->VariableTypes[varDesc.Name] = VarType::Int;
+				} else if (typeName == "float")
+				{
+					_LocalShaderVarCache->VariableTypes[varDesc.Name] = VarType::Float;
+				} else if (typeName == "float2")
+				{
+					_LocalShaderVarCache->VariableTypes[varDesc.Name] = VarType::Vector2;
+				} else if (typeName == "float3")
+				{
+					_LocalShaderVarCache->VariableTypes[varDesc.Name] = VarType::Vector3;
+				} else if (typeName == "float4")
+				{
+					_LocalShaderVarCache->VariableTypes[varDesc.Name] = VarType::Vector4;
+				} else if (typeName == "bool")
+				{
+					_LocalShaderVarCache->VariableTypes[varDesc.Name] = VarType::Bool;
+				}
+
+				/*for (unsigned j = 0; j < typeDesc.Members; ++j)
+				{
+					ID3D11ShaderReflectionType* memberType = type->GetMemberTypeByIndex(j);
+					D3D11_SHADER_TYPE_DESC memberTypeDesc;
+					memberType->GetDesc(&memberTypeDesc);
+				}*/
 
 				_LocalShaderVarCache->Variables[varDesc.Name] = varStruct;
 			}

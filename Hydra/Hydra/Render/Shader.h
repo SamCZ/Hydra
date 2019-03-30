@@ -1,8 +1,10 @@
 #pragma once
 
+#include <d3d11.h>
+
 #include "Hydra/Core/String.h"
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
-#include <d3d11.h>
+#include "Hydra/Render/VarType.h"
 
 namespace Hydra
 {
@@ -48,6 +50,8 @@ namespace Hydra
 		FastMap<String, RawShaderTextureDefine> TextureDefines;
 		FastMap<String, RawShaderSamplerDefine> SamplerDefines;
 		FastMap<String, RawShaderVariable> Variables;
+
+		Map<String, VarType::Type> VariableTypes;
 	};
 
 	class Shader

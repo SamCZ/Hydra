@@ -4,9 +4,9 @@
 #include <string>
 #include <vector>
 #include "ImGui/imgui.h"
-#include "Engine/Utils/ColorRGBA.h"
+#include "Hydra/Core/ColorRGBA.h"
 
-using namespace NovaEngine;
+using namespace Hydra;
 
 #define WSTAY (ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize)
 
@@ -220,19 +220,19 @@ static bool drawVectorInput4(std::string id, glm::vec4& vec, float prec = 0.1f) 
 	return e;
 }
 
-static void DrawText(std::string str, const ColorRGBA& col = makeRGB(255, 255, 25)) {
+static void DrawText(std::string str, const ColorRGBA& col = MakeRGB(255, 255, 25)) {
 	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(col.r, col.g, col.b, col.a));
 	ImGui::Text(str.c_str());
 	ImGui::PopStyleColor();
 }
 
-static void DrawText(const char* fmt, const ColorRGBA& col = makeRGB(255, 255, 25)) {
+static void DrawText(const char* fmt, const ColorRGBA& col = MakeRGB(255, 255, 25)) {
 	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(col.r, col.g, col.b, col.a));
 	ImGui::Text(fmt);
 	ImGui::PopStyleColor();
 }
 
-static ImVec4 cRGBA(const ColorRGBA& col = makeRGB(255, 255, 25)) {
+static ImVec4 cRGBA(const ColorRGBA& col = MakeRGB(255, 255, 25)) {
 	return ImVec4(col.r, col.g, col.b, col.a);
 }
 

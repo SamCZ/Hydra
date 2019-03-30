@@ -7,6 +7,8 @@
 
 #include <d3d11.h>
 
+#include "Hydra/Render/VarType.h"
+
 namespace Hydra
 {
 	class Technique;
@@ -16,26 +18,6 @@ namespace Hydra
 	struct StorageStruct
 	{
 
-	};
-
-	struct VarType
-	{
-		enum Type
-		{
-			Int,
-			UInt,
-			Float,
-			Bool,
-			Vector2,
-			Vector3,
-			Vector4,
-			Matrix3,
-			Matrix4,
-
-			Vector4Array,
-			StorageStruct,
-			StorageStructArray
-		};
 	};
 
 	struct Var
@@ -59,6 +41,10 @@ namespace Hydra
 		bool HasChnaged;
 	};
 
+	class Material;
+
+	DEFINE_PTR(Material)
+
 	class Material
 	{
 	private:
@@ -78,7 +64,8 @@ namespace Hydra
 		Map<NVRHI::ShaderType::Enum, ShaderVars*> _ActiveShaderVars;
 
 		List<Var*> _VarsToMarkClean;
-
+	public:
+		static Map<String, MaterialPtr> AllMaterials;
 	public:
 		Material(const String& name, SharedPtr<Technique> technique);
 		~Material();
@@ -122,6 +109,10 @@ namespace Hydra
 		void SetSampler(const String& name, NVRHI::SamplerHandle sampler);
 		NVRHI::SamplerHandle GetSampler(const String& name);
 
+		Var* GetRawVar(const String& name);
+		unsigned char* GetRawVarData(const String& name);
+
+		Map<String, VarType::Type> GetVarTypes();
 
 		void SetDefine(const String& name, const String& value);
 
@@ -184,6 +175,4 @@ namespace Hydra
 			return SetVariable(name, type, rawData, size);
 		}
 	};
-
-	DEFINE_PTR(Material)
 }

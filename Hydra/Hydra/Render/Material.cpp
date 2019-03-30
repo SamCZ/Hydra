@@ -8,6 +8,7 @@
 namespace Hydra
 {
 	Map<String, SharedPtr<Technique>> Material::_TechniqueCache;
+	Map<String, MaterialPtr> Material::AllMaterials;
 
 	Material::Material(const String & name, SharedPtr<Technique> technique) : _Name(name), _Technique(technique)
 	{
@@ -210,6 +211,38 @@ namespace Hydra
 		return nullptr;
 	}
 
+	Var* Hydra::Material::GetRawVar(const String & name)
+	{
+		if (_Variables.find(name) != _Variables.end())
+		{
+			return _Variables[name];
+		}
+		return nullptr;
+	}
+
+	unsigned char* Hydra::Material::GetRawVarData(const String & name)
+	{
+		if (_Variables.find(name) != _Variables.end())
+		{
+			Var* var = _Variables[name];
+
+			return var->Data;
+		}
+		return nullptr;
+	}
+
+	Map<String, VarType::Type> Hydra::Material::GetVarTypes()
+	{
+		Map<String, VarType::Type> map;
+
+		ITER(_ActiveShaderVars, it)
+		{
+			map.insert(it->second->VariableTypes.begin(), it->second->VariableTypes.end());
+		}
+
+		return map;
+	}
+
 	void Material::SetDefine(const String& name, const String& value)
 	{
 		bool updateShader = false;
@@ -390,7 +423,11 @@ namespace Hydra
 			_TechniqueCache[name] = tech;
 		}
 
-		return MakeShared<Material>(name, tech);
+		MaterialPtr material = MakeShared<Material>(name, tech);
+
+		AllMaterials[name] = material;
+
+		return material;
 	}
 
 	SharedPtr<Material> Material::CreateOrGet(const File & source, bool precompile)

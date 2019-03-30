@@ -177,6 +177,7 @@
     <ClInclude Include="Hydra\Render\TestVars.h" />
     <ClInclude Include="Hydra\Render\TextureLayoutDef.h" />
     <ClInclude Include="Hydra\Render\UI\UIRenderer.h" />
+    <ClInclude Include="Hydra\Render\VarType.h" />
     <ClInclude Include="Hydra\Render\VertexBuffer.h" />
     <ClInclude Include="Hydra\Scene\Component.h" />
     <ClInclude Include="Hydra\Scene\Components\Camera.h" />

@@ -32,7 +32,7 @@ namespace Hydra
 		return noiseHeight;
 	}
 
-	float* NoiseMap::GenerateNoiseMap(int width, int height, int seed, float scale, int octaves, float persistance, float lacunarity)
+	float* NoiseMap::GenerateNoiseMap(int width, int height, int seed, const Vector2& offset, float scale, int octaves, float persistance, float lacunarity)
 	{
 		float* map = new float[width * height];
 
@@ -44,36 +44,38 @@ namespace Hydra
 
 		Random prng = Random(seed);
 
-		Vector2 offset = Vector2(prng.GetFloat(-1000, 1000), prng.GetFloat(-1000, 1000));
+		Vector2 rndOffset = Vector2(prng.GetFloat(-1000, 1000), prng.GetFloat(-1000, 1000)) + offset;
+
+		rndOffset = offset;
 
 		for (int y = 0; y < height; y++)
 		{
 			for (int x = 0; x < width; x++)
 			{
-				float noiseValue = Noise(noise, x + offset.x, y + offset.y, scale, octaves, persistance, lacunarity);
+				float noiseValue = Noise(noise, x + rndOffset.x, y + rndOffset.y, scale, octaves, persistance, lacunarity);
 
-				map[y * width + x] = noiseValue * 10;
+				map[y * width + x] = noiseValue;
 
 				minValue = glm::min(noiseValue, minValue);
 				maxValue = glm::max(noiseValue, maxValue);
 			}
 		}
 
-		// Normalize
-		if (maxValue != minValue)
+		// Normalize Local
+		/*if (maxValue != minValue)
 		{
 			for (int i = 0; i < width * height; i++)
 			{
 				map[i] = (map[i] - minValue) / (maxValue - minValue);
 			}
-		}
+		}*/
 
 		return map;
 	}
 
-	HeightMap* NoiseMap::GenerateHeightMap(const MeshSettings & meshSettings)
+	HeightMap* NoiseMap::GenerateHeightMap(const MeshSettings & meshSettings, const Vector2& offset)
 	{
-		int size = MeshSettings_SupportedChunkSizes[(meshSettings.UseFlatShading) ? meshSettings.FlatshadedChunkSizeIndex : meshSettings.ChunkSizeIndex] + 5;
+		int size = meshSettings.GetNumVertsPerLine();
 
 		HeightMap* heightMap = new HeightMap();
 		heightMap->Width = size;
@@ -82,9 +84,19 @@ namespace Hydra
 		int numOctaves = 7;
 		float persistence = .5f;
 		float lacunarity = 2;
-		float initialScale = 1.0f;
+		float initialScale = 0.5f;
 
-		heightMap->Data = GenerateNoiseMap(size, size, 0, initialScale, numOctaves, persistence, lacunarity);
+		heightMap->Data = GenerateNoiseMap(size, size, 0, offset, initialScale, numOctaves, persistence, lacunarity);
+
+		int numErosionIterations = 2000;
+
+		//Erosion erosion;
+		//erosion.Erode(heightMap->Data, size, numErosionIterations);
+
+		for (int i = 0; i < size * size; i++)
+		{
+			heightMap->Data[i] = heightMap->Data[i] * 20;
+		}
 
 		return heightMap;
 	}

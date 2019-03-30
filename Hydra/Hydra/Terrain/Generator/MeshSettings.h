@@ -10,5 +10,15 @@ namespace Hydra
 		bool UseFlatShading;
 		int ChunkSizeIndex;
 		int FlatshadedChunkSizeIndex;
+
+		inline int GetNumVertsPerLine() const
+		{
+			return MeshSettings_SupportedChunkSizes[(UseFlatShading) ? FlatshadedChunkSizeIndex : ChunkSizeIndex] + 5;
+		}
+
+		inline float GetMeshWorldSize() const
+		{
+			return (GetNumVertsPerLine() - 3) * MeshScale;
+		}
 	};
 }

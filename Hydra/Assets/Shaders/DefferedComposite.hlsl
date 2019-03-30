@@ -160,7 +160,8 @@ float4 MainPS(FullScreenQuadOutput IN) : SV_Target
 	AmbientLight Ambient;
 	Ambient.Color = (0.25).xxxx;
 
-	if (data.WorldPos.z == 0)
+	//TODO: This causes white dots in the black spectrum.
+	if (data.WorldPos.x == 0 && data.WorldPos.y == 0 && data.WorldPos.z == 0)
 	{
 		return float4(0.0, 0.0, 0.0, 0.0);
 	}
@@ -174,6 +175,7 @@ float4 MainPS(FullScreenQuadOutput IN) : SV_Target
 	if (g_DirLight.ShadowType > 0.0)
 	{
 		shadowValue = GetShadow(data, data.WorldPos.xyz);
+		shadowValue = 1.0;
 		//shadowValue = max(shadowValue, 0.5);
 	}
 
