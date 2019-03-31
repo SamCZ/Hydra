@@ -50,7 +50,6 @@ namespace Hydra
 	private:
 		static Map<String, SharedPtr<Technique>> _TechniqueCache;
 
-		String _Name;
 		SharedPtr<Technique> _Technique;
 
 		Map<String, Var*> _Variables;
@@ -67,6 +66,7 @@ namespace Hydra
 	public:
 		static Map<String, MaterialPtr> AllMaterials;
 
+		String Name;
 		bool IsInternalMaterial;
 	public:
 		Material(const String& name, SharedPtr<Technique> technique);
@@ -121,6 +121,7 @@ namespace Hydra
 		Shader* GetShader(const NVRHI::ShaderType::Enum& type);
 		NVRHI::ShaderHandle GetRawShader(const NVRHI::ShaderType::Enum& type);
 
+		void ApplyParams(NVRHI::DispatchState& state);
 		void ApplyParams(NVRHI::DrawCallState& state);
 
 		static SharedPtr<Material> CreateOrGet(const String& name, const File& source, bool precompile = true, bool isInternalMaterial = false);

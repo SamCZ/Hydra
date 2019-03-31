@@ -86,6 +86,9 @@ static SharedPtr<DeviceManager> _deviceManager = nullptr;
 static SharedPtr<NVRHI::RendererInterfaceD3D11> _renderInterface = nullptr;
 static SpatialPtr lightObj = nullptr;
 
+static TexturePtr uavTex;
+static TexturePtr heigthMap;
+
 class UIRenderView : public IVisualController
 {
 private:
@@ -125,6 +128,10 @@ public:
 		_UIRenderer->Begin();
 
 		_UIRenderer->DrawImage(Graphics::GetRenderTarget("DirLight_ShadowMa_ColorTest"), 0, 0, 100, 100, 0.0f);
+
+		_UIRenderer->DrawImage(uavTex, 0, 105, 100, 100, 0.0f);
+
+		_UIRenderer->DrawImage(heigthMap, 105, 105, 100, 100, 0.0f);
 
 		_UIRenderer->End();
 
@@ -430,6 +437,7 @@ public:
 
 		AddChunk(meshSettings, terrainMat, 0, 0, 0);
 
+
 		/*for (int x = -5; x <= 5; x++)
 		{
 			for (int y = -5; y <= 5; y++)
@@ -486,6 +494,21 @@ public:
 
 		material->SetInt("g_numVertsPerLine", numVertsPerLine);
 		material->SetInt("g_skipIncrement", skipIncrement);
+
+		heigthMap = hMap->Texture;
+
+		//Generate Normal map
+
+		uavTex = Graphics::CreateUAVTexture("TestNormalMap", NVRHI::Format::RGBA16_FLOAT, hMap->Width - 2, hMap->Height - 2);
+
+		MaterialPtr computeMat = Material::CreateOrGet("NormalMapCmp", (File)"Assets/Shaders/Utils/GPU/NormalMapFromHeightMap.hlsl");
+		computeMat->SetTexture("_OutNormalMap", uavTex);
+		computeMat->SetTexture("_HeightMap", hMap->Texture);
+		computeMat->SetFloat("_Strength", 20.0f);
+
+		Graphics::Dispatch(computeMat, 16, 16, 1);
+
+		material->SetTexture("_GlobalNormalMap", uavTex);
 
 		MeshData* meshData = MeshGenerator::GenerateTerrainMesh(hMap, meshSettings, levelOfDetail);
 
@@ -556,6 +579,9 @@ public:
 
 		Graphics::Blit("Sky", mainRenderTarget);
 		Graphics::Blit(rsd->GetOutputName(), mainRenderTarget);
+
+		MaterialPtr computeMat = Material::CreateOrGet("NormalMapCmp", (File)"Assets/Shaders/Utils/GPU/NormalMapFromHeightMap.hlsl");
+		Graphics::Dispatch(computeMat, 16, 16, 1);
 
 		_renderInterface->forgetAboutTexture(pMainResource);
 	}

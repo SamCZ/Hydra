@@ -70,6 +70,8 @@ namespace Hydra
 		static void Composite(MaterialPtr mateiral, TexturePtr slot0Texture, TexturePtr pDest);
 		static void Composite(MaterialPtr mateiral, const String& slot0Texture, const String& pDest);
 
+		static void Dispatch(MaterialPtr material, uint32_t groupsX, uint32_t groupsY, uint32_t groupsZ);
+
 		static void RenderCubeMap(MaterialPtr mateiral, InputLayoutPtr inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, TexturePtr pDest);
 		static void RenderCubeMap(MaterialPtr mateiral, const String& inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, const String& outputName);
 
@@ -92,6 +94,7 @@ namespace Hydra
 		static TexturePtr CreateRenderTarget(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, const NVRHI::Color& clearColor, UINT sampleCount);
 		static TexturePtr CreateRenderTarget2DArray(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, int mipCount, int arrSize);
 		static TexturePtr CreateRenderTargetCubeMap(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, const NVRHI::Color& clearColor, int mipLevels = 1);
+		static TexturePtr CreateUAVTexture(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, const NVRHI::Color& clearColor = NVRHI::Color(0.0f), int mipLevels = 1);
 
 		static TexturePtr GetRenderTarget(const String& name);
 		static void ReleaseRenderTarget(const String& name);

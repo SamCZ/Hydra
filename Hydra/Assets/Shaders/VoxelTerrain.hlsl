@@ -23,6 +23,8 @@ Texture2D _LayerTex4 : register(t6);
 Texture2D _LayerTex5 : register(t7);
 Texture2D _LayerTex6 : register(t8);
 
+Texture2D _GlobalNormalMap : register(t9);
+
 SamplerState DefaultSampler	: register(s0);
 
 Texture2D _HeightMap : register(t0);
@@ -71,7 +73,7 @@ PS_Input OnMainVS(in VS_Input input, in PS_Input output)
 		height = heightMainVertexA * (1 - dstPercentFromAToB) + heightMainVertexB * dstPercentFromAToB;
 	}
 
-	output.position.y = height;
+	output.position.y = height * 50.0f;
 
 	return output;
 }
@@ -79,6 +81,8 @@ PS_Input OnMainVS(in VS_Input input, in PS_Input output)
 PBROutput OnMainPS(in PS_Input input)
 {
 	PBROutput output;
+
+	float3 computedNormal = _GlobalNormalMap.Sample(DefaultSampler, input.texCoord).rgb;
 
 	float texScale = _TexScale;
 
@@ -100,7 +104,8 @@ PBROutput OnMainPS(in PS_Input input)
 
 	output.Albedo = grassColor;
 	//output.Albedo = _Color;
-	output.Normal = TriplanarTexturingNormal(input, _GrassNormalTex, DefaultSampler, 1.0);//GetNormalFromNormalMap(input, _GrassNormalTex, DefaultSampler, input.positionWS.xz);
+	//output.Normal = TriplanarTexturingNormal(input, _GrassNormalTex, DefaultSampler, 1.0);//GetNormalFromNormalMap(input, _GrassNormalTex, DefaultSampler, input.positionWS.xz);
+	output.Normal = computedNormal;
 	output.Metallic = 0.0;
 	output.Roughness = 1.0;
 	output.AO = 0.0;

@@ -157,6 +157,23 @@ namespace Hydra
 		Composite(material, GetRenderTarget(slot0Texture), GetRenderTarget(pDest));
 	}
 
+	void Hydra::Graphics::Dispatch(MaterialPtr material, uint32_t groupsX, uint32_t groupsY, uint32_t groupsZ)
+	{
+		NVRHI::DispatchState state;
+
+		state.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_COMPUTE);
+
+		if (state.shader == nullptr)
+		{
+			LogError("Graphics::Composite", material->Name + ", " + ToString(groupsX) + ", " + ToString(groupsY) + ", " + ToString(groupsZ), "Material does not have compute shader !");
+			return;
+		}
+
+		material->ApplyParams(state);
+
+		Engine::GetRenderInterface()->dispatch(state, groupsX, groupsY, groupsZ);
+	}
+
 	void Graphics::RenderCubeMap(MaterialPtr material, InputLayoutPtr inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, TexturePtr pDest)
 	{
 		Engine::GetRenderInterface()->beginRenderingPass();
@@ -413,6 +430,31 @@ namespace Hydra
 
 		_RenderViewTargets[name] = handle;
 
+		return handle;
+	}
+
+	TexturePtr Hydra::Graphics::CreateUAVTexture(const String& name, const NVRHI::Format::Enum & format, UINT width, UINT height, const NVRHI::Color & clearColor, int mipLevels)
+	{
+		if (_RenderViewTargets.find(name) != _RenderViewTargets.end())
+		{
+			return _RenderViewTargets[name];
+		}
+
+		NVRHI::TextureDesc gbufferDesc;
+		gbufferDesc.width = width;
+		gbufferDesc.height = height;
+		//gbufferDesc.useClearValue = true;
+		//gbufferDesc.sampleCount = 1;
+		//gbufferDesc.disableGPUsSync = false;
+		gbufferDesc.isRenderTarget = true;
+		gbufferDesc.isUAV = true;
+		//gbufferDesc.usage = NVRHI::TextureDesc::Usage::USAGE_DYNAMIC;
+
+		gbufferDesc.format = format;
+		gbufferDesc.clearValue = clearColor;
+		gbufferDesc.debugName = name.c_str();
+		NVRHI::TextureHandle handle = Engine::GetRenderInterface()->createTexture(gbufferDesc, NULL);
+		_RenderViewTargets[name] = handle;
 		return handle;
 	}
 

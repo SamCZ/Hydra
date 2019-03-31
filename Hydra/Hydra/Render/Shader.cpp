@@ -139,6 +139,17 @@ namespace Hydra
 			}
 		}
 
+		if (_Type == NVRHI::ShaderType::SHADER_COMPUTE)
+		{
+			uint32_t groupsX;
+			uint32_t groupsY;
+			uint32_t groupsZ;
+
+			UINT status = reflection->GetThreadGroupSize(&groupsX, &groupsY, &groupsZ);
+
+			std::cout << "Compute " << groupsX << ", " << groupsY << ", " << groupsZ << std::endl;
+		}
+
 		for (unsigned int i = 0; i < shaderDesc.BoundResources; i++)
 		{
 			D3D11_SHADER_INPUT_BIND_DESC resourceDesc;
@@ -146,6 +157,7 @@ namespace Hydra
 
 			switch (resourceDesc.Type)
 			{
+				case D3D_SIT_UAV_RWTYPED:
 				case D3D_SIT_TEXTURE:
 				{
 					RawShaderTextureDefine define = {};

@@ -10,7 +10,7 @@ namespace Hydra
 	Map<String, SharedPtr<Technique>> Material::_TechniqueCache;
 	Map<String, MaterialPtr> Material::AllMaterials;
 
-	Material::Material(const String & name, SharedPtr<Technique> technique) : _Name(name), _Technique(technique), IsInternalMaterial(false)
+	Material::Material(const String & name, SharedPtr<Technique> technique) : Name(name), _Technique(technique), IsInternalMaterial(false)
 	{
 		if (_Technique->IsPrecompiled())
 		{
@@ -319,6 +319,101 @@ namespace Hydra
 		return nullptr;
 	}
 
+	void Hydra::Material::ApplyParams(NVRHI::DispatchState & state)
+	{
+		//TODO: Optimize this method
+
+		// Prepare constant buffers
+		_VarsToMarkClean.clear();
+
+		for (Map<NVRHI::ShaderType::Enum, ShaderVars*>::iterator it0 = _ActiveShaderVars.begin(); it0 != _ActiveShaderVars.end(); it0++)
+		{
+			ShaderVars* vars = it0->second;
+
+			// Write variable data to constant buffer
+			for (FastMap<String, RawShaderVariable>::iterator it1 = vars->Variables.begin(); it1 != vars->Variables.end(); it1++)
+			{
+				String name = it1->first;
+				RawShaderVariable& var = it1->second;
+
+				if (_Variables.find(name) != _Variables.end())
+				{
+					Var* localVar = _Variables[name];
+
+					if (localVar->HasChnaged)
+					{
+						_VarsToMarkClean.push_back(localVar);
+
+						if (var.Size != localVar->DataSize)
+						{
+							LogError("Variable(" + ToString(localVar->DataSize) + ") size is not coresponding with source size(" + ToString(var.Size) + ") !");
+							continue;
+						}
+
+						memcpy(vars->ConstantBuffers[var.ConstantBufferIndex].LocalDataBuffer + var.ByteOffset, localVar->Data, localVar->DataSize);
+
+						vars->ConstantBuffers[var.ConstantBufferIndex].MarkUpdate = true;
+					}
+				}
+			}
+
+			for (int i = 0; i < vars->ConstantBufferCount; i++)
+			{
+				if (vars->ConstantBuffers[i].MarkUpdate)
+				{
+					Engine::GetRenderInterface()->writeConstantBuffer(vars->ConstantBuffers[i].ConstantBuffer, vars->ConstantBuffers[i].LocalDataBuffer, vars->ConstantBuffers[i].Size);
+					vars->ConstantBuffers[i].MarkUpdate = false;
+				}
+			}
+
+			NVRHI::PipelineStageBindings* bindigs = &state;
+
+			if (bindigs == nullptr) continue;
+
+			for (int i = 0; i < vars->ConstantBufferCount; i++)
+			{
+				NVRHI::BindConstantBuffer(*bindigs, vars->ConstantBuffers[i].BindIndex, vars->ConstantBuffers[i].ConstantBuffer);
+			}
+
+
+			for (FastMap<String, RawShaderTextureDefine>::iterator it = vars->TextureDefines.begin(); it != vars->TextureDefines.end(); it++)
+			{
+				RawShaderTextureDefine& texDefine = it->second;
+
+				if (_TextureVariables.find(it->first) != _TextureVariables.end())
+				{
+					texDefine.TextureHandle = _TextureVariables[it->first].Handle;
+				}
+
+				bool writable = false;
+
+				if (texDefine.TextureHandle)
+				{
+					writable = texDefine.TextureHandle->GetDesc().isUAV;
+				}
+
+				NVRHI::BindTexture(*bindigs, texDefine.BindIndex, texDefine.TextureHandle, writable);
+			}
+
+			for (FastMap<String, RawShaderSamplerDefine>::iterator it = vars->SamplerDefines.begin(); it != vars->SamplerDefines.end(); it++)
+			{
+				RawShaderSamplerDefine& samDefine = it->second;
+
+				if (_SamplerVariables.find(it->first) != _SamplerVariables.end())
+				{
+					samDefine.SamplerHandle = _SamplerVariables[it->first].Handle;
+				}
+
+				NVRHI::BindSampler(*bindigs, it->second.BindIndex, it->second.SamplerHandle);
+			}
+		}
+
+		for (Var* var : _VarsToMarkClean)
+		{
+			var->HasChnaged = false;
+		}
+	}
+
 	void Material::ApplyParams(NVRHI::DrawCallState& state)
 	{
 		//TODO: Optimize this method
@@ -411,16 +506,23 @@ namespace Hydra
 
 	SharedPtr<Material> Material::CreateOrGet(const String & name, const File & source, bool precompile, bool isInternalMaterial)
 	{
+		if (AllMaterials.find(name) != AllMaterials.end())
+		{
+			return AllMaterials[name];
+		}
+
 		SharedPtr<Technique> tech = nullptr;
 
-		if (_TechniqueCache.find(name) != _TechniqueCache.end())
+		String fileName = source.GetPath();
+
+		if (_TechniqueCache.find(fileName) != _TechniqueCache.end())
 		{
-			tech = _TechniqueCache[name];
+			tech = _TechniqueCache[fileName];
 		}
 		else
 		{
 			tech = MakeShared<Technique>(source, precompile);
-			_TechniqueCache[name] = tech;
+			_TechniqueCache[fileName] = tech;
 		}
 
 		MaterialPtr material = MakeShared<Material>(name, tech);

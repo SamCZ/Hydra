@@ -62,13 +62,13 @@ namespace Hydra
 		}
 
 		// Normalize Local
-		/*if (maxValue != minValue)
+		if (maxValue != minValue)
 		{
 			for (int i = 0; i < width * height; i++)
 			{
 				map[i] = (map[i] - minValue) / (maxValue - minValue);
 			}
-		}*/
+		}
 
 		return map;
 	}
@@ -95,7 +95,7 @@ namespace Hydra
 
 		for (int i = 0; i < size * size; i++)
 		{
-			heightMap->Data[i] = heightMap->Data[i] * 20;
+			heightMap->Data[i] = (0.5 + heightMap->Data[i]) * 0.5;
 		}
 
 		return heightMap;

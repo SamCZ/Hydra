@@ -83,6 +83,11 @@ namespace NVRHI
 			binding.mipLevel = t->GetDesc().mipLevels;
 		}
 
+		if (isWritable)
+		{
+			binding.mipLevel = 0;
+		}
+
         if (!t)
         {
             //remove null

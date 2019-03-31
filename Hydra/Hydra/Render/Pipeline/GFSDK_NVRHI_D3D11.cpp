@@ -52,7 +52,8 @@ namespace NVRHI
 		std::map<std::pair<DXGI_FORMAT, uint32_t>, ComPtr<ID3D11ShaderResourceView> > shaderResourceViews;
 		std::map<std::pair<uint32_t, uint32_t>, ComPtr<ID3D11RenderTargetView> > renderTargetViews;
 		std::map<std::pair<uint32_t, uint32_t>, ComPtr<ID3D11DepthStencilView> > depthStencilViews;
-        std::vector<std::map<DXGI_FORMAT, ComPtr<ID3D11UnorderedAccessView> > > unorderedAccessViewsPerMip;
+		std::map<std::pair<uint32_t, DXGI_FORMAT>, ComPtr<ID3D11UnorderedAccessView>> unorderedAccessViewsPerMip;
+        //std::vector<std::map<DXGI_FORMAT, ComPtr<ID3D11UnorderedAccessView> > > unorderedAccessViewsPerMip;
 
         Texture(RendererInterfaceD3D11* _parent) : parent(_parent), refCount(1) { }
         ULONG AddRef() override { return ++refCount; }
@@ -1182,7 +1183,7 @@ namespace NVRHI
 		texture->desc = textureDesc ? *textureDesc : getTextureDescFromD3D11Resource(resource, formatOverride);
 
         //Resize these withe empty views to the right sizes for simplicity later
-		texture->unorderedAccessViewsPerMip.resize(texture->desc.mipLevels);
+		//texture->unorderedAccessViewsPerMip.resize(texture->desc.mipLevels);
 
 		mutex.unlock();
 
@@ -1490,7 +1491,7 @@ namespace NVRHI
 			format = GetFormatMapping(texture->desc.format).srvFormat;
 		}
 
-        ComPtr<ID3D11UnorderedAccessView>& uavPtr = texture->unorderedAccessViewsPerMip[mipLevel][format];
+        ComPtr<ID3D11UnorderedAccessView>& uavPtr = texture->unorderedAccessViewsPerMip[std::make_pair(mipLevel, format)];
         if (uavPtr == NULL)
         {
             //we haven't seen this one before
