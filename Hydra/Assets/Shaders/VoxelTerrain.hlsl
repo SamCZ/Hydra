@@ -39,6 +39,7 @@ cbuffer VertexBufferVars
 {
 	int g_numVertsPerLine;
 	int g_skipIncrement;
+	float g_HeightScale;
 }
 
 PS_Input OnMainVS(in VS_Input input, in PS_Input output)
@@ -73,7 +74,7 @@ PS_Input OnMainVS(in VS_Input input, in PS_Input output)
 		height = heightMainVertexA * (1 - dstPercentFromAToB) + heightMainVertexB * dstPercentFromAToB;
 	}
 
-	output.position.y = height * 50.0f;
+	output.position.y = height * g_HeightScale;
 
 	return output;
 }

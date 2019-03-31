@@ -44,6 +44,8 @@ namespace Hydra
 
 		void DrawRect(float x, float y, float w, float h, ColorRGBA color, bool isStroke = false, float strokeSize = 0.0f, float topLeft = 0.0f, float topRight = 0.0f, float bottomRight = 0.0f, float bottomLeft = 0.0f);
 
+		void DrawOval(float x, float y, float w, float h, ColorRGBA color);
+
 	protected:
 		virtual NVGcontext* CreateContext(int flags) = 0;
 		virtual void DestroyContext(NVGcontext* context) = 0;

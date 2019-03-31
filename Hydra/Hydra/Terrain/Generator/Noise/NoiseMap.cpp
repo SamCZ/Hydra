@@ -54,7 +54,7 @@ namespace Hydra
 			{
 				float noiseValue = Noise(noise, x + rndOffset.x, y + rndOffset.y, scale, octaves, persistance, lacunarity);
 
-				map[x + y * width] = noiseValue;
+				map[x + y * width] = noiseValue * 0.1;
 
 				minValue = glm::min(noiseValue, minValue);
 				maxValue = glm::max(noiseValue, maxValue);
@@ -95,7 +95,7 @@ namespace Hydra
 
 		for (int i = 0; i < size * size; i++)
 		{
-			heightMap->Data[i] = (0.5 + heightMap->Data[i]) * 0.5;
+			heightMap->Data[i] = heightMap->Data[i];
 		}
 
 		return heightMap;

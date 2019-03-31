@@ -94,8 +94,11 @@ namespace Hydra
 						int b = vertexIndicesMap[x + currentIncrement + (y * numVertsPerLine)];
 						int c = vertexIndicesMap[x + ((y + currentIncrement) * numVertsPerLine)];
 						int d = vertexIndicesMap[x + currentIncrement + ((y + currentIncrement) * numVertsPerLine)];
-						meshData->AddTriangle(a, d, c);
-						meshData->AddTriangle(d, a, b);
+						/*meshData->AddTriangle(a, d, c);
+						meshData->AddTriangle(d, a, b);*/
+
+						meshData->AddTriangle(c, d, a);
+						meshData->AddTriangle(b, a, d);
 					}
 				}
 			}

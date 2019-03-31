@@ -14,7 +14,7 @@ namespace Hydra
 
 		~HeightMap();
 
-		void InitalizeTexture();
+		void InitalizeTexture(bool isUAV = false);
 		void UploadTextureData();
 	};
 }

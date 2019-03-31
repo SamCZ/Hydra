@@ -14,7 +14,7 @@ namespace Hydra
 		}
 	}
 
-	void HeightMap::InitalizeTexture()
+	void HeightMap::InitalizeTexture(bool isUAV)
 	{
 		if (!Texture)
 		{
@@ -24,6 +24,9 @@ namespace Hydra
 			textureDesc.mipLevels = 1;
 			textureDesc.format = NVRHI::Format::R32_FLOAT;
 			textureDesc.debugName = "HeightMap";
+
+			textureDesc.isUAV = isUAV;
+
 			Texture = Engine::GetRenderInterface()->createTexture(textureDesc, NULL);
 		}
 	}

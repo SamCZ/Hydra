@@ -160,4 +160,20 @@ namespace Hydra
 			nvgFill(_Context);
 		}
 	}
+
+	void UIRenderer::DrawOval(float x, float y, float w, float h, ColorRGBA color)
+	{
+		nvgBeginPath(_Context);
+
+		nvgCircle(_Context, x, y, w);
+
+		NVGcolor c = nvgRGBAf(color.r, color.g, color.b, 1.0f);
+
+		/*nvgFillColor(_Context, c);
+		nvgFill(_Context);*/
+
+		nvgStrokeWidth(_Context, 1.0f);
+		nvgStrokeColor(_Context, c);
+		nvgStroke(_Context);
+	}
 }

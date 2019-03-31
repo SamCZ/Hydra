@@ -89,6 +89,8 @@ static SpatialPtr lightObj = nullptr;
 static TexturePtr uavTex;
 static TexturePtr heigthMap;
 
+static float paintRadius = 10.0f;
+
 class UIRenderView : public IVisualController
 {
 private:
@@ -127,11 +129,20 @@ public:
 
 		_UIRenderer->Begin();
 
-		_UIRenderer->DrawImage(Graphics::GetRenderTarget("DirLight_ShadowMa_ColorTest"), 0, 0, 100, 100, 0.0f);
+		//_UIRenderer->DrawImage(Graphics::GetRenderTarget("DirLight_ShadowMa_ColorTest"), 0, 0, 100, 100, 0.0f);
 
-		_UIRenderer->DrawImage(uavTex, 0, 105, 100, 100, 0.0f);
+		//_UIRenderer->DrawImage(uavTex, 0, 105, 100, 100, 0.0f);
 
-		_UIRenderer->DrawImage(heigthMap, 105, 105, 100, 100, 0.0f);
+		//_UIRenderer->DrawImage(heigthMap, 105, 105, 100, 100, 0.0f);
+
+		_UIRenderer->DrawImage(uavTex, 0, 0, heigthMap->GetDesc().width, heigthMap->GetDesc().height, 0.0f);
+		
+		Vector2i mPos = Engine::GetInputManager()->GetCursorPos();
+
+		if (mPos.x <= heigthMap->GetDesc().width && mPos.y <= heigthMap->GetDesc().height)
+		{
+			_UIRenderer->DrawOval(mPos.x, mPos.y, paintRadius * 2, 0, MakeRGB(255, 0, 0));
+		}
 
 		_UIRenderer->End();
 
@@ -340,11 +351,55 @@ public:
 		rm->MainScene->AddChild(pl);
 	}
 
+	bool isHoldingMouse;
+
+	inline void MouseDown()
+	{
+		isHoldingMouse = true;
+		Paint(Vector2(_InputManager->GetCursorPos()));
+	}
+
+	inline void MouseUp()
+	{
+		isHoldingMouse = false;
+	}
+
+	inline void MouseMoveXY(float val)
+	{
+		if (isHoldingMouse)
+		{
+			Paint(_InputManager->GetCursorPos());
+		}
+	}
+
+	inline void OnMouseWheel(float val)
+	{
+		paintRadius += val;
+	}
+
+	inline void Paint(Vector2 pos)
+	{
+		MaterialPtr paintMat = Material::CreateOrGet("Painter", (File)"Assets/Shaders/Utils/GPU/Paint.hlsl");
+		paintMat->SetTexture("_HeightMap", heigthMap);
+		paintMat->SetVector2("_Position", pos);
+		paintMat->SetFloat("_Radius", paintRadius);
+		Graphics::Dispatch(paintMat, 16, 16, 1);
+	}
+
 	inline HRESULT DeviceCreated() override
 	{
 		Log("MainRenderView::DeviceCreated");
 
 		_InputManager = MakeShared<WindowsInputManager>();
+
+		_InputManager->AddActionMapping("MouseX", Keys::LeftMouseButton);
+		_InputManager->BindAction("MouseX", IE_Pressed, this, &MainRenderView::MouseDown);
+		_InputManager->BindAction("MouseX", IE_Released, this, &MainRenderView::MouseUp);
+
+
+		_InputManager->AddAxisMapping("MouseWheel", Keys::MouseWheelAxis, 1.0f);
+		_InputManager->BindAxis("MouseWheel", this, &MainRenderView::OnMouseWheel);
+
 
 		_InputManager->AddAxisMapping("RotX", Keys::I, 1.0f);
 		_InputManager->AddAxisMapping("RotX", Keys::K, -1.0f);
@@ -360,6 +415,9 @@ public:
 
 		_InputManager->AddAxisMapping("LookUpDown", Keys::MouseY, -0.1f);
 		_InputManager->AddAxisMapping("LookLeftRight", Keys::MouseX, -0.1f);
+
+		_InputManager->BindAxis("LookUpDown", this, &MainRenderView::MouseMoveXY);
+		_InputManager->BindAxis("LookLeftRight", this, &MainRenderView::MouseMoveXY);
 
 		_InputManager->AddActionMapping("Esc", Keys::Escape);
 		_InputManager->BindAction("Esc", IE_Pressed, this, &MainRenderView::Escape);
@@ -484,7 +542,7 @@ public:
 	inline void AddChunk(const MeshSettings& meshSettings, MaterialPtr material, float x, float y, int levelOfDetail)
 	{
 		HeightMap* hMap = NoiseMap::GenerateHeightMap(meshSettings, Vector2(x, -y));
-		hMap->InitalizeTexture();
+		hMap->InitalizeTexture(true);
 		hMap->UploadTextureData();
 
 		material->SetTexture("_HeightMap", hMap->Texture);
@@ -494,6 +552,7 @@ public:
 
 		material->SetInt("g_numVertsPerLine", numVertsPerLine);
 		material->SetInt("g_skipIncrement", skipIncrement);
+		material->SetFloat("g_HeightScale", 50.0f);
 
 		heigthMap = hMap->Texture;
 
@@ -504,7 +563,7 @@ public:
 		MaterialPtr computeMat = Material::CreateOrGet("NormalMapCmp", (File)"Assets/Shaders/Utils/GPU/NormalMapFromHeightMap.hlsl");
 		computeMat->SetTexture("_OutNormalMap", uavTex);
 		computeMat->SetTexture("_HeightMap", hMap->Texture);
-		computeMat->SetFloat("_Strength", 20.0f);
+		computeMat->SetFloat("_Strength", 5.0f);
 
 		Graphics::Dispatch(computeMat, 16, 16, 1);
 

@@ -2,7 +2,7 @@
 
 RWTexture2D<float4> _OutNormalMap : register(u0);
 
-Texture2D _HeightMap : register(t0);
+RWTexture2D<float> _HeightMap : register(u1);
 
 cbuffer Params
 {
