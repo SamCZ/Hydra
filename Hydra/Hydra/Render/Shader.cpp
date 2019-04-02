@@ -72,8 +72,46 @@ namespace Hydra
 		D3D11_SHADER_DESC shaderDesc;
 		reflection->GetDesc(&shaderDesc);
 
-		_LocalShaderVarCache->ConstantBufferCount = shaderDesc.ConstantBuffers;
+
+		int constantBufferRealCount = 0;
+
+		for (int i = 0; i < shaderDesc.ConstantBuffers; i++)
+		{
+			ID3D11ShaderReflectionConstantBuffer* cb = reflection->GetConstantBufferByIndex(i);
+
+			D3D11_SHADER_BUFFER_DESC bufferDesc;
+			cb->GetDesc(&bufferDesc);
+
+			D3D11_SHADER_INPUT_BIND_DESC bindDesc;
+			reflection->GetResourceBindingDescByName(bufferDesc.Name, &bindDesc);
+
+			if (_Type == NVRHI::ShaderType::SHADER_COMPUTE)
+			{
+				//std::cout << "yo" << std::endl;
+			}
+
+			if (bindDesc.Type == D3D_SIT_UAV_RWSTRUCTURED || bindDesc.Type == D3D_SIT_STRUCTURED)
+			{
+				RawShaderBuffer define = {};
+				define.Name = bufferDesc.Name;
+				define.Size = bufferDesc.Size;
+				define.BindIndex = bindDesc.BindPoint;
+				define.Index = static_cast<int>(_LocalShaderVarCache->TextureDefines.size());
+				define.Buffer = nullptr;
+
+				_LocalShaderVarCache->BufferDefines[bufferDesc.Name] = define;
+			}
+			else
+			{
+				constantBufferRealCount++;
+			}
+		}
+
+
+		_LocalShaderVarCache->ConstantBufferCount = constantBufferRealCount;
 		_LocalShaderVarCache->ConstantBuffers = new RawShaderConstantBuffer[_LocalShaderVarCache->ConstantBufferCount];
+
+		int constantBufferIndex = 0;
 
 		for (int i = 0; i < _LocalShaderVarCache->ConstantBufferCount; i++)
 		{
@@ -85,10 +123,15 @@ namespace Hydra
 			D3D11_SHADER_INPUT_BIND_DESC bindDesc;
 			reflection->GetResourceBindingDescByName(bufferDesc.Name, &bindDesc);
 
-			_LocalShaderVarCache->ConstantBuffers[i].BindIndex = bindDesc.BindPoint;
-			_LocalShaderVarCache->ConstantBuffers[i].Name = bufferDesc.Name;
-			_LocalShaderVarCache->ConstantBuffers[i].Size = bufferDesc.Size;
-			_LocalShaderVarCache->ConstantBuffers[i].MarkUpdate = false;
+			if (bindDesc.Type == D3D_SIT_UAV_RWSTRUCTURED)
+			{
+				continue;
+			}
+
+			_LocalShaderVarCache->ConstantBuffers[constantBufferIndex].BindIndex = bindDesc.BindPoint;
+			_LocalShaderVarCache->ConstantBuffers[constantBufferIndex].Name = bufferDesc.Name;
+			_LocalShaderVarCache->ConstantBuffers[constantBufferIndex].Size = bufferDesc.Size;
+			_LocalShaderVarCache->ConstantBuffers[constantBufferIndex].MarkUpdate = false;
 
 			for (unsigned int v = 0; v < bufferDesc.Variables; v++)
 			{
@@ -99,7 +142,7 @@ namespace Hydra
 				var->GetDesc(&varDesc);
 
 				RawShaderVariable varStruct = {};
-				varStruct.ConstantBufferIndex = i;
+				varStruct.ConstantBufferIndex = constantBufferIndex;
 				varStruct.ByteOffset = varDesc.StartOffset;
 				varStruct.Size = varDesc.Size;
 				
@@ -137,6 +180,8 @@ namespace Hydra
 
 				_LocalShaderVarCache->Variables[varDesc.Name] = varStruct;
 			}
+
+			constantBufferIndex++;
 		}
 
 		if (_Type == NVRHI::ShaderType::SHADER_COMPUTE)
@@ -155,6 +200,11 @@ namespace Hydra
 			D3D11_SHADER_INPUT_BIND_DESC resourceDesc;
 			reflection->GetResourceBindingDesc(i, &resourceDesc);
 
+			if (_Type == NVRHI::ShaderType::SHADER_COMPUTE)
+			{
+				//std::cout << "yo" << std::endl;
+			}
+
 			switch (resourceDesc.Type)
 			{
 				case D3D_SIT_UAV_RWTYPED:
@@ -169,6 +219,12 @@ namespace Hydra
 
 					break;
 				}
+
+				case D3D_SIT_UAV_RWSTRUCTURED:
+				{
+					break;
+				}
+
 				case D3D_SIT_SAMPLER:
 				{
 					RawShaderSamplerDefine define = {};

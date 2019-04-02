@@ -33,6 +33,15 @@ namespace Hydra
 		NVRHI::TextureHandle TextureHandle;
 	};
 
+	struct RawShaderBuffer
+	{
+		String Name;
+		unsigned int Size;
+		unsigned int Index;
+		unsigned int BindIndex;
+		NVRHI::BufferHandle Buffer;
+	};
+
 	struct RawShaderSamplerDefine
 	{
 		unsigned int Index;
@@ -50,6 +59,7 @@ namespace Hydra
 		FastMap<String, RawShaderTextureDefine> TextureDefines;
 		FastMap<String, RawShaderSamplerDefine> SamplerDefines;
 		FastMap<String, RawShaderVariable> Variables;
+		FastMap<String, RawShaderBuffer> BufferDefines;
 
 		Map<String, VarType::Type> VariableTypes;
 	};

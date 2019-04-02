@@ -495,6 +495,7 @@ public:
 
 		AddChunk(meshSettings, terrainMat, 0, 0, 0);
 
+		CreateVoxelTerrainInGPU();
 
 		/*for (int x = -5; x <= 5; x++)
 		{
@@ -539,6 +540,74 @@ public:
 		return S_OK;
 	}
 
+	struct VoxelBuffer
+	{
+		Vector4 Position;
+		Vector3 Normal;
+	};
+
+	inline void CreateVoxelTerrainInGPU()
+	{
+		const int N = 64;
+		const int SIZE = N * N * N * 3 * 5;
+
+		Vector4 pos = Vector4(-1);
+
+		/*List<VoxelBuffer> EmptyData = List<VoxelBuffer>(SIZE);
+		for (int i = 0; i < SIZE; i++)
+		{
+			EmptyData[i].Position = pos;
+			EmptyData[i].Normal = pos;
+		}*/
+
+		VoxelBuffer* EmptyData = new VoxelBuffer[SIZE];
+
+		for (int i = 0; i < SIZE; i++)
+		{
+			EmptyData[i].Position = pos;
+			EmptyData[i].Normal = pos;
+		}
+
+		/*EmptyData[0].Position = Vector4(0, 0, 0, 1);
+		EmptyData[1].Position = Vector4(0, 10, 0, 1);
+		EmptyData[2].Position = Vector4(10, 10, 0, 1);
+
+		EmptyData[3].Position = Vector4(0, 0, 0, 1);
+		EmptyData[4].Position = Vector4(10, 10, 0, 1);
+		EmptyData[5].Position = Vector4(10, 0, 0, 1);*/
+
+		NVRHI::BufferDesc bufferDesc;
+		bufferDesc.byteSize = SIZE * sizeof(VoxelBuffer);
+		bufferDesc.canHaveUAVs = true;
+		NVRHI::BufferHandle buffer = Engine::GetRenderInterface()->createBuffer(bufferDesc, EmptyData);
+
+		delete[] EmptyData;
+
+		MaterialPtr mcm = Material::CreateOrGet("Assets/Shaders/Utils/GPU/MarchingCubes.hlsl");
+		mcm->SetBuffer("_Buffer", buffer);
+		mcm->SetFloat("a", -10);
+
+		Graphics::Dispatch(mcm, N / 8, N / 8, N / 8);
+
+
+		MaterialPtr mat = Material::CreateOrGet("Assets/Shaders/ProceduralDeffered.hlsl");
+		mat->SetBuffer("_Buffer", buffer);
+
+
+		Mesh* proceduralMesh = new Mesh();
+		proceduralMesh->SetVertexBuffer(buffer);
+		proceduralMesh->SetIndexCount(SIZE);
+		proceduralMesh->SetIndexed(false);
+
+		SpatialPtr sp = MakeShared<Spatial>();
+		RendererPtr r = sp->AddComponent<Renderer>();
+
+		r->Material = mat;
+		r->SetMesh(proceduralMesh);
+
+		rm->MainScene->AddChild(sp);
+	}
+
 	inline void AddChunk(const MeshSettings& meshSettings, MaterialPtr material, float x, float y, int levelOfDetail)
 	{
 		HeightMap* hMap = NoiseMap::GenerateHeightMap(meshSettings, Vector2(x, -y));
@@ -565,7 +634,7 @@ public:
 		computeMat->SetTexture("_HeightMap", hMap->Texture);
 		computeMat->SetFloat("_Strength", 5.0f);
 
-		Graphics::Dispatch(computeMat, 16, 16, 1);
+		Graphics::Dispatch(computeMat, hMap->Width / 16, hMap->Height / 16, 1);
 
 		material->SetTexture("_GlobalNormalMap", uavTex);
 

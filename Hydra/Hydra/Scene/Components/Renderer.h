@@ -64,7 +64,7 @@ namespace Hydra
 		void UpdateInstancing(NVRHI::DrawCallState& state);
 
 	public:
-		void WriteDataToState(NVRHI::DrawCallState& state);
+		bool WriteDataToState(NVRHI::DrawCallState& state);
 
 		NVRHI::DrawArguments& GetDrawArguments();
 	};

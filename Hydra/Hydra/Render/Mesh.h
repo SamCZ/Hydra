@@ -24,6 +24,8 @@ namespace Hydra
 	private:
 		NVRHI::BufferHandle _IndexHandle;
 		NVRHI::BufferHandle _VertexBuffer;
+		bool _IsIndexed;
+		int _IndexCount;
 	public:
 		Mesh();
 		~Mesh();
@@ -48,6 +50,15 @@ namespace Hydra
 
 		NVRHI::BufferHandle GetVertexBuffer();
 		NVRHI::BufferHandle GetIndexBuffer();
+
+		void SetIndexBuffer(NVRHI::BufferHandle buffer);
+		void SetVertexBuffer(NVRHI::BufferHandle buffer);
+
+		void SetIndexed(bool indexed);
+		bool IsIndexed();
+
+		void SetIndexCount(int count);
+		int GetIndexCount() const;
 
 	private:
 		Vector3 ComputeTriangleNormal(const Vector3& p1, const Vector3& p2, const Vector3& p3);

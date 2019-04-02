@@ -293,7 +293,7 @@ namespace Hydra {
 		{
 			RendererPtr& r = renderers[i];
 
-			r->WriteDataToState(state);
+			bool isIndexed = r->WriteDataToState(state);
 
 
 			if (r->GameObject->IsStatic())
@@ -308,8 +308,15 @@ namespace Hydra {
 			Graphics::ApplyMaterialParameters(state, _ShadowMaterial);
 
 
-
-			Engine::GetRenderInterface()->drawIndexed(state, &r->GetDrawArguments(), 1);
+			if (isIndexed)
+			{
+				Engine::GetRenderInterface()->drawIndexed(state, &r->GetDrawArguments(), 1);
+			}
+			else
+			{
+				Engine::GetRenderInterface()->draw(state, &r->GetDrawArguments(), 1);
+			}
+			
 
 			state.renderState.clearColorTarget = false;
 			state.renderState.clearDepthTarget = false;
@@ -404,7 +411,7 @@ namespace Hydra {
 				_DefaultMaterial->SetTexture("_AOMap", r->Mat.Opacity);
 			}
 
-			r->WriteDataToState(state);
+			bool isIndexed = r->WriteDataToState(state);
 			
 
 			if (r->GameObject->IsStatic())
@@ -421,8 +428,14 @@ namespace Hydra {
 			Graphics::ApplyMaterialParameters(state, material);
 
 
-
-			Engine::GetRenderInterface()->drawIndexed(state, &r->GetDrawArguments(), 1);
+			if (isIndexed)
+			{
+				Engine::GetRenderInterface()->drawIndexed(state, &r->GetDrawArguments(), 1);
+			}
+			else
+			{
+				Engine::GetRenderInterface()->draw(state, &r->GetDrawArguments(), 1);
+			}
 
 			state.renderState.clearColorTarget = false;
 			state.renderState.clearDepthTarget = false;

@@ -41,6 +41,12 @@ namespace Hydra
 		bool HasChnaged;
 	};
 
+	struct BufferVar
+	{
+		NVRHI::BufferHandle Handle;
+		bool HasChnaged;
+	};
+
 	class Material;
 
 	DEFINE_PTR(Material)
@@ -55,6 +61,7 @@ namespace Hydra
 		Map<String, Var*> _Variables;
 		Map<String, TextureVar> _TextureVariables;
 		Map<String, SamplerVar> _SamplerVariables;
+		Map<String, BufferVar> _BufferVariables;
 
 		Map<NVRHI::ShaderType::Enum, Shader*> _ActiveShaders;
 		Map<String, String> _Defines;
@@ -110,6 +117,9 @@ namespace Hydra
 
 		void SetSampler(const String& name, NVRHI::SamplerHandle sampler);
 		NVRHI::SamplerHandle GetSampler(const String& name);
+
+		void SetBuffer(const String& name, NVRHI::BufferHandle buffer);
+		NVRHI::BufferHandle GetBuffer(const String& name);
 
 		Var* GetRawVar(const String& name);
 		unsigned char* GetRawVarData(const String& name);

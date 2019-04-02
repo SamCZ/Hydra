@@ -8,7 +8,7 @@
 
 namespace Hydra
 {
-	Mesh::Mesh() : PrimitiveType(NVRHI::PrimitiveType::TRIANGLE_LIST), _IndexHandle(nullptr), _VertexBuffer(nullptr)
+	Mesh::Mesh() : PrimitiveType(NVRHI::PrimitiveType::TRIANGLE_LIST), _IndexHandle(nullptr), _VertexBuffer(nullptr), _IsIndexed(true)
 	{
 	}
 
@@ -220,6 +220,8 @@ namespace Hydra
 		}
 
 		if (VertexData.size() == 0 || Indices.size() == 0) return;
+
+		_IndexCount = Indices.size();
 
 		NVRHI::BufferDesc indexBufferDesc;
 		indexBufferDesc.isIndexBuffer = true;
@@ -438,6 +440,36 @@ namespace Hydra
 	NVRHI::BufferHandle Mesh::GetIndexBuffer()
 	{
 		return _IndexHandle;
+	}
+
+	void Mesh::SetIndexBuffer(NVRHI::BufferHandle buffer)
+	{
+		_IndexHandle = buffer;
+	}
+
+	void Mesh::SetVertexBuffer(NVRHI::BufferHandle buffer)
+	{
+		_VertexBuffer = buffer;
+	}
+
+	void Mesh::SetIndexed(bool indexed)
+	{
+		_IsIndexed = indexed;
+	}
+
+	bool Mesh::IsIndexed()
+	{
+		return _IsIndexed;
+	}
+
+	void Mesh::SetIndexCount(int count)
+	{
+		_IndexCount = count;
+	}
+
+	int Hydra::Mesh::GetIndexCount() const
+	{
+		return _IndexCount;
 	}
 
 	Vector3 Mesh::ComputeTriangleNormal(const Vector3 & p1, const Vector3 & p2, const Vector3 & p3)

@@ -211,6 +211,28 @@ namespace Hydra
 		return nullptr;
 	}
 
+	void Material::SetBuffer(const String & name, NVRHI::BufferHandle buffer)
+	{
+		if (_BufferVariables.find(name) == _BufferVariables.end())
+		{
+			_BufferVariables[name] = {};
+		}
+
+		BufferVar& var = _BufferVariables[name];
+		var.Handle = buffer;
+		var.HasChnaged = true;
+	}
+
+	NVRHI::BufferHandle Material::GetBuffer(const String & name)
+	{
+		if (_BufferVariables.find(name) != _BufferVariables.end())
+		{
+			return _BufferVariables[name].Handle;
+		}
+
+		return nullptr;
+	}
+
 	Var* Hydra::Material::GetRawVar(const String & name)
 	{
 		if (_Variables.find(name) != _Variables.end())
@@ -404,7 +426,26 @@ namespace Hydra
 					samDefine.SamplerHandle = _SamplerVariables[it->first].Handle;
 				}
 
-				NVRHI::BindSampler(*bindigs, it->second.BindIndex, it->second.SamplerHandle);
+				NVRHI::BindSampler(*bindigs, samDefine.BindIndex, it->second.SamplerHandle);
+			}
+
+			for (auto& it : vars->BufferDefines)
+			{
+				RawShaderBuffer& buffDefine = it.second;
+
+				if (_BufferVariables.find(it.first) != _BufferVariables.end())
+				{
+					buffDefine.Buffer = _BufferVariables[it.first].Handle;
+				}
+
+				bool writable = false;
+
+				if (buffDefine.Buffer)
+				{
+					writable = buffDefine.Buffer->GetDesc().canHaveUAVs;
+				}
+
+				NVRHI::BindBuffer(*bindigs, buffDefine.BindIndex, buffDefine.Buffer, writable);
 			}
 		}
 
@@ -493,6 +534,18 @@ namespace Hydra
 				}
 
 				NVRHI::BindSampler(*bindigs, it->second.BindIndex, it->second.SamplerHandle);
+			}
+
+			for (auto& it : vars->BufferDefines)
+			{
+				RawShaderBuffer& buffDefine = it.second;
+
+				if (_BufferVariables.find(it.first) != _BufferVariables.end())
+				{
+					buffDefine.Buffer = _BufferVariables[it.first].Handle;
+				}
+
+				NVRHI::BindBuffer(*bindigs, buffDefine.BindIndex, buffDefine.Buffer, false);
 			}
 		}
 

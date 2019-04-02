@@ -67,6 +67,8 @@ namespace Hydra
 			for (int i = 0; i < width * height; i++)
 			{
 				map[i] = (map[i] - minValue) / (maxValue - minValue);
+
+				map[i] = 0;
 			}
 		}
 
