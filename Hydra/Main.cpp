@@ -224,7 +224,7 @@ public:
 								var = mat->GetRawVar(kv.first);
 							}
 
-							if (DragFloat(kv.first, (float*)mat->GetRawVarData(kv.first), 1.0))
+							if (DragFloat(kv.first, (float*)mat->GetRawVarData(kv.first), 0.01))
 							{
 								var->HasChnaged = true;
 							}
@@ -235,11 +235,11 @@ public:
 						{
 							if (var == nullptr)
 							{
-								mat->SetVector2(kv.first, Vector2(1));
+								mat->SetVector2(kv.first, Vector2(0));
 								var = mat->GetRawVar(kv.first);
 							}
 
-							if (DragFloat2(kv.first, (float*)mat->GetRawVarData(kv.first), 1.0))
+							if (DragFloat2(kv.first, (float*)mat->GetRawVarData(kv.first), 0.01))
 							{
 								var->HasChnaged = true;
 							}
@@ -251,11 +251,11 @@ public:
 						{
 							if (var == nullptr)
 							{
-								mat->SetVector3(kv.first, Vector3(1));
+								mat->SetVector3(kv.first, Vector3(0));
 								var = mat->GetRawVar(kv.first);
 							}
 
-							if (DragFloat3(kv.first, (float*)mat->GetRawVarData(kv.first), 1.0))
+							if (DragFloat3(kv.first, (float*)mat->GetRawVarData(kv.first), 0.01))
 							{
 								var->HasChnaged = true;
 							}
@@ -266,11 +266,11 @@ public:
 						{
 							if (var == nullptr)
 							{
-								mat->SetVector4(kv.first, Vector4(1));
+								mat->SetVector4(kv.first, Vector4(0));
 								var = mat->GetRawVar(kv.first);
 							}
 
-							if (DragFloat4(kv.first, (float*)mat->GetRawVarData(kv.first), 1.0))
+							if (DragFloat4(kv.first, (float*)mat->GetRawVarData(kv.first), 0.01))
 							{
 								var->HasChnaged = true;
 							}
@@ -470,9 +470,32 @@ public:
 		/*VoxelTerrainPtr terrain = MakeShared<VoxelTerrain>();
 		rm->MainScene->AddChild(terrain);*/
 
+		struct Voxel
+		{
+			Vector4 Position;
+		};
 		
+		Voxel* voxels = new Voxel[216];
 
-		_SkyMaterial = Material::CreateOrGet("Assets/Shaders/Sky.hlsl", true, true);
+		for (int x = 0; x < 6; x++)
+		{
+			for (int z = 0; z < 6; z++)
+			{
+				for (int y = 0; y < 6; y++)
+				{
+					float val = (cos(x) * sin(z)) + 0.5;
+
+					if (y > 3 && cos(x * z) > 0.0) val = 0;
+
+					voxels[x + y * 6 + z * 6 * 6].Position = Vector4(x, y, z, val);
+				}
+			}
+		}
+
+		_SkyMaterial = Material::CreateOrGet("Assets/Shaders/Sky.hlsl", true, false);
+		_SkyMaterial->SetVector3("_SpherePos", Vector3(1.5, 0, 0));
+		_SkyMaterial->SetFloat("_MergeWeight", 1.0);
+		_SkyMaterial->SetStructArray("_Voxels", voxels, 216 * sizeof(Voxel));
 
 		MaterialPtr terrainMat = Material::CreateOrGet("Assets/Shaders/VoxelTerrain.hlsl");
 		terrainMat->SetTexture("_GrassTex", TextureImporter::Import("Assets/IndustryEmpire/Textures/TilePatine_D.TGA"));
@@ -495,7 +518,7 @@ public:
 
 		AddChunk(meshSettings, terrainMat, 0, 0, 0);
 
-		CreateVoxelTerrainInGPU();
+		//CreateVoxelTerrainInGPU();
 
 		/*for (int x = -5; x <= 5; x++)
 		{
@@ -551,14 +574,16 @@ public:
 		const int N = 64;
 		const int SIZE = N * N * N * 3 * 5;
 
-		Vector4 pos = Vector4(-1);
+		TexturePtr heightMap3D = Graphics::CreateUAVTexture3D("3DHeightmap", NVRHI::Format::RG32_FLOAT, N, N, N);
+		float* data = new float[N * N * N];
 
-		/*List<VoxelBuffer> EmptyData = List<VoxelBuffer>(SIZE);
-		for (int i = 0; i < SIZE; i++)
-		{
-			EmptyData[i].Position = pos;
-			EmptyData[i].Normal = pos;
-		}*/
+		data[0] = 1.0f;
+
+		Engine::GetRenderInterface()->writeTexture(heightMap3D, 0, data, N * 4, N * N * 4);
+
+		delete[] data;
+
+		Vector4 pos = Vector4(-1);
 
 		VoxelBuffer* EmptyData = new VoxelBuffer[SIZE];
 
@@ -567,14 +592,6 @@ public:
 			EmptyData[i].Position = pos;
 			EmptyData[i].Normal = pos;
 		}
-
-		/*EmptyData[0].Position = Vector4(0, 0, 0, 1);
-		EmptyData[1].Position = Vector4(0, 10, 0, 1);
-		EmptyData[2].Position = Vector4(10, 10, 0, 1);
-
-		EmptyData[3].Position = Vector4(0, 0, 0, 1);
-		EmptyData[4].Position = Vector4(10, 10, 0, 1);
-		EmptyData[5].Position = Vector4(10, 0, 0, 1);*/
 
 		NVRHI::BufferDesc bufferDesc;
 		bufferDesc.byteSize = SIZE * sizeof(VoxelBuffer);
@@ -586,6 +603,7 @@ public:
 		MaterialPtr mcm = Material::CreateOrGet("Assets/Shaders/Utils/GPU/MarchingCubes.hlsl");
 		mcm->SetBuffer("_Buffer", buffer);
 		mcm->SetFloat("a", -10);
+		mcm->SetTexture("_VoxelMap", heightMap3D);
 
 		Graphics::Dispatch(mcm, N / 8, N / 8, N / 8);
 
@@ -681,6 +699,8 @@ public:
 		Graphics::Destroy();
 	}
 
+	float _Time = 0;
+
 	void Render(RenderTargetView RTV) override
 	{
 		ID3D11Resource* pMainResource = NULL;
@@ -700,10 +720,12 @@ public:
 
 			_SkyMaterial->SetVector3("g_LightDir", -dir);
 
+			_SkyMaterial->SetFloat("_Time", _Time);
+
 			_SkyMaterial->ApplyParams(state);
 		}, "Sky");
 
-		
+		_Time += 0.01f;
 
 		Graphics::Blit("Sky", mainRenderTarget);
 		Graphics::Blit(rsd->GetOutputName(), mainRenderTarget);

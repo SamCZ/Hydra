@@ -458,6 +458,32 @@ namespace Hydra
 		return handle;
 	}
 
+	TexturePtr Graphics::CreateUAVTexture3D(const String & name, const NVRHI::Format::Enum & format, UINT width, UINT height, UINT depth, const NVRHI::Color & clearColor, int mipLevels)
+	{
+		if (_RenderViewTargets.find(name) != _RenderViewTargets.end())
+		{
+			return _RenderViewTargets[name];
+		}
+
+		NVRHI::TextureDesc gbufferDesc;
+		gbufferDesc.width = width;
+		gbufferDesc.height = height;
+		//gbufferDesc.useClearValue = true;
+		//gbufferDesc.sampleCount = 1;
+		//gbufferDesc.disableGPUsSync = false;
+		gbufferDesc.isRenderTarget = true;
+		gbufferDesc.isUAV = true;
+		gbufferDesc.depthOrArraySize = depth;
+		//gbufferDesc.usage = NVRHI::TextureDesc::Usage::USAGE_DYNAMIC;
+
+		gbufferDesc.format = format;
+		gbufferDesc.clearValue = clearColor;
+		gbufferDesc.debugName = name.c_str();
+		NVRHI::TextureHandle handle = Engine::GetRenderInterface()->createTexture(gbufferDesc, NULL);
+		_RenderViewTargets[name] = handle;
+		return handle;
+	}
+
 	TexturePtr Graphics::GetRenderTarget(const String & name)
 	{
 		if (_RenderViewTargets.find(name) != _RenderViewTargets.end())

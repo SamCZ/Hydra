@@ -36,13 +36,15 @@ namespace Hydra
 		_MouseCaptured = inputManager->IsMouseCaptured();
 	}
 
+	static float moveSpeed = 0.5f;
+
 	void FirstPersonController::MoveForwardBackward(float val)
 	{
 		if (!Enabled || !_MouseCaptured) return;
 
 		if (auto camera = _Camera.lock())
 		{
-			camera->GameObject->Position += camera->GetForward() * val * -0.5f;
+			camera->GameObject->Position += camera->GetForward() * val * -moveSpeed;
 		}
 	}
 
@@ -52,7 +54,7 @@ namespace Hydra
 
 		if (auto camera = _Camera.lock())
 		{
-			camera->GameObject->Position += camera->GetLeft() * val * -0.5f;
+			camera->GameObject->Position += camera->GetLeft() * val * -moveSpeed;
 		}
 	}
 

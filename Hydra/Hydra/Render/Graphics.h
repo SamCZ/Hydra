@@ -95,6 +95,7 @@ namespace Hydra
 		static TexturePtr CreateRenderTarget2DArray(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, int mipCount, int arrSize);
 		static TexturePtr CreateRenderTargetCubeMap(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, const NVRHI::Color& clearColor, int mipLevels = 1);
 		static TexturePtr CreateUAVTexture(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, const NVRHI::Color& clearColor = NVRHI::Color(0.0f), int mipLevels = 1);
+		static TexturePtr CreateUAVTexture3D(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, UINT depth, const NVRHI::Color& clearColor = NVRHI::Color(0.0f), int mipLevels = 1);
 
 		static TexturePtr GetRenderTarget(const String& name);
 		static void ReleaseRenderTarget(const String& name);

@@ -160,6 +160,181 @@ float fbm(float2 pos)
 	return snoise(float3(pos.x, pos.y, 0.0) * 2);
 }
 
+float signedDstToSphere(float3 pos, float3 center, float radius)
+{
+	return length(center - pos) - radius;
+}
+
+float signedDistanceToBox(float3 pos, float3 center, float3 size)
+{
+	float3 offset = abs(pos - center) - size;
+
+	float unsignedDist = length(max(offset, 0));
+	float dstInsideBox = max(min(offset, 0), 0);
+
+	return unsignedDist - dstInsideBox;
+}
+
+float smoothMin(float dstA, float dstB, float k)
+{
+	float h = max(k - abs(dstA - dstB), 0) / k;
+	return min(dstA, dstB) - h * h * h * k * 1.0 / 6.0;
+}
+
+cbuffer Constants2 : register(b1)
+{
+	float3 _SpherePos;
+	float3 _CubePos;
+	float _MergeWeight;
+
+	float _BulbPower;
+};
+
+float2 mandelBulb(float3 position)
+{
+	float3 z = position;
+	float dr = 1.0;
+	float r = _Time;
+	int iterations = 0;
+
+	float power = _BulbPower;
+
+	for (int i = 0; i < 15; i++)
+	{
+		iterations = i;
+		r = length(z);
+
+		if (r > 2)
+		{
+			break;
+		}
+
+		// convert to polar coordinates
+		float theta = acos(z.z / r);
+		float phi = atan2(z.y, z.x);
+		dr = pow(r, power - 1.0)*power*dr + 1.0;
+
+		// scale and rotate the point
+		float zr = pow(r, power);
+		theta = theta * power;
+		phi = phi * power;
+
+		// convert back to cartesian coordinates
+		z = zr * float3(sin(theta)*cos(phi), sin(phi)*sin(theta), cos(theta));
+		z += position;
+	}
+	float dst = 0.5*log(r)*r / dr;
+	return float2(iterations, dst * 1);
+}
+
+struct Voxel
+{
+	float4 Position;
+};
+
+cbuffer VoxelData
+{
+	Voxel _Voxels[216];
+};
+
+float DistanceToNearest(float3 pos)
+{
+	float val = signedDistanceToBox(pos, _CubePos, float3(0.5, 0.5, 0.5));
+
+	for (int i = 0; i < 216; i++)
+	{
+		float4 vPos = _Voxels[i].Position;
+
+		if (vPos.w > 0.5)
+		{
+			float vVal = signedDstToSphere(pos, vPos.xyz * 0.5, 0.5);
+			val = smoothMin(vVal, val, _MergeWeight);
+		}
+	}
+
+	return val;
+
+	//float box = signedDistanceToBox(pos, _CubePos, float3(0.5, 0.5, 0.5));
+	//float box2 = signedDistanceToBox(pos, _SpherePos, float3(0.5, 0.5, 0.5));
+
+	//float sphere = signedDstToSphere(pos, _SpherePos, 0.5);
+	//float sphere2 = signedDstToSphere(pos, _SpherePos, 0.5);
+
+	//return max(box, sphere * -1);
+
+	//return smoothMin(box, box2, _MergeWeight);
+
+	//return mandelBulb(pos).y;
+}
+
+int max_iter = 10;
+
+float3 calcNormal(in float3 p)
+{
+	float3 normal = float3(0, 0, 0);
+
+	float4 c = float4(0, 0, 0, 0);
+
+	float4 nz, ndz, dz[4];
+
+	float4 z = float4(p, 0.0); //(c.y+c.x)*.3);
+
+	dz[0] = float4(1.0, 0.0, 0.0, 0.0);
+	dz[1] = float4(0.0, 1.0, 0.0, 0.0);
+	dz[2] = float4(0.0, 0.0, 1.0, 0.0);
+	//dz[3]=vec4(0.0,0.0,0.0,1.0);
+
+	for (int i = 0; i < max_iter; i++)
+	{
+		float4 mz = float4(z.x, -z.y, -z.z, -z.w);
+		// derivative
+		dz[0] = float4(dot(mz, dz[0]), z.x*dz[0].yzw + dz[0].x*z.yzw);
+		dz[1] = float4(dot(mz, dz[1]), z.x*dz[1].yzw + dz[1].x*z.yzw);
+		dz[2] = float4(dot(mz, dz[2]), z.x*dz[2].yzw + dz[2].x*z.yzw);
+		//dz[3]=vec4(dot(mz,dz[3]),z.x*dz[3].yzw+dz[3].x*z.yzw);
+
+		// z = z2 + c
+		nz.x = dot(z, mz);
+		nz.yzw = 2.0*z.x*z.yzw;
+		z = nz + c;
+
+		if (dot(z, z) > 4.0)
+			break;
+	}
+
+	normal = float3(dot(z, dz[0]), dot(z, dz[1]), dot(z, dz[2]));
+	return normal;
+}
+
+float3 Raymarch(float3 pos, float3 dir)
+{
+	float3 color = float3(0.0, 0.0, 0.0);
+
+	float3 stepPos = pos;
+	float distance = 0.01;
+
+	float distRangeMin = 0.01;
+	float distRangeMax = 10.0;
+
+	int inter = 0;
+
+	do
+	{
+		stepPos += dir * distance;
+		distance = DistanceToNearest(stepPos);
+
+		inter++;
+	} while (distance > distRangeMin && distance <= distRangeMax);
+
+	if (distance <= distRangeMin)
+	{
+		color = float3(0.5, 0.5, 0.5) * (saturate(inter * 0.01));
+	}
+
+
+	return color;
+}
+
 float4 MainPS(FullScreenQuadOutput IN) : SV_Target
 {
 	float x = 2.0 * IN.position.x / g_ViewPort.x - 1.0;
@@ -177,6 +352,8 @@ float4 MainPS(FullScreenQuadOutput IN) : SV_Target
 	ray_view = float4(ray_view.xy, -1.0, 0.0);
 	float3 ray_world = (mul(g_InvView, ray_view)).xyz;
 	ray_world = normalize(ray_world);
+
+	//if (true) return float4(Raymarch(g_ViewPos, ray_world.xyz), 1.0);
 
 	float4 cloud_color = (0.0).xxxx;
 	float4 finalColor = cloud_color;
