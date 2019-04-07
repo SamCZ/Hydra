@@ -67,7 +67,7 @@ namespace Hydra
 		/// and corner[1] are inside of the surface, but the rest of the cube is not.
 		/// triangleConnectionTable[256][16]
 		/// </summary>
-		int TriangleConnectionTable[256][16]
+		static int TriangleConnectionTable[256][16]
 		{
 			{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
 			{0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},

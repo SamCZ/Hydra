@@ -411,7 +411,7 @@ namespace Hydra
 
 				if (texDefine.TextureHandle)
 				{
-					writable = texDefine.TextureHandle->GetDesc().isUAV;
+					writable = texDefine.TextureHandle->GetDesc().isUAV && texDefine.IsWritable;
 				}
 
 				NVRHI::BindTexture(*bindigs, texDefine.BindIndex, texDefine.TextureHandle, writable);
@@ -442,7 +442,7 @@ namespace Hydra
 
 				if (buffDefine.Buffer)
 				{
-					writable = buffDefine.Buffer->GetDesc().canHaveUAVs;
+					writable = buffDefine.Buffer->GetDesc().canHaveUAVs && buffDefine.IsWritable;
 				}
 
 				NVRHI::BindBuffer(*bindigs, buffDefine.BindIndex, buffDefine.Buffer, writable);

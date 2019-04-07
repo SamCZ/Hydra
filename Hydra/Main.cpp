@@ -43,6 +43,10 @@
 #include "Hydra/Terrain/Generator/Noise/NoiseMap.h"
 #include "Hydra/Terrain/Generator/MeshGenerator.h"
 
+#include "Hydra/Terrain/Marching/MarchingCubesTable.h"
+
+#include "Hydra/Core/Random.h"
+
 /* Set the better graphic card for notebooks ( ͡° ͜ʖ ͡°)
 *  http://developer.download.nvidia.com/devzone/devcenter/gamegraphics/files/OptimusRenderingPolicies.pdf
 *  http://stevendebock.blogspot.com/2013/07/nvidia-optimus.html
@@ -518,7 +522,7 @@ public:
 
 		AddChunk(meshSettings, terrainMat, 0, 0, 0);
 
-		//CreateVoxelTerrainInGPU();
+		CreateVoxelTerrainInGPU();
 
 		/*for (int x = -5; x <= 5; x++)
 		{
@@ -569,19 +573,57 @@ public:
 		Vector3 Normal;
 	};
 
+	inline NVRHI::BufferHandle CreateBuffer(int size, void* data, bool readOnly = true)
+	{
+		NVRHI::BufferDesc bufferDesc;
+		bufferDesc.byteSize = size;
+		bufferDesc.canHaveUAVs = !readOnly;
+		return Engine::GetRenderInterface()->createBuffer(bufferDesc, data);
+	}
+
 	inline void CreateVoxelTerrainInGPU()
 	{
 		const int N = 64;
 		const int SIZE = N * N * N * 3 * 5;
 
-		TexturePtr heightMap3D = Graphics::CreateUAVTexture3D("3DHeightmap", NVRHI::Format::RG32_FLOAT, N, N, N);
-		float* data = new float[N * N * N];
+		float* heightMap = new float[N * N * N];
+		
+		Random rnd;
 
-		data[0] = 1.0f;
+		FastNoise noise;
+		noise.SetNoiseType(FastNoise::NoiseType::Perlin);
 
-		Engine::GetRenderInterface()->writeTexture(heightMap3D, 0, data, N * 4, N * N * 4);
+		float scale = 5.0;
 
-		delete[] data;
+		for (int x = 0; x < N; x++)
+		{
+			for (int y = 0; y < N; y++)
+			{
+				for (int z = 0; z < N; z++)
+				{
+					heightMap[x + y * N + z * N * N] = (noise.GetNoise(x * scale, y * scale, z * scale) + 0.5f);
+				}
+			}
+		}
+
+		NVRHI::BufferDesc bufferDescMap;
+		bufferDescMap.byteSize = N * N * N * sizeof(float);
+		bufferDescMap.canHaveUAVs = true;
+		NVRHI::BufferHandle heightMap3D = Engine::GetRenderInterface()->createBuffer(bufferDescMap, heightMap);
+		delete[] heightMap;
+
+		/*MaterialPtr genMapMat = Material::CreateOrGet("Assets/Shaders/Utils/GPU/GenerateMap.hlsl");
+		genMapMat->SetBuffer("_VoxelMap", heightMap3D);	
+		Graphics::Dispatch(genMapMat, N / 8, N / 8, N / 8);*/
+		
+		TexturePtr normalMap = Graphics::CreateUAVTexture3D("3DHeightmap", NVRHI::Format::RGBA32_FLOAT, N, N, N);
+
+		MaterialPtr normalGen = Material::CreateOrGet("Assets/Shaders/Utils/GPU/NormalMapFrom3DNoise.hlsl");
+		normalGen->SetInt("_Width", N);
+		normalGen->SetInt("_Height", N);
+		normalGen->SetBuffer("_Noise", heightMap3D);
+		normalGen->SetTexture("_Result", normalMap);
+		Graphics::Dispatch(normalGen, N / 8, N / 8, N / 8);
 
 		Vector4 pos = Vector4(-1);
 
@@ -601,10 +643,18 @@ public:
 		delete[] EmptyData;
 
 		MaterialPtr mcm = Material::CreateOrGet("Assets/Shaders/Utils/GPU/MarchingCubes.hlsl");
-		mcm->SetBuffer("_Buffer", buffer);
-		mcm->SetFloat("a", -10);
-		mcm->SetTexture("_VoxelMap", heightMap3D);
+		mcm->SetFloat("_Target", 0.5);
+		mcm->SetInt("_Width", N);
+		mcm->SetInt("_Height", N);
+		mcm->SetInt("_Depth", N);
+		mcm->SetInt("_Border", 1);
 
+		mcm->SetTexture("_Normals", normalMap);
+
+		mcm->SetBuffer("_Buffer", buffer);
+		mcm->SetBuffer("_Voxels", heightMap3D);
+		mcm->SetBuffer("_CubeEdgeFlags", CreateBuffer(256 * sizeof(int), MarchingCubesTable::CubeEdgeFlags));
+		mcm->SetBuffer("_TriangleConnectionTable", CreateBuffer(256 * 16 * sizeof(int), MarchingCubesTable::TriangleConnectionTable));
 		Graphics::Dispatch(mcm, N / 8, N / 8, N / 8);
 
 

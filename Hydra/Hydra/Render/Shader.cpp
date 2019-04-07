@@ -97,6 +97,7 @@ namespace Hydra
 				define.Size = bufferDesc.Size;
 				define.BindIndex = bindDesc.BindPoint;
 				define.Index = static_cast<int>(_LocalShaderVarCache->TextureDefines.size());
+				define.IsWritable = bindDesc.Type == D3D_SIT_UAV_RWSTRUCTURED;
 				define.Buffer = nullptr;
 
 				_LocalShaderVarCache->BufferDefines[bufferDesc.Name] = define;
@@ -214,6 +215,7 @@ namespace Hydra
 					define.BindIndex = resourceDesc.BindPoint;
 					define.Index = static_cast<int>(_LocalShaderVarCache->TextureDefines.size());
 					define.TextureHandle = nullptr;
+					define.IsWritable = resourceDesc.Type == D3D_SIT_UAV_RWTYPED;
 
 					_LocalShaderVarCache->TextureDefines[resourceDesc.Name] = define;
 

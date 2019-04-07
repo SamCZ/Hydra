@@ -31,6 +31,7 @@ namespace Hydra
 		unsigned int Index;
 		unsigned int BindIndex;
 		NVRHI::TextureHandle TextureHandle;
+		bool IsWritable;
 	};
 
 	struct RawShaderBuffer
@@ -39,6 +40,7 @@ namespace Hydra
 		unsigned int Size;
 		unsigned int Index;
 		unsigned int BindIndex;
+		bool IsWritable;
 		NVRHI::BufferHandle Buffer;
 	};
 

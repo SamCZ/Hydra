@@ -5,6 +5,7 @@
 struct PS_Input
 {
 	float4 position     : SV_Position;
+	float3 normal       : NORMAL;
 	float2 uv           : TEXCOORD;
 	float3 positionWS : WSPOSITION0;
 };
@@ -38,6 +39,8 @@ PS_Input MainVS(uint id : SV_VertexID)
 
 	OUT.position = mul(mul(mul(g_ProjectionMatrix, g_ViewMatrix), g_ModelMatrix), pos);
 
+	OUT.normal = normalize(_Buffer[id].Normal);
+
 	return OUT;
 }
 
@@ -54,7 +57,7 @@ PS_Attributes MainPS(PS_Input IN) : SV_Target
 	PS_Attributes OUT;
 
 	OUT.AlbedoMetallic = float4(1, 1, 1, 0);
-	OUT.NormalRoughness = float4(0, 1, 0, 1);
+	OUT.NormalRoughness = float4(IN.normal, 1);
 
 	OUT.WorldPos = float4(IN.positionWS, 1.0);
 
