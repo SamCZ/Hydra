@@ -3,6 +3,7 @@
 #include "Hydra/Scene/Component.h"
 #include "Hydra/Core/Vector.h"
 #include "Hydra/Core/Container.h"
+#include "Hydra/Physics/Collisons/Ray.h"
 
 namespace Hydra
 {
@@ -53,6 +54,11 @@ namespace Hydra
 
 		void SetFov(float fov);
 		void SetZ(float zNear, float zFar);
+
+		Vector3 GetWorldPosition(float x, float y, float projectionZPos) const;
+		Vector3 GetScreenCoordinates(const Vector3& pos);
+
+		Ray GetRay(int x, int y);
 
 		Matrix4 GetProjectionMatrix();
 		Matrix4 GetViewMatrix();

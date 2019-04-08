@@ -75,6 +75,45 @@ namespace Hydra
 		_Zfar = zFar;
 	}
 
+	Vector3 Camera::GetWorldPosition(float x, float y, float projectionZPos) const
+	{
+		Matrix4 inverseMat = glm::inverse(_ViewProjectionMatrix);
+
+		Vector3 store = Vector3((2.0f * x) / _Width - 1.0f, (2.0f * y) / _Height - 1.0f, projectionZPos * 2 - 1);
+		Vector4 proStore = inverseMat * Vector4(store, 1.0f);
+		store.x = proStore.x;
+		store.y = proStore.y;
+		store.z = proStore.z;
+		store *= 1.0f / proStore.w;
+		return store;
+	}
+
+	Vector3 Camera::GetScreenCoordinates(const Vector3& pos)
+	{
+		Vector4 proj = (GetProjectionViewMatrix() * Vector4(pos, 1.0f));
+
+		Vector3 store = Vector3(proj.x, proj.y, proj.z);
+		store = store / proj.w;
+
+		int viewPortRight = 1;
+		int viewPortLeft = 0;
+		int viewPortTop = 0;
+		int viewPortBottom = 1;
+
+		store.x = ((store.x + 1.0f) * (viewPortRight - viewPortLeft) / 2.0f + viewPortLeft) * GetWidth();
+		store.y = ((store.y + 1.0f) * (viewPortTop - viewPortBottom) / 2.0f + viewPortBottom) * GetHeight();
+		store.z = (store.z + 1.0f) / 2.0f;
+
+		return store;
+	}
+
+	Ray Camera::GetRay(int x, int y)
+	{
+		Vector3 click3d = GetWorldPosition(x, y, 0);
+		Vector3 dir = glm::normalize(GetWorldPosition(x, y, 1) - click3d);
+		return Ray(click3d, dir);
+	}
+
 	Matrix4 Camera::GetProjectionMatrix()
 	{
 		return _ProjectionMatrix;
