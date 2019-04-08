@@ -89,6 +89,29 @@ namespace Hydra
 		}
 	}
 
+	int Spatial::CollideWith(const Collidable& c, CollisionResults & results)
+	{
+		int count = 0;
+
+		for (ComponentPtr cmp : _Components)
+		{
+			if (cmp->Enabled)
+			{
+				count += cmp->CollideWith(c, results);
+			}
+		}
+
+		for (SpatialPtr child : _Childs)
+		{
+			if (child->IsEnabled())
+			{
+				count += child->CollideWith(c, results);
+			}
+		}
+
+		return count;
+	}
+
 	Matrix4 Spatial::GetModelMatrix()
 	{
 		if (Parent)

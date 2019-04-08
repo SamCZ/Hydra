@@ -67,6 +67,12 @@ namespace Hydra
 
 	}
 
+	int Renderer::CollideWith(const Collidable& c, CollisionResults & results)
+	{
+		// TODO: mesh collision
+		return 0;
+	}
+
 	void Renderer::SetMesh(Mesh* mesh)
 	{
 		_Mesh = mesh;

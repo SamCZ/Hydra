@@ -8,6 +8,9 @@
 #include "Hydra/Scene/Transformable.h"
 #include "Hydra/Scene/Component.h"
 
+#include "Hydra/Physics/Collisons/Ray.h"
+#include "Hydra/Physics/Collisons/CollisionResults.h"
+
 namespace Hydra
 {
 	class Spatial;
@@ -45,6 +48,8 @@ namespace Hydra
 
 		virtual void Start();
 		virtual void Update();
+
+		virtual int CollideWith(const Collidable& c, CollisionResults& results);
 
 		void PrintHiearchy(int depth = 0) const;
 

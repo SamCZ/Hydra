@@ -50,6 +50,8 @@ namespace Hydra
 		virtual void Start();
 		virtual void Update();
 
+		virtual int CollideWith(const Collidable& c, CollisionResults& results) override;
+
 		void SetMesh(Mesh* mesh);
 		Mesh* GetMesh();
 

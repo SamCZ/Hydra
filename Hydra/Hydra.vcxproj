@@ -152,6 +152,8 @@
     <ClInclude Include="Hydra\Input\InputMapping.h" />
     <ClInclude Include="Hydra\Input\Windows\WindowsInputManager.h" />
     <ClInclude Include="Hydra\Input\Windows\WindowsPlatformInput.h" />
+    <ClInclude Include="Hydra\Physics\Collisons\Collidable.h" />
+    <ClInclude Include="Hydra\Physics\Collisons\CollisionResults.h" />
     <ClInclude Include="Hydra\Physics\Collisons\Ray.h" />
     <ClInclude Include="Hydra\Physics\Collisons\Testing.h" />
     <ClInclude Include="Hydra\Render\Graphics.h" />
@@ -264,6 +266,7 @@
     <ClCompile Include="Hydra\Core\FastNoise.cpp" />
     <ClCompile Include="Hydra\HydraEngine.cpp" />
     <ClCompile Include="Hydra\Import\UnityAssetManager.cpp" />
+    <ClCompile Include="Hydra\Physics\Collisons\CollisionResults.cpp" />
     <ClCompile Include="Hydra\Physics\Collisons\Ray.cpp" />
     <ClCompile Include="Hydra\Render\Pipeline\DX11\UIRendererDX11.cpp" />
     <ClCompile Include="Hydra\Render\PostProcess\PostEffect.cpp" />

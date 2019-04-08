@@ -1,10 +1,11 @@
 #pragma once
 
 #include "Hydra/Core/Vector.h"
+#include "Hydra/Physics/Collisons/Collidable.h"
 
 namespace Hydra
 {
-	class Ray
+	class Ray : public Collidable
 	{
 	public:
 		Vector3 Origin;
