@@ -138,6 +138,7 @@
     <ClInclude Include="Hydra\Core\Polygonise.h" />
     <ClInclude Include="Hydra\Core\Random.h" />
     <ClInclude Include="Hydra\Core\Resource.h" />
+    <ClInclude Include="Hydra\Core\Sort.h" />
     <ClInclude Include="Hydra\Core\Timing.h" />
     <ClInclude Include="Hydra\Core\YamlConvertors.h" />
     <ClInclude Include="Hydra\Engine.h" />
@@ -151,6 +152,7 @@
     <ClInclude Include="Hydra\Input\InputMapping.h" />
     <ClInclude Include="Hydra\Input\Windows\WindowsInputManager.h" />
     <ClInclude Include="Hydra\Input\Windows\WindowsPlatformInput.h" />
+    <ClInclude Include="Hydra\Physics\Collisons\Ray.h" />
     <ClInclude Include="Hydra\Physics\Collisons\Testing.h" />
     <ClInclude Include="Hydra\Render\Graphics.h" />
     <ClInclude Include="Hydra\Render\Material.h" />
@@ -262,6 +264,7 @@
     <ClCompile Include="Hydra\Core\FastNoise.cpp" />
     <ClCompile Include="Hydra\HydraEngine.cpp" />
     <ClCompile Include="Hydra\Import\UnityAssetManager.cpp" />
+    <ClCompile Include="Hydra\Physics\Collisons\Ray.cpp" />
     <ClCompile Include="Hydra\Render\Pipeline\DX11\UIRendererDX11.cpp" />
     <ClCompile Include="Hydra\Render\PostProcess\PostEffect.cpp" />
     <ClCompile Include="Hydra\Render\RenderStage.cpp" />

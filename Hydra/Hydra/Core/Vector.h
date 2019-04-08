@@ -21,9 +21,11 @@ namespace Hydra
 
 	#define FloatMax std::numeric_limits<float>::max()
 	#define FloatMin std::numeric_limits<float>::min()
+	#define FloatInf std::numeric_limits<float>::infinity()
 
 	#define IntMax std::numeric_limits<int>::max()
 	#define IntMin std::numeric_limits<int>::min()
+	#define IntInf std::numeric_limits<int>::infinity()
 
 	static inline void PrintMatrix(const Matrix4& mat)
 	{
