@@ -134,6 +134,7 @@
     <ClInclude Include="Hydra\Core\Function.h" />
     <ClInclude Include="Hydra\Core\Log.h" />
     <ClInclude Include="Hydra\Core\Math\Box.h" />
+    <ClInclude Include="Hydra\Core\Math\Triangle.h" />
     <ClInclude Include="Hydra\Core\Platform.h" />
     <ClInclude Include="Hydra\Core\Polygonise.h" />
     <ClInclude Include="Hydra\Core\Random.h" />
@@ -152,6 +153,8 @@
     <ClInclude Include="Hydra\Input\InputMapping.h" />
     <ClInclude Include="Hydra\Input\Windows\WindowsInputManager.h" />
     <ClInclude Include="Hydra\Input\Windows\WindowsPlatformInput.h" />
+    <ClInclude Include="Hydra\Physics\Collisons\BIH\BIHNode.h" />
+    <ClInclude Include="Hydra\Physics\Collisons\BIH\BIHTree.h" />
     <ClInclude Include="Hydra\Physics\Collisons\Collidable.h" />
     <ClInclude Include="Hydra\Physics\Collisons\CollisionResults.h" />
     <ClInclude Include="Hydra\Physics\Collisons\Ray.h" />
@@ -264,8 +267,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Hydra\Core\FastNoise.cpp" />
+    <ClCompile Include="Hydra\Core\Math\Box.cpp" />
     <ClCompile Include="Hydra\HydraEngine.cpp" />
     <ClCompile Include="Hydra\Import\UnityAssetManager.cpp" />
+    <ClCompile Include="Hydra\Physics\Collisons\BIH\BIHNode.cpp" />
+    <ClCompile Include="Hydra\Physics\Collisons\BIH\BIHTree.cpp" />
     <ClCompile Include="Hydra\Physics\Collisons\CollisionResults.cpp" />
     <ClCompile Include="Hydra\Physics\Collisons\Ray.cpp" />
     <ClCompile Include="Hydra\Render\Pipeline\DX11\UIRendererDX11.cpp" />
@@ -329,7 +335,6 @@
     <ClCompile Include="ImGui\imgui_demo.cpp" />
     <ClCompile Include="ImGui\imgui_draw.cpp" />
     <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />
-    <ClCompile Include="MainOld.cpp" />
     <ClCompile Include="NanoVG\nanovg.c" />
     <ClCompile Include="Yaml\src\binary.cpp" />
     <ClCompile Include="Yaml\src\contrib\graphbuilder.cpp" />

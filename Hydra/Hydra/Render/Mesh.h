@@ -61,7 +61,6 @@ namespace Hydra
 		int GetIndexCount() const;
 
 	private:
-		Vector3 ComputeTriangleNormal(const Vector3& p1, const Vector3& p2, const Vector3& p3);
 		Vector3 ComputeNormalFromMultiplePoints(List<Vector3>& points);
 	};
 

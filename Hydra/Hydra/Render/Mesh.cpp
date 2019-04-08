@@ -6,6 +6,8 @@
 
 #include <list>
 
+#include "Hydra/Core/Math/Triangle.h"
+
 namespace Hydra
 {
 	Mesh::Mesh() : PrimitiveType(NVRHI::PrimitiveType::TRIANGLE_LIST), _IndexHandle(nullptr), _VertexBuffer(nullptr), _IsIndexed(true)
@@ -98,7 +100,7 @@ namespace Hydra
 			vb2.bitangent = bitangent;
 
 			// NORMAL
-			Vector3 normal = ComputeTriangleNormal(vb0.position, vb1.position, vb2.position);
+			Vector3 normal = Triangle::ComputeTriangleNormal(vb0.position, vb1.position, vb2.position);
 
 			vb0.normal = normal;
 			vb1.normal = normal;
@@ -470,16 +472,6 @@ namespace Hydra
 	int Hydra::Mesh::GetIndexCount() const
 	{
 		return _IndexCount;
-	}
-
-	Vector3 Mesh::ComputeTriangleNormal(const Vector3 & p1, const Vector3 & p2, const Vector3 & p3)
-	{
-		Vector3 U = p2 - p1;
-		Vector3 V = p3 - p1;
-		float x = (U.y * V.z) - (U.z * V.y);
-		float y = (U.z * V.x) - (U.x * V.z);
-		float z = (U.x * V.y) - (U.y * V.x);
-		return glm::normalize(Vector3(x, y, z));
 	}
 
 	Vector3 Hydra::Mesh::ComputeNormalFromMultiplePoints(List<Vector3>& points)
