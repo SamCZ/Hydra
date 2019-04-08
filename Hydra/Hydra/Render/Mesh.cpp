@@ -8,9 +8,11 @@
 
 #include "Hydra/Core/Math/Triangle.h"
 
+#include "Hydra/Physics/Collisons/BIH/BIHTree.h"
+
 namespace Hydra
 {
-	Mesh::Mesh() : PrimitiveType(NVRHI::PrimitiveType::TRIANGLE_LIST), _IndexHandle(nullptr), _VertexBuffer(nullptr), _IsIndexed(true)
+	Mesh::Mesh() : PrimitiveType(NVRHI::PrimitiveType::TRIANGLE_LIST), _IndexHandle(nullptr), _VertexBuffer(nullptr), _IsIndexed(true), _ComplexCollider(nullptr)
 	{
 	}
 
@@ -24,6 +26,11 @@ namespace Hydra
 		if (_VertexBuffer != nullptr)
 		{
 			Engine::GetRenderInterface()->destroyBuffer(_VertexBuffer);
+		}
+
+		if (_ComplexCollider != nullptr)
+		{
+			delete _ComplexCollider;
 		}
 	}
 
@@ -207,6 +214,21 @@ namespace Hydra
 
 			/*VertexData[i * 3 + 0].normal = VerticesNormals[HashV3(p0)];*/
 		}
+	}
+
+	void Hydra::Mesh::CreateComplexCollider()
+	{
+		if (_ComplexCollider == nullptr)
+		{
+			UpdateBounds();
+
+			_ComplexCollider = new BIHTree(this);
+		}
+	}
+
+	BIHTree* Hydra::Mesh::GetComplexCollider()
+	{
+		return _ComplexCollider;
 	}
 
 	void Mesh::UpdateBuffers()

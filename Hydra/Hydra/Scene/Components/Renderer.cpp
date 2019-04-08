@@ -3,6 +3,12 @@
 #include <iostream>
 #include "Hydra/Render/Mesh.h"
 #include "Hydra/Core/Log.h"
+#include "Hydra/Scene/Spatial.h"
+
+#include "Hydra/Physics/Collisons/BIH/BIHTree.h"
+
+#include "Hydra/Physics/Collisons/Ray.h"
+#include "Hydra/Physics/Collisons/CollisionResults.h"
 
 namespace Hydra
 {
@@ -69,7 +75,32 @@ namespace Hydra
 
 	int Renderer::CollideWith(const Collidable& c, CollisionResults & results)
 	{
-		// TODO: mesh collision
+		if (const Ray* ray = dynamic_cast<const Ray*>(&c))
+		{
+			if (_Mesh != nullptr)
+			{
+				BIHTree* tree = _Mesh->GetComplexCollider();
+
+				if (tree != nullptr)
+				{
+					Box worldBounds = _Mesh->Bounds.Transform(this->GameObject->Position, this->GameObject->Rotation, this->GameObject->Scale);
+
+					CollisionResults localResults;
+
+					int count = tree->CollideWithRay(*ray, this->GameObject->GetModelMatrix(), &worldBounds, localResults);
+
+					for (int i = 0; i < localResults.Size(); i++)
+					{
+						CollisionResult& res = localResults.GetCollisonDirect(i);
+						res.Obj = this->GameObject;
+						results.AddCollision(res);
+					}
+
+					return count;
+				}
+			}
+		}
+
 		return 0;
 	}
 

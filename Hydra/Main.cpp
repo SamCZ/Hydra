@@ -309,6 +309,8 @@ public:
 
 	MaterialPtr _SkyMaterial;
 
+	SpatialPtr box;
+
 	inline LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		_InputManager->MsgProc(hWnd, uMsg, wParam, lParam);
@@ -536,13 +538,13 @@ public:
 				AddChunk(meshSettings, terrainMat, meshSettings.GetMeshWorldSize() * x, meshSettings.GetMeshWorldSize() * y, distance);
 			}
 		}*/
-		/*SpatialPtr box = MakeShared<Spatial>();
+
+		box = MakeShared<Spatial>();
 		RendererPtr r = box->AddComponent<Renderer>();
 		r->SetMesh(Mesh::CreatePrimitive(PrimitiveType::Box));
-		r->Mat.Albedo = TextureImporter::Import("Assets/Textures/Rock2.dds");
 		rm->MainScene->AddChild(box);
 
-		class TestRotationComponent : public Component
+		/*class TestRotationComponent : public Component
 		{
 		public:
 			inline void Start()
@@ -692,7 +694,8 @@ public:
 
 		Mesh* proceduralMesh = new Mesh();
 		
-		if (false)
+
+		if (true) // Use complex collisions
 		{
 			size_t bufferSize = SIZE * sizeof(VoxelBuffer);
 			Engine::GetRenderInterface()->readBuffer(buffer, EmptyData, &bufferSize);
@@ -717,15 +720,13 @@ public:
 				}
 			}
 
-			proceduralMesh->UpdateBuffers();
+			proceduralMesh->CreateComplexCollider();
 		}
-		else
-		{
-			proceduralMesh->SetVertexBuffer(buffer);
-			proceduralMesh->SetIndexCount(SIZE);
-			proceduralMesh->SetIndexed(false);
-			r->Material = mat;
-		}
+
+		proceduralMesh->SetVertexBuffer(buffer);
+		proceduralMesh->SetIndexCount(SIZE);
+		proceduralMesh->SetIndexed(false);
+		r->Material = mat;
 
 		r->SetMesh(proceduralMesh);
 		rm->MainScene->AddChild(sp);
@@ -848,7 +849,16 @@ public:
 		_InputManager->Update();
 		rm->MainScene->Update();
 
-		MaterialPtr colMat = Material::CreateOrGet("PCollison", (File)"Assets/Shaders/Utils/GPU/ProceduralCollision.hlsl");
+		Ray r = Camera::MainCamera->GetRay(Engine::ScreenSize.x * 0.5f, Engine::ScreenSize.y * 0.5f);
+		CollisionResults results;
+
+		if (rm->MainScene->CollideWith(r, results) > 0)
+		{
+			box->Position = results.GetClosestCollision().ContactPoint;
+			//std::cout << glm::to_string(results.GetClosestCollision().ContactPoint) << std::endl;
+		}
+
+		/*MaterialPtr colMat = Material::CreateOrGet("PCollison", (File)"Assets/Shaders/Utils/GPU/ProceduralCollision.hlsl");
 		colMat->SetVector3("_Position", Camera::MainCamera->GameObject->Position);
 		colMat->SetFloat("_Radius", 0.5);
 		Graphics::Dispatch(colMat, 3932160 / 512, 1, 1);
@@ -866,7 +876,7 @@ public:
 			//std::cout << glm::to_string(storeColl.V0) << ", " << glm::to_string(storeColl.V1) << ", " << glm::to_string(storeColl.V2) << std::endl;
 		}
 
-		ic++;
+		ic++;*/
 
 		//lightObj->Rotation.x += 0.1f;
 	}

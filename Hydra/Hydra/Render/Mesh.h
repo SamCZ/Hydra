@@ -19,6 +19,8 @@ namespace Hydra
 		};
 	};
 
+	class BIHTree;
+
 	class Mesh : public Resource
 	{
 	private:
@@ -26,6 +28,8 @@ namespace Hydra
 		NVRHI::BufferHandle _VertexBuffer;
 		bool _IsIndexed;
 		int _IndexCount;
+
+		BIHTree* _ComplexCollider;
 	public:
 		Mesh();
 		~Mesh();
@@ -43,6 +47,9 @@ namespace Hydra
 		void GenerateTangentsAndBiTangents();
 
 		void SmoothMesh();
+
+		void CreateComplexCollider();
+		BIHTree* GetComplexCollider();
 
 		void UpdateBuffers();
 

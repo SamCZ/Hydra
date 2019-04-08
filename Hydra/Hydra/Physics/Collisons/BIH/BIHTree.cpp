@@ -20,6 +20,9 @@ namespace Hydra
 
 	BIHTree::~BIHTree()
 	{
+		delete[] _PointData;
+		delete[] _TriIndices;
+
 		delete _Root;
 	}
 
