@@ -89,7 +89,7 @@ namespace Hydra
 		SpatialPtr spatial = MakeShared<Spatial>();
 		spatial->Position = Vector3(pos.x * 16, -16, pos.y * 16);
 
-		float* noiseMap = GenerateNoiseMapYo(16, pos.x * 15, pos.y * 15);
+		float* noiseMap = GenerateNoiseMapYo(16, pos.x * 15.0f, pos.y * 15.0f);
 
 		Erosion erosion;
 		//erosion.Erode(noiseMap, 16, 500);
@@ -109,7 +109,7 @@ namespace Hydra
 					}
 
 					float scale = 0.1f;
-					float noiseVal = noiseMap[x + z * 16] * 2.0f + 1.0;
+					float noiseVal = noiseMap[x + z * 16] * 2.0f + 1.0f;
 
 					/*float xx = x + pos.x * 15;
 					float zz = z + pos.y * 15;

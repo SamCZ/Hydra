@@ -147,7 +147,7 @@ public:
 
 		if (mPos.x <= heigthMap->GetDesc().width && mPos.y <= heigthMap->GetDesc().height)
 		{
-			_UIRenderer->DrawOval(mPos.x, mPos.y, paintRadius * 2, 0, MakeRGB(255, 0, 0));
+			_UIRenderer->DrawOval(mPos.x, mPos.y, paintRadius * 2.0f, 0, MakeRGB(255, 0, 0));
 		}
 
 		_UIRenderer->End();
@@ -230,7 +230,7 @@ public:
 								var = mat->GetRawVar(kv.first);
 							}
 
-							if (DragFloat(kv.first, (float*)mat->GetRawVarData(kv.first), 0.01))
+							if (DragFloat(kv.first, (float*)mat->GetRawVarData(kv.first), 0.01f))
 							{
 								var->HasChnaged = true;
 							}
@@ -245,7 +245,7 @@ public:
 								var = mat->GetRawVar(kv.first);
 							}
 
-							if (DragFloat2(kv.first, (float*)mat->GetRawVarData(kv.first), 0.01))
+							if (DragFloat2(kv.first, (float*)mat->GetRawVarData(kv.first), 0.01f))
 							{
 								var->HasChnaged = true;
 							}
@@ -261,7 +261,7 @@ public:
 								var = mat->GetRawVar(kv.first);
 							}
 
-							if (DragFloat3(kv.first, (float*)mat->GetRawVarData(kv.first), 0.01))
+							if (DragFloat3(kv.first, (float*)mat->GetRawVarData(kv.first), 0.01f))
 							{
 								var->HasChnaged = true;
 							}
@@ -276,7 +276,7 @@ public:
 								var = mat->GetRawVar(kv.first);
 							}
 
-							if (DragFloat4(kv.first, (float*)mat->GetRawVarData(kv.first), 0.01))
+							if (DragFloat4(kv.first, (float*)mat->GetRawVarData(kv.first), 0.01f))
 							{
 								var->HasChnaged = true;
 							}
@@ -489,9 +489,9 @@ public:
 			{
 				for (int y = 0; y < 6; y++)
 				{
-					float val = (cos(x) * sin(z)) + 0.5;
+					float val = (cos(x) * sin(z)) + 0.5f;
 
-					if (y > 3 && cos(x * z) > 0.0) val = 0;
+					if (y > 3 && cos(x * z) > 0.0f) val = 0;
 
 					voxels[x + y * 6 + z * 6 * 6].Position = Vector4(x, y, z, val);
 				}

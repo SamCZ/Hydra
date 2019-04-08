@@ -77,7 +77,7 @@ static void RestartDragger() {
 	}
 }
 
-static bool DragInt(const std::string& label, int* v, int speed = 1.0f) {
+static bool DragInt(const std::string& label, int* v, int speed = 1) {
 	return ImGui::DragInt((label + "##" + std::to_string(GetNextId())).c_str(), v, speed);
 }
 

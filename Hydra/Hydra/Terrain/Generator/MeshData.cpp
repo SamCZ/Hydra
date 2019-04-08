@@ -55,7 +55,7 @@ namespace Hydra
 	}
 	void MeshData::CalculateNormals()
 	{
-		int triangleCount = _Indices.size() / 3;
+		int triangleCount = (int)_Indices.size() / 3;
 		for (int i = 0; i < triangleCount; i++)
 		{
 			int normalTriangleIndex = i * 3;
@@ -69,7 +69,7 @@ namespace Hydra
 			_Vertices[vertexIndexC].normal += triangleNormal;
 		}
 
-		int borderTriangleCount = _OutOfMeshTriangles.size() / 3;
+		int borderTriangleCount = (int)_OutOfMeshTriangles.size() / 3;
 		for (int i = 0; i < borderTriangleCount; i++)
 		{
 			int normalTriangleIndex = i * 3;

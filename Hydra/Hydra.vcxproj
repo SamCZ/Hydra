@@ -215,8 +215,6 @@
     <ClInclude Include="Hydra\Terrain\Marching\MarchingTertrahedron.h" />
     <ClInclude Include="Hydra\Terrain\Marching\MarchingTertrahedronTable.h" />
     <ClInclude Include="Hydra\Terrain\Render\VoxelChunkRenderer.h" />
-    <ClInclude Include="Hydra\Terrain\Terrain.h" />
-    <ClInclude Include="Hydra\Terrain\TerrainNode.h" />
     <ClInclude Include="Hydra\Terrain\Voxel\VoxelTerrain.h" />
     <ClInclude Include="Hydra\Terrain\Voxel\World\VoxelChunk.h" />
     <ClInclude Include="Hydra\Terrain\Voxel\World\VoxelWorld.h" />
@@ -292,8 +290,6 @@
     <ClCompile Include="Hydra\Terrain\Marching\Marching.cpp" />
     <ClCompile Include="Hydra\Terrain\Marching\MarchingCubes.cpp" />
     <ClCompile Include="Hydra\Terrain\Marching\MarchingTertrahedron.cpp" />
-    <ClCompile Include="Hydra\Terrain\Terrain.cpp" />
-    <ClCompile Include="Hydra\Terrain\TerrainNode.cpp" />
     <ClCompile Include="Hydra\Terrain\Voxel\VoxelTerrain.cpp" />
     <ClCompile Include="Hydra\Terrain\Voxel\World\VoxelChunk.cpp" />
     <ClCompile Include="Hydra\Terrain\Voxel\World\VoxelWorld.cpp" />
