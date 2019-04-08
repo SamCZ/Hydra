@@ -97,6 +97,17 @@ static TexturePtr heigthMap;
 
 static float paintRadius = 10.0f;
 
+struct CollisionBuffer
+{
+	int Result;
+	Vector3 V0;
+	Vector3 V1;
+	Vector3 V2;
+	Vector3 Normal;
+};
+
+static CollisionBuffer storeColl = {};
+
 class UIRenderView : public IVisualController
 {
 private:
@@ -365,6 +376,21 @@ public:
 	{
 		isHoldingMouse = true;
 		Paint(Vector2(_InputManager->GetCursorPos()));
+
+		//storeColl
+
+		MaterialPtr paint3d = Material::CreateOrGet("Paint3D", (File)"Assets/Shaders/Utils/GPU/Paint3D.hlsl");
+		paint3d->SetVector3("_ArrPos", storeColl.V1);
+		Graphics::Dispatch(paint3d, 1, 1, 1);
+
+		MaterialPtr clearMat = Material::CreateOrGet("Clear3D", (File)"Assets/Shaders/Utils/GPU/ClearProceduralMesh.hlsl");
+		Graphics::Dispatch(clearMat, 64 / 8, 64 / 8, 64 / 8);
+
+		MaterialPtr normalGen = Material::CreateOrGet("nmpf3d", (File)"Assets/Shaders/Utils/GPU/NormalMapFrom3DNoise.hlsl");
+		Graphics::Dispatch(normalGen, 64 / 8, 64 / 8, 64 / 8);
+
+		MaterialPtr mcm = Material::CreateOrGet("amsflkas", (File)"Assets/Shaders/Utils/GPU/MarchingCubes.hlsl");
+		Graphics::Dispatch(mcm, 64 / 8, 64 / 8, 64 / 8);
 	}
 
 	inline void MouseUp()
@@ -568,10 +594,6 @@ public:
 
 		rm->MainScene->Start();
 
-		bool s = Testing::IntersectionSphereTriangle(Vector3(0, 0, 0), 0.5f, Vector3(-12.000000, 10.000000, -32.000000), Vector3(-12.000000, 10.000000, -32.000000), Vector3(-12.000000, 10.000000, -32.000000), Vector3());
-
-		std::cout << (s ? "Y" : "N") << std::endl;
-
 		return S_OK;
 	}
 
@@ -588,15 +610,6 @@ public:
 		bufferDesc.canHaveUAVs = !readOnly;
 		return Engine::GetRenderInterface()->createBuffer(bufferDesc, data);
 	}
-
-	struct CollisionBuffer
-	{
-		int Result;
-		Vector3 V0;
-		Vector3 V1;
-		Vector3 V2;
-		Vector3 Normal;
-	};
 	
 	inline void CreateVoxelTerrainInGPU()
 	{
@@ -619,6 +632,7 @@ public:
 				for (int z = 0; z < N; z++)
 				{
 					heightMap[x + y * N + z * N * N] = (noise.GetNoise(x * scale, y * scale, z * scale) + 0.5f);
+					//heightMap[x + y * N + z * N * N] = 0.0;
 				}
 			}
 		}
@@ -635,12 +649,15 @@ public:
 		
 		TexturePtr normalMap = Graphics::CreateUAVTexture3D("3DHeightmap", NVRHI::Format::RGBA32_FLOAT, N, N, N);
 
-		MaterialPtr normalGen = Material::CreateOrGet("Assets/Shaders/Utils/GPU/NormalMapFrom3DNoise.hlsl");
+		MaterialPtr normalGen = Material::CreateOrGet("nmpf3d", (File)"Assets/Shaders/Utils/GPU/NormalMapFrom3DNoise.hlsl");
 		normalGen->SetInt("_Width", N);
 		normalGen->SetInt("_Height", N);
 		normalGen->SetBuffer("_Noise", heightMap3D);
 		normalGen->SetTexture("_Result", normalMap);
 		Graphics::Dispatch(normalGen, N / 8, N / 8, N / 8);
+
+		MaterialPtr paint3d = Material::CreateOrGet("Paint3D", (File)"Assets/Shaders/Utils/GPU/Paint3D.hlsl");
+		paint3d->SetBuffer("_Voxels", heightMap3D);
 
 		Vector4 pos = Vector4(-1);
 
@@ -659,7 +676,13 @@ public:
 
 		//delete[] EmptyData;
 
-		MaterialPtr mcm = Material::CreateOrGet("Assets/Shaders/Utils/GPU/MarchingCubes.hlsl");
+		MaterialPtr clearMat = Material::CreateOrGet("Clear3D", (File)"Assets/Shaders/Utils/GPU/ClearProceduralMesh.hlsl");
+		clearMat->SetBuffer("_Buffer", buffer);
+		clearMat->SetInt("_Width", N);
+		clearMat->SetInt("_Height", N);
+		clearMat->SetInt("_Depth", N);
+
+		MaterialPtr mcm = Material::CreateOrGet("amsflkas", (File)"Assets/Shaders/Utils/GPU/MarchingCubes.hlsl");
 		mcm->SetFloat("_Target", 0.5);
 		mcm->SetInt("_Width", N);
 		mcm->SetInt("_Height", N);
@@ -688,6 +711,7 @@ public:
 		MaterialPtr colMat = Material::CreateOrGet("PCollison", (File)"Assets/Shaders/Utils/GPU/ProceduralCollision.hlsl");
 		colMat->SetBuffer("_Buffer", buffer);
 		colMat->SetBuffer("_Collisions", collHandle);
+		colMat->SetBuffer("_Voxels", heightMap3D);
 
 		SpatialPtr sp = MakeShared<Spatial>();
 		RendererPtr r = sp->AddComponent<Renderer>();
@@ -695,7 +719,7 @@ public:
 		Mesh* proceduralMesh = new Mesh();
 		
 
-		if (true) // Use complex collisions
+		if (false) // Use complex collisions
 		{
 			size_t bufferSize = SIZE * sizeof(VoxelBuffer);
 			Engine::GetRenderInterface()->readBuffer(buffer, EmptyData, &bufferSize);
@@ -852,31 +876,27 @@ public:
 		Ray r = Camera::MainCamera->GetRay(Engine::ScreenSize.x * 0.5f, Engine::ScreenSize.y * 0.5f);
 		CollisionResults results;
 
-		if (rm->MainScene->CollideWith(r, results) > 0)
+		/*if (rm->MainScene->CollideWith(r, results) > 0)
 		{
-			box->Position = results.GetClosestCollision().ContactPoint;
+			//box->Position = results.GetClosestCollision().ContactPoint;
 			//std::cout << glm::to_string(results.GetClosestCollision().ContactPoint) << std::endl;
-		}
+		}*/
 
-		/*MaterialPtr colMat = Material::CreateOrGet("PCollison", (File)"Assets/Shaders/Utils/GPU/ProceduralCollision.hlsl");
+		MaterialPtr colMat = Material::CreateOrGet("PCollison", (File)"Assets/Shaders/Utils/GPU/ProceduralCollision.hlsl");
 		colMat->SetVector3("_Position", Camera::MainCamera->GameObject->Position);
 		colMat->SetFloat("_Radius", 0.5);
-		Graphics::Dispatch(colMat, 3932160 / 512, 1, 1);
+
+		colMat->SetVector3("_Origin", r.Origin);
+		colMat->SetVector3("_Direction", r.Direction);
+
+		Graphics::Dispatch(colMat, 1, 1, 1);
 
 		NVRHI::BufferHandle buff = colMat->GetBuffer("_Collisions");
 
-		CollisionBuffer storeColl = {};
-		size_t size = sizeof(storeColl);
+		size_t size = sizeof(CollisionBuffer);
 		Engine::GetRenderInterface()->readBuffer(buff, &storeColl, &size);
-		
-		if (storeColl.Result > 0)
-		{
-			std::cout << "COL! " << ic << std::endl;
 
-			//std::cout << glm::to_string(storeColl.V0) << ", " << glm::to_string(storeColl.V1) << ", " << glm::to_string(storeColl.V2) << std::endl;
-		}
-
-		ic++;*/
+		ic++;
 
 		//lightObj->Rotation.x += 0.1f;
 	}
