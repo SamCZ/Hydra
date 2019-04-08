@@ -109,8 +109,8 @@ namespace Hydra
 
 	void Renderer::WriteMeshData()
 	{
-		if (!_NeedsUpdate) return;
-		_NeedsUpdate = false;
+		//if (!_NeedsUpdate) return;
+		//_NeedsUpdate = false;
 		_RenderInterface = Engine::GetRenderInterface();
 
 		if (_Mesh == nullptr) return;

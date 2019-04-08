@@ -487,7 +487,7 @@ DeviceManager::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
 
     if( uMsg >= WM_MOUSEFIRST && uMsg <= WM_MOUSELAST || 
-        uMsg >= WM_KEYFIRST && uMsg <= WM_KEYLAST )
+        uMsg >= WM_KEYFIRST && uMsg <= WM_KEYLAST || uMsg == WM_ACTIVATE)
     {
         // processing messages front-to-back
         for(auto it = m_vControllers.begin(); it != m_vControllers.end(); it++)

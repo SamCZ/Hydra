@@ -47,6 +47,8 @@
 
 #include "Hydra/Core/Random.h"
 
+#include "Hydra/Physics/Collisons/Testing.h"
+
 /* Set the better graphic card for notebooks ( ͡° ͜ʖ ͡°)
 *  http://developer.download.nvidia.com/devzone/devcenter/gamegraphics/files/OptimusRenderingPolicies.pdf
 *  http://stevendebock.blogspot.com/2013/07/nvidia-optimus.html
@@ -564,6 +566,10 @@ public:
 
 		rm->MainScene->Start();
 
+		bool s = Testing::IntersectionSphereTriangle(Vector3(0, 0, 0), 0.5f, Vector3(-12.000000, 10.000000, -32.000000), Vector3(-12.000000, 10.000000, -32.000000), Vector3(-12.000000, 10.000000, -32.000000), Vector3());
+
+		std::cout << (s ? "Y" : "N") << std::endl;
+
 		return S_OK;
 	}
 
@@ -581,6 +587,15 @@ public:
 		return Engine::GetRenderInterface()->createBuffer(bufferDesc, data);
 	}
 
+	struct CollisionBuffer
+	{
+		int Result;
+		Vector3 V0;
+		Vector3 V1;
+		Vector3 V2;
+		Vector3 Normal;
+	};
+	
 	inline void CreateVoxelTerrainInGPU()
 	{
 		const int N = 64;
@@ -640,7 +655,7 @@ public:
 		bufferDesc.canHaveUAVs = true;
 		NVRHI::BufferHandle buffer = Engine::GetRenderInterface()->createBuffer(bufferDesc, EmptyData);
 
-		delete[] EmptyData;
+		//delete[] EmptyData;
 
 		MaterialPtr mcm = Material::CreateOrGet("Assets/Shaders/Utils/GPU/MarchingCubes.hlsl");
 		mcm->SetFloat("_Target", 0.5);
@@ -662,17 +677,57 @@ public:
 		mat->SetBuffer("_Buffer", buffer);
 
 
-		Mesh* proceduralMesh = new Mesh();
-		proceduralMesh->SetVertexBuffer(buffer);
-		proceduralMesh->SetIndexCount(SIZE);
-		proceduralMesh->SetIndexed(false);
+		CollisionBuffer emptyBuff = {};
+		NVRHI::BufferDesc bufferDesc2;
+		bufferDesc2.byteSize = sizeof(CollisionBuffer);
+		bufferDesc2.canHaveUAVs = true;
+		NVRHI::BufferHandle collHandle = Engine::GetRenderInterface()->createBuffer(bufferDesc2, &emptyBuff);
+
+		MaterialPtr colMat = Material::CreateOrGet("PCollison", (File)"Assets/Shaders/Utils/GPU/ProceduralCollision.hlsl");
+		colMat->SetBuffer("_Buffer", buffer);
+		colMat->SetBuffer("_Collisions", collHandle);
 
 		SpatialPtr sp = MakeShared<Spatial>();
 		RendererPtr r = sp->AddComponent<Renderer>();
 
-		r->Material = mat;
-		r->SetMesh(proceduralMesh);
+		Mesh* proceduralMesh = new Mesh();
+		
+		if (false)
+		{
+			size_t bufferSize = SIZE * sizeof(VoxelBuffer);
+			Engine::GetRenderInterface()->readBuffer(buffer, EmptyData, &bufferSize);
 
+			int index = 0;
+			for (int i = 0; i < SIZE; i++)
+			{
+				VoxelBuffer& bff = EmptyData[i];
+
+				if (bff.Position.w != -1)
+				{
+					VertexBufferEntry e = {};
+					e.position.x = bff.Position.x;
+					e.position.y = bff.Position.y;
+					e.position.z = bff.Position.z;
+					e.normal = bff.Normal;
+
+					proceduralMesh->VertexData.emplace_back(e);
+					proceduralMesh->Indices.push_back(index);
+
+					index++;
+				}
+			}
+
+			proceduralMesh->UpdateBuffers();
+		}
+		else
+		{
+			proceduralMesh->SetVertexBuffer(buffer);
+			proceduralMesh->SetIndexCount(SIZE);
+			proceduralMesh->SetIndexed(false);
+			r->Material = mat;
+		}
+
+		r->SetMesh(proceduralMesh);
 		rm->MainScene->AddChild(sp);
 	}
 
@@ -786,11 +841,32 @@ public:
 		_renderInterface->forgetAboutTexture(pMainResource);
 	}
 
+	int ic;
+
 	void Animate(double fElapsedTimeSeconds) override
 	{
 		_InputManager->Update();
 		rm->MainScene->Update();
 
+		MaterialPtr colMat = Material::CreateOrGet("PCollison", (File)"Assets/Shaders/Utils/GPU/ProceduralCollision.hlsl");
+		colMat->SetVector3("_Position", Camera::MainCamera->GameObject->Position);
+		colMat->SetFloat("_Radius", 0.5);
+		Graphics::Dispatch(colMat, 3932160 / 512, 1, 1);
+
+		NVRHI::BufferHandle buff = colMat->GetBuffer("_Collisions");
+
+		CollisionBuffer storeColl = {};
+		size_t size = sizeof(storeColl);
+		Engine::GetRenderInterface()->readBuffer(buff, &storeColl, &size);
+		
+		if (storeColl.Result > 0)
+		{
+			std::cout << "COL! " << ic << std::endl;
+
+			//std::cout << glm::to_string(storeColl.V0) << ", " << glm::to_string(storeColl.V1) << ", " << glm::to_string(storeColl.V2) << std::endl;
+		}
+
+		ic++;
 
 		//lightObj->Rotation.x += 0.1f;
 	}

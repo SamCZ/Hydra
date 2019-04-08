@@ -165,6 +165,7 @@ namespace Hydra
 
 		if (state.shader == nullptr)
 		{
+			throw;
 			LogError("Graphics::Composite", material->Name + ", " + ToString(groupsX) + ", " + ToString(groupsY) + ", " + ToString(groupsZ), "Material does not have compute shader !");
 			return;
 		}

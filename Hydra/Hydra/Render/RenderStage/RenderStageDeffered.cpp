@@ -366,18 +366,50 @@ namespace Hydra {
 		state.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_NONE;
 		//state.renderState.rasterState.fillMode = NVRHI::RasterState::FILL_LINE;
 
-		_DefaultMaterial->SetSampler("DefaultSampler", Graphics::GetSampler("DefaultSampler"));
-
-		_DefaultMaterial->SetMatrix4("g_ProjectionMatrix", camera->GetProjectionMatrix());
-		_DefaultMaterial->SetMatrix4("g_ViewMatrix", camera->GetViewMatrix());
-
 		for (int i = 0; i < activeRenderers.size(); i++)
 		{
 			RendererPtr& r = activeRenderers[i];
 
 			if (r->Enabled == false || r->GameObject->IsEnabled() == false) continue;
 
-			MaterialPtr material = _DefaultMaterial;
+			Matrix4* modelMat = nullptr;
+
+			if (r->GameObject->IsStatic())
+			{
+				modelMat = &r->GameObject->GetStaticModelMatrix();
+			}
+			else
+			{
+				modelMat = &r->GameObject->GetModelMatrix();
+			}
+
+			if (r->Material != nullptr)
+			{
+				MaterialPtr material = r->Material;
+
+				Graphics::SetMaterialShaders(state, material);
+
+				material->SetMatrix4("g_ProjectionMatrix", camera->GetProjectionMatrix());
+				material->SetMatrix4("g_ViewMatrix", camera->GetViewMatrix());
+				material->SetMatrix4("g_ModelMatrix", *modelMat);
+
+				Graphics::ApplyMaterialParameters(state, material);
+			}
+			else
+			{
+				MaterialPtr material = _DefaultMaterial;
+
+				Graphics::SetMaterialShaders(state, material);
+
+				material->SetMatrix4("g_ProjectionMatrix", camera->GetProjectionMatrix());
+				material->SetMatrix4("g_ViewMatrix", camera->GetViewMatrix());
+				material->SetMatrix4("g_ModelMatrix", *modelMat);
+
+				Graphics::ApplyMaterialParameters(state, material);
+
+			}
+
+			/*MaterialWeakPtr material = _DefaultMaterial;
 
 			if (r->Material != nullptr)
 			{
@@ -392,27 +424,9 @@ namespace Hydra {
 				material->SetMatrix4("g_ViewMatrix", camera->GetViewMatrix());
 			}
 			
-
-			_DefaultMaterial->SetTexture("_AlbedoMap", r->Mat.Albedo);
-			if (r->Mat.Normal)
-			{
-				_DefaultMaterial->SetTexture("_NormalMap", r->Mat.Normal);
-			}
-			if (r->Mat.Roughness)
-			{
-				_DefaultMaterial->SetTexture("_RoughnessMap", r->Mat.Roughness);
-			}
-			if (r->Mat.Metallic)
-			{
-				_DefaultMaterial->SetTexture("_MetallicMap", r->Mat.Metallic);
-			}
-			if (r->Mat.Opacity)
-			{
-				_DefaultMaterial->SetTexture("_AOMap", r->Mat.Opacity);
-			}
-
 			bool isIndexed = r->WriteDataToState(state);
 			
+			_DefaultMaterial->SetSampler("DefaultSampler", Graphics::GetSampler("DefaultSampler"));
 
 			if (r->GameObject->IsStatic())
 			{
@@ -425,8 +439,10 @@ namespace Hydra {
 
 			material->SetVector3("_Color", r->TestColor);
 
-			Graphics::ApplyMaterialParameters(state, material);
+			Graphics::ApplyMaterialParameters(state, material);*/
 
+
+			bool isIndexed = r->WriteDataToState(state);
 
 			if (isIndexed)
 			{

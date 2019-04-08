@@ -566,6 +566,11 @@ namespace Hydra
 
 		SharedPtr<Technique> tech = nullptr;
 
+		if (!source.IsExist())
+		{
+			throw;
+		}
+
 		String fileName = source.GetPath();
 
 		if (_TechniqueCache.find(fileName) != _TechniqueCache.end())

@@ -464,6 +464,21 @@ namespace Hydra
 		// Window focus and activation
 		case WM_ACTIVATE:
 		{
+			if (LOWORD(wParam) & WA_ACTIVE || LOWORD(wParam) & WA_CLICKACTIVE)
+			{
+
+			}
+			else
+			{
+				_MouseCaptured = false;
+				_MouseShowState = true;
+				// Show mouse cursor. Each time ShowCursor(true) is called an internal value is incremented so we 
+				// call ShowCursor until the cursor is actually shown (>= 0 value returned by showcursor)
+				while (::ShowCursor(true) < 0);
+
+				::ReleaseCapture();
+			}
+
 			//TODO: This
 			/*EWindowActivation ActivationType;
 
