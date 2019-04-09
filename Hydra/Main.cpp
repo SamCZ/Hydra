@@ -95,7 +95,7 @@ static SpatialPtr lightObj = nullptr;
 static TexturePtr uavTex;
 static TexturePtr heigthMap;
 
-static float paintRadius = 10.0f;
+static float paintRadius = 3.0f;
 
 struct CollisionBuffer
 {
@@ -152,14 +152,18 @@ public:
 
 		//_UIRenderer->DrawImage(heigthMap, 105, 105, 100, 100, 0.0f);
 
-		_UIRenderer->DrawImage(uavTex, 0, 0, heigthMap->GetDesc().width, heigthMap->GetDesc().height, 0.0f);
+		/*_UIRenderer->DrawImage(uavTex, 0, 0, heigthMap->GetDesc().width, heigthMap->GetDesc().height, 0.0f);
 		
 		Vector2i mPos = Engine::GetInputManager()->GetCursorPos();
 
 		if (mPos.x <= heigthMap->GetDesc().width && mPos.y <= heigthMap->GetDesc().height)
 		{
 			_UIRenderer->DrawOval(mPos.x, mPos.y, paintRadius * 2.0f, 0, MakeRGB(255, 0, 0));
-		}
+		}*/
+
+		_UIRenderer->DrawString("Paint size: " + ToString(paintRadius), 5, 5, 16, Colors::Black);
+
+		_UIRenderer->DrawOval(Engine::ScreenSize.x * 0.5f, Engine::ScreenSize.y * 0.5f, 2, 2, Colors::White);
 
 		_UIRenderer->End();
 
@@ -372,15 +376,12 @@ public:
 
 	bool isHoldingMouse;
 
-	inline void MouseDown()
+	inline void Paint3D(float mode)
 	{
-		isHoldingMouse = true;
-		Paint(Vector2(_InputManager->GetCursorPos()));
-
-		//storeColl
-
 		MaterialPtr paint3d = Material::CreateOrGet("Paint3D", (File)"Assets/Shaders/Utils/GPU/Paint3D.hlsl");
 		paint3d->SetVector3("_ArrPos", storeColl.V1);
+		paint3d->SetFloat("_Mode", mode);
+		paint3d->SetFloat("_Size", paintRadius);
 		Graphics::Dispatch(paint3d, 1, 1, 1);
 
 		MaterialPtr clearMat = Material::CreateOrGet("Clear3D", (File)"Assets/Shaders/Utils/GPU/ClearProceduralMesh.hlsl");
@@ -391,6 +392,21 @@ public:
 
 		MaterialPtr mcm = Material::CreateOrGet("amsflkas", (File)"Assets/Shaders/Utils/GPU/MarchingCubes.hlsl");
 		Graphics::Dispatch(mcm, 64 / 8, 64 / 8, 64 / 8);
+	}
+
+	inline void MouseDown()
+	{
+		isHoldingMouse = true;
+		Paint(Vector2(_InputManager->GetCursorPos()));
+
+		//storeColl
+
+		Paint3D(1);
+	}
+
+	inline void MouseDownLeft()
+	{
+		Paint3D(0);
 	}
 
 	inline void MouseUp()
@@ -429,9 +445,12 @@ public:
 
 		_InputManager = MakeShared<WindowsInputManager>();
 
-		_InputManager->AddActionMapping("MouseX", Keys::LeftMouseButton);
-		_InputManager->BindAction("MouseX", IE_Pressed, this, &MainRenderView::MouseDown);
-		_InputManager->BindAction("MouseX", IE_Released, this, &MainRenderView::MouseUp);
+		_InputManager->AddActionMapping("MouseLeft", Keys::LeftMouseButton);
+		_InputManager->BindAction("MouseLeft", IE_Pressed, this, &MainRenderView::MouseDown);
+		_InputManager->BindAction("MouseLeft", IE_Released, this, &MainRenderView::MouseUp);
+
+		_InputManager->AddActionMapping("MouseRight", Keys::RightMouseButton);
+		_InputManager->BindAction("MouseRight", IE_Pressed, this, &MainRenderView::MouseDownLeft);
 
 
 		_InputManager->AddAxisMapping("MouseWheel", Keys::MouseWheelAxis, 1.0f);
@@ -553,7 +572,7 @@ public:
 		meshSettings.ChunkSizeIndex = 8;
 		meshSettings.UseGPUTexturing = true;
 
-		AddChunk(meshSettings, terrainMat, 0, 0, 0);
+		//AddChunk(meshSettings, terrainMat, 0, 0, 0);
 
 		CreateVoxelTerrainInGPU();
 
@@ -568,10 +587,10 @@ public:
 			}
 		}*/
 
-		box = MakeShared<Spatial>();
+		/*box = MakeShared<Spatial>();
 		RendererPtr r = box->AddComponent<Renderer>();
 		r->SetMesh(Mesh::CreatePrimitive(PrimitiveType::Box));
-		rm->MainScene->AddChild(box);
+		rm->MainScene->AddChild(box);*/
 
 		/*class TestRotationComponent : public Component
 		{
@@ -624,9 +643,9 @@ public:
 		Random rnd;
 
 		FastNoise noise;
-		noise.SetNoiseType(FastNoise::NoiseType::Perlin);
+		noise.SetNoiseType(FastNoise::NoiseType::PerlinFractal);
 
-		float scale = 5.0;
+		float scale = 2.5;
 
 		for (int x = 0; x < N; x++)
 		{
@@ -634,8 +653,15 @@ public:
 			{
 				for (int z = 0; z < N; z++)
 				{
-					heightMap[x + y * N + z * N * N] = (noise.GetNoise(x * scale, y * scale, z * scale) + 0.5f);
+					//heightMap[x + y * N + z * N * N] = (noise.GetNoise(x * scale, y * scale, z * scale) + 0.5f) * (1.0f - (y / 32));
 					//heightMap[x + y * N + z * N * N] = 0.0;
+
+					heightMap[x + y * N + z * N * N] = 1.0 - ((noise.GetNoise(x * scale, z * scale) + 0.5f) * (1.0f - (y / (float)32)));
+
+					if (y <= 2)
+					{
+						heightMap[x + y * N + z * N * N] = 0;
+					}
 				}
 			}
 		}

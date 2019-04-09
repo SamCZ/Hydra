@@ -68,7 +68,10 @@ PS_Attributes MainPS(PS_Input IN) : SV_Target
 {
 	PS_Attributes OUT;
 
-	float3 color = TriplanarTexturing(_LayerTex0, DefaultSampler, IN.positionWS, IN.normal, 1.0);
+	float3 color0 = TriplanarTexturing(_LayerTex1, DefaultSampler, IN.positionWS, IN.normal, 1.0);
+	float3 color1 = TriplanarTexturing(_LayerTex0, DefaultSampler, IN.positionWS, IN.normal, 1.0);
+
+	float3 color = lerp(color0, color1, pow(dot(IN.normal, float3(0, 1, 0)), 2) );
 
 	OUT.AlbedoMetallic = float4(color, 0);
 	OUT.NormalRoughness = float4(IN.normal, 1);
