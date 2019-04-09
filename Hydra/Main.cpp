@@ -418,6 +418,9 @@ public:
 		paintMat->SetVector2("_Position", pos);
 		paintMat->SetFloat("_Radius", paintRadius);
 		Graphics::Dispatch(paintMat, 16, 16, 1);
+
+		MaterialPtr computeMat = Material::CreateOrGet("NormalMapCmp", (File)"Assets/Shaders/Utils/GPU/NormalMapFromHeightMap.hlsl");
+		Graphics::Dispatch(computeMat, 16, 16, 1);
 	}
 
 	inline HRESULT DeviceCreated() override
@@ -701,6 +704,14 @@ public:
 		MaterialPtr mat = Material::CreateOrGet("Assets/Shaders/ProceduralDeffered.hlsl");
 		mat->SetBuffer("_Buffer", buffer);
 
+		mat->SetTexture("_LayerTex0", TextureImporter::Import("Assets/Textures/Terrain/Grass.png"));
+		mat->SetTexture("_LayerTex1", TextureImporter::Import("Assets/Textures/Terrain/Rocks 1.png"));
+		mat->SetTexture("_LayerTex2", TextureImporter::Import("Assets/Textures/Terrain/Rocks 2.png"));
+		mat->SetTexture("_LayerTex3", TextureImporter::Import("Assets/Textures/Terrain/Sandy grass.png"));
+		mat->SetTexture("_LayerTex4", TextureImporter::Import("Assets/Textures/Terrain/Snow.png"));
+		mat->SetTexture("_LayerTex5", TextureImporter::Import("Assets/Textures/Terrain/Stony ground.png"));
+		mat->SetTexture("_LayerTex6", TextureImporter::Import("Assets/Textures/Terrain/Water.png"));
+
 
 		CollisionBuffer emptyBuff = {};
 		NVRHI::BufferDesc bufferDesc2;
@@ -859,9 +870,6 @@ public:
 
 		Graphics::Blit("Sky", mainRenderTarget);
 		Graphics::Blit(rsd->GetOutputName(), mainRenderTarget);
-
-		MaterialPtr computeMat = Material::CreateOrGet("NormalMapCmp", (File)"Assets/Shaders/Utils/GPU/NormalMapFromHeightMap.hlsl");
-		Graphics::Dispatch(computeMat, 16, 16, 1);
 
 		_renderInterface->forgetAboutTexture(pMainResource);
 	}

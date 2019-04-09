@@ -393,6 +393,8 @@ namespace Hydra {
 				material->SetMatrix4("g_ViewMatrix", camera->GetViewMatrix());
 				material->SetMatrix4("g_ModelMatrix", *modelMat);
 
+				material->SetSampler("DefaultSampler", Graphics::GetSampler("DefaultSampler"));
+
 				Graphics::ApplyMaterialParameters(state, material);
 			}
 			else
@@ -404,6 +406,8 @@ namespace Hydra {
 				material->SetMatrix4("g_ProjectionMatrix", camera->GetProjectionMatrix());
 				material->SetMatrix4("g_ViewMatrix", camera->GetViewMatrix());
 				material->SetMatrix4("g_ModelMatrix", *modelMat);
+
+				material->SetSampler("DefaultSampler", Graphics::GetSampler("DefaultSampler"));
 
 				Graphics::ApplyMaterialParameters(state, material);
 

@@ -1,7 +1,5 @@
 #pragma hydra vert:MainVS pixel:MainPS
 
-#include "Assets/Shaders/Input/Default.hlsli"
-
 struct PS_Input
 {
 	float4 position : SV_Position;
@@ -10,6 +8,8 @@ struct PS_Input
 	float3 normal   : NORMAL;
 	float3 color    : COLOR;
 };
+
+#include "Assets/Shaders/Input/Default.hlsli"
 
 cbuffer GlobalConstants : register(b0)
 {

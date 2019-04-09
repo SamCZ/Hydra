@@ -18,7 +18,7 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID, 
 
 	int3 pos = (int3)_ArrPos;
 
-	int size = 2;
+	int size = 3;
 
 	for (int x = -size; x <= size; x++)
 	{
@@ -26,11 +26,19 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID, 
 		{
 			for (int z = -size; z <= size; z++)
 			{
-				float dist = distance(int3(x, y, z), int3(0, 0, 0)) / (float)size;
 
-				dist =+ 0.01;
+				_Voxels[GetIndex(int3(pos.x + x, pos.y + y, pos.z + z))] = 1;
 
-				_Voxels[GetIndex(int3(pos.x + x, pos.y + y, pos.z + z))] = 0.6;
+				/*float dist = clamp(abs(distance(int3(x, y, z), int3(0, 0, 0))) / 5, 0, 1);
+
+				if (dist > 0.5)
+				{
+					_Voxels[GetIndex(int3(pos.x + x, pos.y + y, pos.z + z))] = 0;
+				}
+				else
+				{
+					_Voxels[GetIndex(int3(pos.x + x, pos.y + y, pos.z + z))] = 1;
+				}*/
 			}
 		}
 	}

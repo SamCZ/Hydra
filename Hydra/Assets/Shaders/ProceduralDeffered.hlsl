@@ -1,5 +1,7 @@
 #pragma hydra vert:MainVS pixel:MainPS
 
+#include "Assets/Shaders/Utils/Texturing.hlsli"
+
 #pragma pack_matrix( column_major )
 
 struct PS_Input
@@ -52,11 +54,23 @@ struct PS_Attributes
 	float4 WorldPos        : SV_Target3;
 };
 
+Texture2D _LayerTex0 : register(t0);
+Texture2D _LayerTex1 : register(t1);
+Texture2D _LayerTex2 : register(t2);
+Texture2D _LayerTex3 : register(t3);
+Texture2D _LayerTex4 : register(t4);
+Texture2D _LayerTex5 : register(t5);
+Texture2D _LayerTex6 : register(t6);
+
+SamplerState DefaultSampler : register(s0);
+
 PS_Attributes MainPS(PS_Input IN) : SV_Target
 {
 	PS_Attributes OUT;
 
-	OUT.AlbedoMetallic = float4(1, 1, 1, 0);
+	float3 color = TriplanarTexturing(_LayerTex0, DefaultSampler, IN.positionWS, IN.normal, 1.0);
+
+	OUT.AlbedoMetallic = float4(color, 0);
 	OUT.NormalRoughness = float4(IN.normal, 1);
 
 	OUT.WorldPos = float4(IN.positionWS, 1.0);

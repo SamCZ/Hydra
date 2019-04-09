@@ -34,6 +34,7 @@ sampler _LinearClamp
 	magfilter = LINEAR;
 };
 
+#define CMP_TRI_NORMALS 0
 
 // edgeConnection lists the index of the endpoint vertices for each of the 12 edges of the cube
 static int2 edgeConnection[12] =
@@ -77,7 +78,11 @@ float GetOffset(float v1, float v2)
 	return (delta == 0.0f) ? 0.5f : (_Target - v1) / delta;
 }
 
-VoxelBuffer CreateVertex(float3 position, float3 centre, float3 size)
+VoxelBuffer CreateVertex(float3 position, float3 centre, float3 size
+#if CMP_TRI_NORMALS
+	, float3 triNorm
+#endif
+)
 {
 	VoxelBuffer vert;
 	vert.Position = float4(position - centre, 1.0);
@@ -85,8 +90,24 @@ VoxelBuffer CreateVertex(float3 position, float3 centre, float3 size)
 	float3 uv = position / size;
 	vert.Normal = _Normals.SampleLevel(_LinearClamp, uv, 0).xyz;
 
+#if CMP_TRI_NORMALS
+	vert.Normal = triNorm;
+#endif
+
 	return vert;
 }
+
+#if CMP_TRI_NORMALS
+float3 ComputeTriangleNormal(float3 p1, float3 p2, float3 p3)
+{
+	float3 U = p2 - p1;
+	float3 V = p3 - p1;
+	float x = (U.y * V.z) - (U.z * V.y);
+	float y = (U.z * V.x) - (U.x * V.z);
+	float z = (U.x * V.y) - (U.y * V.x);
+	return normalize(float3(x, y, z));
+}
+#endif
 
 [numthreads(8, 8, 8)]
 void CSMain(int3 id : SV_DispatchThreadID)
@@ -140,6 +161,17 @@ void CSMain(int3 id : SV_DispatchThreadID)
 		//If the connection table is not -1 then this a triangle.
 		if (_TriangleConnectionTable[flagIndex * 16 + 3 * i] >= 0)
 		{
+#if CMP_TRI_NORMALS
+			float3 pos0 = edgeVertex[_TriangleConnectionTable[flagIndex * 16 + (3 * i + 0)]];
+			float3 pos1 = edgeVertex[_TriangleConnectionTable[flagIndex * 16 + (3 * i + 1)]];
+			float3 pos2 = edgeVertex[_TriangleConnectionTable[flagIndex * 16 + (3 * i + 2)]];
+
+			float3 norm = ComputeTriangleNormal(pos0, pos1, pos2);
+
+			_Buffer[idx * 15 + (3 * i + 0)] = CreateVertex(pos0, centre, size, norm);
+			_Buffer[idx * 15 + (3 * i + 1)] = CreateVertex(pos1, centre, size, norm);
+			_Buffer[idx * 15 + (3 * i + 2)] = CreateVertex(pos2, centre, size, norm);
+#else
 			float3 position;
 
 			position = edgeVertex[_TriangleConnectionTable[flagIndex * 16 + (3 * i + 0)]];
@@ -150,6 +182,7 @@ void CSMain(int3 id : SV_DispatchThreadID)
 
 			position = edgeVertex[_TriangleConnectionTable[flagIndex * 16 + (3 * i + 2)]];
 			_Buffer[idx * 15 + (3 * i + 2)] = CreateVertex(position, centre, size);
+#endif
 		}
 	}
 
