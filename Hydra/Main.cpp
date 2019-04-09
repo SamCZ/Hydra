@@ -382,7 +382,7 @@ public:
 		paint3d->SetVector3("_ArrPos", storeColl.V1);
 		paint3d->SetFloat("_Mode", mode);
 		paint3d->SetFloat("_Size", paintRadius);
-		Graphics::Dispatch(paint3d, 1, 1, 1);
+		Graphics::Dispatch(paint3d, 64 / 8, 64 / 8, 64 / 8);
 
 		MaterialPtr clearMat = Material::CreateOrGet("Clear3D", (File)"Assets/Shaders/Utils/GPU/ClearProceduralMesh.hlsl");
 		Graphics::Dispatch(clearMat, 64 / 8, 64 / 8, 64 / 8);
@@ -401,12 +401,12 @@ public:
 
 		//storeColl
 
-		Paint3D(1);
+		Paint3D(0);
 	}
 
 	inline void MouseDownLeft()
 	{
-		Paint3D(0);
+		Paint3D(1);
 	}
 
 	inline void MouseUp()

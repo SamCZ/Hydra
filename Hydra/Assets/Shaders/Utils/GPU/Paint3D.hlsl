@@ -24,7 +24,7 @@ bool CheckIndex(int3 pos)
 	return true;
 }
 
-[numthreads(1, 1, 1)]
+[numthreads(8, 8, 8)]
 void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID, uint3 dispatchThreadId : SV_DispatchThreadID, uint groupIndex : SV_GroupIndex)
 {
 
@@ -32,33 +32,18 @@ void CSMain(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID, 
 
 	int size = 32;
 
-	for (int x = -size; x <= size; x++)
+	int x = dispatchThreadId.x - 32;
+	int y = dispatchThreadId.y - 32;
+	int z = dispatchThreadId.z - 32;
+
+	int3 index = int3(pos.x + x, pos.y + y, pos.z + z);
+
+	if (!CheckIndex(index)) return;
+
+	int dist = abs(distance(int3(x, y, z), int3(0, 0, 0)));
+
+	if (dist < _Size)
 	{
-		for (int y = -size; y <= size; y++)
-		{
-			for (int z = -size; z <= size; z++)
-			{
-				int3 index = int3(pos.x + x, pos.y + y, pos.z + z);
-
-				if (!CheckIndex(index)) continue;
-
-				int dist = abs(distance(int3(x, y, z), int3(0, 0, 0)));
-
-				if (dist < _Size) {
-					_Voxels[GetIndex(index)] = _Mode;
-				}
-
-				/*float dist = clamp(abs(distance(int3(x, y, z), int3(0, 0, 0))) / 5, 0, 1);
-
-				if (dist > 0.5)
-				{
-					_Voxels[GetIndex(int3(pos.x + x, pos.y + y, pos.z + z))] = 0;
-				}
-				else
-				{
-					_Voxels[GetIndex(int3(pos.x + x, pos.y + y, pos.z + z))] = 1;
-				}*/
-			}
-		}
+		_Voxels[GetIndex(index)] = _Mode;
 	}
 }
