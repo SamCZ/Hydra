@@ -5,7 +5,7 @@
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
 #include "Hydra/Core/Vector.h"
 #include "Hydra/Core/Container.h"
-#include "Hydra/Engine.h"
+#include "Hydra/EngineContext.h"
 #include "Hydra/Render/VertexBuffer.h"
 
 namespace Hydra
@@ -18,6 +18,8 @@ namespace Hydra
 		NVRHI::TextureHandle Metallic;
 		NVRHI::TextureHandle Opacity;
 	};
+
+	class EngineContext;
 
 	class Mesh;
 	class Material;
@@ -66,6 +68,7 @@ namespace Hydra
 		void UpdateInstancing(NVRHI::DrawCallState& state);
 
 	public:
+		void InitializeData(EngineContext* context);
 		bool WriteDataToState(NVRHI::DrawCallState& state);
 
 		NVRHI::DrawArguments& GetDrawArguments();

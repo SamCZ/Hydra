@@ -65,7 +65,6 @@ namespace Hydra
 
 
 		mesh->GenerateNormals();
-		mesh->UpdateBuffers();
 
 		_VertexData.clear();
 		_Indices.clear();

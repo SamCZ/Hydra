@@ -3,7 +3,7 @@
 #include "Hydra/Render/Pipeline/BindingHelpers.h"
 #include "Hydra/Render/Technique.h"
 #include "Hydra/Render/Shader.h"
-#include "Hydra/Engine.h"
+#include "Hydra/EngineContext.h"
 
 namespace Hydra
 {
@@ -48,7 +48,7 @@ namespace Hydra
 
 					delete[] cbuffer.LocalDataBuffer;
 
-					Engine::GetRenderInterface()->destroyConstantBuffer(cbuffer.ConstantBuffer);
+					_Technique->GetEngineContext()->GetRenderInterface()->destroyConstantBuffer(cbuffer.ConstantBuffer);
 				}
 
 				delete[] vars->ConstantBuffers;
@@ -383,7 +383,7 @@ namespace Hydra
 			{
 				if (vars->ConstantBuffers[i].MarkUpdate)
 				{
-					Engine::GetRenderInterface()->writeConstantBuffer(vars->ConstantBuffers[i].ConstantBuffer, vars->ConstantBuffers[i].LocalDataBuffer, vars->ConstantBuffers[i].Size);
+					_Technique->GetEngineContext()->GetRenderInterface()->writeConstantBuffer(vars->ConstantBuffers[i].ConstantBuffer, vars->ConstantBuffers[i].LocalDataBuffer, vars->ConstantBuffers[i].Size);
 					vars->ConstantBuffers[i].MarkUpdate = false;
 				}
 			}
@@ -497,7 +497,7 @@ namespace Hydra
 			{
 				if (vars->ConstantBuffers[i].MarkUpdate)
 				{
-					Engine::GetRenderInterface()->writeConstantBuffer(vars->ConstantBuffers[i].ConstantBuffer, vars->ConstantBuffers[i].LocalDataBuffer, vars->ConstantBuffers[i].Size);
+					_Technique->GetEngineContext()->GetRenderInterface()->writeConstantBuffer(vars->ConstantBuffers[i].ConstantBuffer, vars->ConstantBuffers[i].LocalDataBuffer, vars->ConstantBuffers[i].Size);
 					vars->ConstantBuffers[i].MarkUpdate = false;
 				}
 			}
@@ -643,7 +643,7 @@ namespace Hydra
 					cbuffer.LocalDataBuffer = new unsigned char[cbuffer.Size];
 					ZeroMemory(cbuffer.LocalDataBuffer, cbuffer.Size);
 
-					cbuffer.ConstantBuffer = Engine::GetRenderInterface()->createConstantBuffer(NVRHI::ConstantBufferDesc(cbuffer.Size, cbuffer.Name.c_str()), nullptr);
+					cbuffer.ConstantBuffer = _Technique->GetEngineContext()->GetRenderInterface()->createConstantBuffer(NVRHI::ConstantBufferDesc(cbuffer.Size, cbuffer.Name.c_str()), nullptr);
 				}
 
 				_ActiveShaderVars[shader->GetType()] = vars;

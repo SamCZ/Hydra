@@ -119,7 +119,6 @@ namespace Hydra
 		mesh->Indices = _Indices;
 
 		mesh->GenerateTangentsAndBiTangents();
-		mesh->UpdateBuffers();
 
 		return mesh;
 	}

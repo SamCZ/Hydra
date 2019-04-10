@@ -148,7 +148,6 @@ namespace Hydra
 	{
 		//if (!_NeedsUpdate) return;
 		//_NeedsUpdate = false;
-		_RenderInterface = Engine::GetRenderInterface();
 
 		if (_Mesh == nullptr) return;
 
@@ -209,6 +208,22 @@ namespace Hydra
 		else
 		{
 			state.vertexBufferCount = 1;
+		}
+	}
+
+	void Renderer::InitializeData(EngineContext* context)
+	{
+		if (_RenderInterface == nullptr)
+		{
+			_RenderInterface = context->GetRenderInterface();
+		}
+
+		if (_Mesh != nullptr)
+		{
+			if ((_Mesh->GetVertexBuffer() == nullptr || (_Mesh->GetIndexBuffer() == nullptr ? _Mesh->IsIndexed() : false)) && _Mesh->CanAutoCreateBuffers())
+			{
+				_Mesh->UpdateBuffers(context);
+			}
 		}
 	}
 

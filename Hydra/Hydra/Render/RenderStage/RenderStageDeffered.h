@@ -8,9 +8,15 @@ namespace Hydra
 	class Renderer;
 	class Light;
 
+	class EngineContext;
+	class Graphics;
+
 	class RenderStageDeffered : public RenderStage
 	{
 	private:
+		EngineContext* _Context;
+		Graphics* _Graphics;
+
 		InputLayoutPtr _InputLayout;
 		MaterialPtr _DefaultMaterial;
 		MaterialPtr _ShadowMaterial;
@@ -26,7 +32,7 @@ namespace Hydra
 		TexturePtr _BrdfLutTexture;
 		SamplerPtr _BrdfLutSampler;
 	public:
-		RenderStageDeffered();
+		RenderStageDeffered(EngineContext* context);
 		~RenderStageDeffered();
 
 		void RenderLights(List<SharedPtr<Renderer>>& renderers, List<SharedPtr<Light>>& lights);

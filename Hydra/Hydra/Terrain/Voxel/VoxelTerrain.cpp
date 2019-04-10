@@ -16,8 +16,6 @@
 
 #include "Hydra/Render/Mesh.h"
 
-#include "Hydra/Import/TextureImporter.h"
-
 #include "Hydra/Render/Graphics.h"
 
 namespace Hydra
@@ -146,7 +144,6 @@ namespace Hydra
 
 		voxelMesh->GenerateUVs();
 		voxelMesh->GenerateNormals();
-		voxelMesh->UpdateBuffers();
 
 		static MaterialPtr terrainMat = nullptr;
 
@@ -154,10 +151,8 @@ namespace Hydra
 		{
 			terrainMat = Material::CreateOrGet("Assets/Shaders/VoxelTerrain.hlsl");
 
-			terrainMat->SetTexture("_GrassTex", TextureImporter::Import("Assets/IndustryEmpire/Textures/TilePatine_D.TGA"));
-			terrainMat->SetTexture("_GrassNormalTex", TextureImporter::Import("Assets/IndustryEmpire/Textures/TilePatine_N.TGA"));
-
-			terrainMat->SetSampler("DefaultSampler", Graphics::CreateSampler("TerrainSampler"));
+			//terrainMat->SetTexture("_GrassTex", TextureImporter::Import("Assets/IndustryEmpire/Textures/TilePatine_D.TGA"));
+			//terrainMat->SetTexture("_GrassNormalTex", TextureImporter::Import("Assets/IndustryEmpire/Textures/TilePatine_N.TGA"));
 		}
 
 		SpatialPtr chunkObj = MakeShared<Spatial>();

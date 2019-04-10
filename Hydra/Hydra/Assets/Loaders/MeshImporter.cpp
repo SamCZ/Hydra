@@ -1,10 +1,9 @@
-#include "Hydra/Import/MeshImporter.h"
+#include "Hydra/Assets/Loaders/MeshImporter.h"
 
 #include <iostream>
 #include "Hydra/Core/Log.h"
 #include "Hydra/Render/Mesh.h"
 #include "Hydra/Scene/Components/Renderer.h"
-#include "Hydra/Import/TextureImporter.h"
 
 namespace Hydra
 {
@@ -19,10 +18,10 @@ namespace Hydra
 			return TexCache[file.GetPath()];
 		}
 
-		NVRHI::TextureHandle tex = TextureImporter::Import(file);
-		TexCache[file.GetPath()] = tex;
+		//NVRHI::TextureHandle tex = TextureImporter::Import(file);
+		//TexCache[file.GetPath()] = tex;
 
-		return tex;
+		return nullptr;
 	}
 
 	SpatialPtr Meshimporter::Import(const File& file, MeshImportOptions& importoptions)
@@ -358,8 +357,6 @@ namespace Hydra
 		}
 
 		nMesh->UpdateBounds();
-
-		nMesh->UpdateBuffers();
 
 		return nMesh;
 	}

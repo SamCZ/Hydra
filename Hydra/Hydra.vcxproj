@@ -127,6 +127,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Hydra\Assets\IAssetImporter.h" />
+    <ClInclude Include="Hydra\Assets\AssetManager.h" />
+    <ClInclude Include="Hydra\Assets\IAssetLocator.h" />
     <ClInclude Include="Hydra\Core\Array.h" />
     <ClInclude Include="Hydra\Core\Delegate.h" />
     <ClInclude Include="Hydra\Core\EObject.h" />
@@ -142,11 +145,11 @@
     <ClInclude Include="Hydra\Core\Sort.h" />
     <ClInclude Include="Hydra\Core\Timing.h" />
     <ClInclude Include="Hydra\Core\YamlConvertors.h" />
-    <ClInclude Include="Hydra\Engine.h" />
+    <ClInclude Include="Hydra\EngineContext.h" />
     <ClInclude Include="Hydra\HydraEngine.h" />
-    <ClInclude Include="Hydra\Import\MeshImporter.h" />
-    <ClInclude Include="Hydra\Import\TextureImporter.h" />
-    <ClInclude Include="Hydra\Import\UnityAssetManager.h" />
+    <ClInclude Include="Hydra\Assets\Loaders\MeshImporter.h" />
+    <ClInclude Include="Hydra\Assets\Loaders\TextureImporter.h" />
+    <ClInclude Include="Hydra\Assets\Loaders\UnityAssetManager.h" />
     <ClInclude Include="Hydra\Input\GenericPlatformInput.h" />
     <ClInclude Include="Hydra\Input\InputCoreTypes.h" />
     <ClInclude Include="Hydra\Input\InputManager.h" />
@@ -264,10 +267,12 @@
     <ResourceCompile Include="Hydra.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Hydra\Assets\AssetManager.cpp" />
     <ClCompile Include="Hydra\Core\FastNoise.cpp" />
     <ClCompile Include="Hydra\Core\Math\Box.cpp" />
+    <ClCompile Include="Hydra\EngineContext.cpp" />
     <ClCompile Include="Hydra\HydraEngine.cpp" />
-    <ClCompile Include="Hydra\Import\UnityAssetManager.cpp" />
+    <ClCompile Include="Hydra\Assets\Loaders\UnityAssetManager.cpp" />
     <ClCompile Include="Hydra\Physics\Collisons\BIH\BIHNode.cpp" />
     <ClCompile Include="Hydra\Physics\Collisons\BIH\BIHTree.cpp" />
     <ClCompile Include="Hydra\Physics\Collisons\CollisionResults.cpp" />
@@ -293,20 +298,19 @@
     <ClCompile Include="Hydra\Terrain\Voxel\VoxelTerrain.cpp" />
     <ClCompile Include="Hydra\Terrain\Voxel\World\VoxelChunk.cpp" />
     <ClCompile Include="Hydra\Terrain\Voxel\World\VoxelWorld.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainYamlTest.cpp" />
     <ClCompile Include="Hydra\Render\Material.cpp" />
     <ClCompile Include="Hydra\Render\RenderManager.cpp" />
     <ClCompile Include="Hydra\Render\RenderStage\RenderStageDeffered.cpp" />
     <ClCompile Include="Hydra\Scene\Components\LodGroup.cpp" />
     <ClCompile Include="IndustryEmpire\IndustryEmpire.cpp" />
-    <ClCompile Include="Main.cpp" />
     <ClCompile Include="Hydra\Core\Polygonise.cpp" />
     <ClCompile Include="Hydra\Core\Random.cpp" />
     <ClCompile Include="Hydra\Core\Resource.cpp" />
     <ClCompile Include="Hydra\Core\Timing.cpp" />
-    <ClCompile Include="Hydra\Engine.cpp" />
-    <ClCompile Include="Hydra\Import\MeshImporter.cpp" />
-    <ClCompile Include="Hydra\Import\TextureImporter.cpp" />
+    <ClCompile Include="Hydra\Assets\Loaders\MeshImporter.cpp" />
+    <ClCompile Include="Hydra\Assets\Loaders\TextureImporter.cpp" />
     <ClCompile Include="Hydra\Input\GenericPlatformInput.cpp" />
     <ClCompile Include="Hydra\Input\InputCoreTypes.cpp" />
     <ClCompile Include="Hydra\Input\InputManager.cpp" />

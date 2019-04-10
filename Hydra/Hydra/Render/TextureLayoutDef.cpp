@@ -1,5 +1,4 @@
 #include "Hydra/Render/TextureLayoutDef.h"
-#include "Hydra/Engine.h"
 #include "Hydra/Render/Material.h"
 
 namespace Hydra
@@ -19,7 +18,7 @@ namespace Hydra
 	{
 		ActiveGroup = String_None;
 	}
-	bool Hydra::TextureLayoutDef::DeleteGroup(const String& name, bool destroyTextures)
+	bool Hydra::TextureLayoutDef::DeleteGroup(const String& name)
 	{
 		bool deletedSomething = false;
 
@@ -29,11 +28,6 @@ namespace Hydra
 		{
 			if (it->second.GroupName == name)
 			{
-				if (destroyTextures)
-				{
-					Engine::GetRenderInterface()->destroyTexture(it->second.Texture);
-				}
-
 				toRemove.push_back(it->second.Name);
 			}
 		}

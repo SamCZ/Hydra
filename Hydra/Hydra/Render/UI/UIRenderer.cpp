@@ -2,7 +2,7 @@
 
 #include "NanoVG/nanovg.h"
 
-#include "Hydra/Engine.h"
+#include "Hydra/Scene/Components/Camera.h"
 
 namespace Hydra
 {
@@ -32,7 +32,7 @@ namespace Hydra
 
 	void UIRenderer::Begin()
 	{
-		nvgBeginFrame(_Context, Engine::ScreenSize.x, Engine::ScreenSize.y, 1.0f);
+		nvgBeginFrame(_Context, Camera::MainCamera->GetWidth(), Camera::MainCamera->GetHeight(), 1.0f);
 	}
 
 	void UIRenderer::End()

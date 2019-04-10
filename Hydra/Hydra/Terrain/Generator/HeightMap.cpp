@@ -1,5 +1,5 @@
 #include "Hydra/Terrain/Generator/HeightMap.h"
-#include "Hydra/Engine.h"
+#include "Hydra/EngineContext.h"
 #include "Hydra/Render/Graphics.h"
 
 namespace Hydra
@@ -10,12 +10,14 @@ namespace Hydra
 
 		if (Texture)
 		{
-			Engine::GetRenderInterface()->destroyTexture(Texture);
+			_Context->GetRenderInterface()->destroyTexture(Texture);
 		}
 	}
 
-	void HeightMap::InitalizeTexture(bool isUAV)
+	void HeightMap::InitalizeTexture(EngineContext* context, bool isUAV)
 	{
+		_Context = context;
+
 		if (!Texture)
 		{
 			NVRHI::TextureDesc textureDesc;
@@ -27,7 +29,7 @@ namespace Hydra
 
 			textureDesc.isUAV = isUAV;
 
-			Texture = Engine::GetRenderInterface()->createTexture(textureDesc, NULL);
+			Texture = _Context->GetRenderInterface()->createTexture(textureDesc, NULL);
 		}
 	}
 
@@ -35,7 +37,7 @@ namespace Hydra
 	{
 		if (Texture)
 		{
-			Engine::GetRenderInterface()->writeTexture(Texture, 0, Data, Width * 4, 0);
+			_Context->GetRenderInterface()->writeTexture(Texture, 0, Data, Width * 4, 0);
 			//Engine::GetRenderInterface()->generateMipmaps(Texture);
 		}
 	}

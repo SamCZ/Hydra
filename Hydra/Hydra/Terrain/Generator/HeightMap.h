@@ -5,8 +5,12 @@
 
 namespace Hydra
 {
+	class EngineContext;
+
 	struct HeightMap
 	{
+		EngineContext* _Context;
+
 		int Width;
 		int Height;
 		float* Data;
@@ -14,7 +18,7 @@ namespace Hydra
 
 		~HeightMap();
 
-		void InitalizeTexture(bool isUAV = false);
+		void InitalizeTexture(EngineContext* context, bool isUAV = false);
 		void UploadTextureData();
 	};
 }

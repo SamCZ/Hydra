@@ -48,9 +48,6 @@
     <ClInclude Include="ImGui\stb_textedit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hydra\Import\MeshImporter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Hydra\Scene\Spatial.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -105,9 +102,6 @@
     <ClInclude Include="Hydra\Core\Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hydra\Engine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Hydra\Render\Pipeline\DDS\DDS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -121,9 +115,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Hydra\Render\Pipeline\DDS\PlatformHelpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Import\TextureImporter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Hydra\Core\Log.h">
@@ -273,9 +264,6 @@
     <ClInclude Include="Hydra\Core\YamlConvertors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hydra\Import\UnityAssetManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Hydra\Render\RenderStage\RenderStageDeffered.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -411,6 +399,27 @@
     <ClInclude Include="Hydra\Core\Math\Triangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Hydra\EngineContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Assets\AssetManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Assets\Loaders\MeshImporter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Assets\Loaders\TextureImporter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Assets\Loaders\UnityAssetManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Assets\IAssetImporter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Assets\IAssetLocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Hydra.rc">
@@ -431,9 +440,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ImGui\ImGuizmo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Import\MeshImporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Scene\Spatial.cpp">
@@ -469,13 +475,7 @@
     <ClCompile Include="Hydra\Core\Resource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hydra\Engine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Hydra\Render\Pipeline\DDS\DDSTextureLoader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Import\TextureImporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Render\Graphics.cpp">
@@ -512,9 +512,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Core\Timing.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="IndustryEmpire\IndustryEmpire.cpp">
@@ -622,9 +619,6 @@
     <ClCompile Include="Yaml\src\contrib\graphbuilderadapter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hydra\Import\UnityAssetManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MainYamlTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -710,6 +704,27 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Core\Math\Box.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\EngineContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Assets\AssetManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Assets\Loaders\MeshImporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Assets\Loaders\TextureImporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Assets\Loaders\UnityAssetManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

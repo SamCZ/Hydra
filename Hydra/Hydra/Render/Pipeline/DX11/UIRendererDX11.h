@@ -7,13 +7,16 @@
 
 namespace Hydra
 {
+	class EngineContext;
+
 	class UIRendererDX11 : public UIRenderer
 	{
 	private:
+		EngineContext* _Context;
 		ID3D11Device* _Device;
 		Map<NVRHI::TextureHandle, int> _TexMap;
 	public:
-		UIRendererDX11(ID3D11Device* device);
+		UIRendererDX11(EngineContext* context);
 	protected:
 		virtual NVGcontext* CreateContext(int flags);
 		virtual void DestroyContext(NVGcontext* context);

@@ -30,6 +30,8 @@ namespace Hydra
 
 	#define CmpFnc Function<void(NVRHI::DrawCallState&, int, int)>
 
+	class EngineContext;
+
 	struct ConstantBufferInfo
 	{
 		String Name;
@@ -42,71 +44,70 @@ namespace Hydra
 	class Graphics
 	{
 	private:
-		static Map<String, ConstantBufferInfo> _ConstantBuffers;
-		static Map<String, TexturePtr> _RenderViewTargets;
-		static Map<String, InputLayoutPtr> _InputLayouts;
-		static Map<String, SamplerPtr> _Samplers;
+		EngineContext* _Context;
 
-		static MaterialPtr _BlitMaterial;
-		static MaterialPtr _BlurMaterial;
+		Map<String, ConstantBufferInfo> _ConstantBuffers;
+		Map<String, TexturePtr> _RenderViewTargets;
+		Map<String, InputLayoutPtr> _InputLayouts;
+		Map<String, SamplerPtr> _Samplers;
+
+		MaterialPtr _BlitMaterial;
+		MaterialPtr _BlurMaterial;
 	public:
-		//Graphics();
-		//~Graphics();
+		Graphics(EngineContext* context);
+		~Graphics();
 
-		static void Create();
-		static void Destroy();
+		void AllocateViewDependentResources(uint32 width, uint32 height, uint32 sampleCount);
 
-		static void AllocateViewDependentResources(uint32 width, uint32 height, uint32 sampleCount);
+		void Blit(TexturePtr pSource, TexturePtr pDest);
+		void Blit(const String& name, TexturePtr pDest);
+		void Blit(const String& pSource, const String& pDest);
 
-		static void Blit(TexturePtr pSource, TexturePtr pDest);
-		static void Blit(const String& name, TexturePtr pDest);
-		static void Blit(const String& pSource, const String& pDest);
+		void BlurTexture(TexturePtr pSource, TexturePtr pDest);
+		void BlurTexture(const String pSource, const String pDest);
 
-		static void BlurTexture(TexturePtr pSource, TexturePtr pDest);
-		static void BlurTexture(const String pSource, const String pDest);
+		void Composite(MaterialPtr mateiral, Function<void(NVRHI::DrawCallState&)> preRenderFunction, TexturePtr pDest);
+		void Composite(MaterialPtr mateiral, Function<void(NVRHI::DrawCallState&)> preRenderFunction, const String& outputName);
+		void Composite(MaterialPtr mateiral, TexturePtr slot0Texture, TexturePtr pDest);
+		void Composite(MaterialPtr mateiral, const String& slot0Texture, const String& pDest);
 
-		static void Composite(MaterialPtr mateiral, Function<void(NVRHI::DrawCallState&)> preRenderFunction, TexturePtr pDest);
-		static void Composite(MaterialPtr mateiral, Function<void(NVRHI::DrawCallState&)> preRenderFunction, const String& outputName);
-		static void Composite(MaterialPtr mateiral, TexturePtr slot0Texture, TexturePtr pDest);
-		static void Composite(MaterialPtr mateiral, const String& slot0Texture, const String& pDest);
+		void Dispatch(MaterialPtr material, uint32_t groupsX, uint32_t groupsY, uint32_t groupsZ);
 
-		static void Dispatch(MaterialPtr material, uint32_t groupsX, uint32_t groupsY, uint32_t groupsZ);
+		void RenderCubeMap(MaterialPtr mateiral, InputLayoutPtr inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, TexturePtr pDest);
+		void RenderCubeMap(MaterialPtr mateiral, const String& inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, const String& outputName);
 
-		static void RenderCubeMap(MaterialPtr mateiral, InputLayoutPtr inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, TexturePtr pDest);
-		static void RenderCubeMap(MaterialPtr mateiral, const String& inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, const String& outputName);
+		void SetMaterialShaders(NVRHI::DrawCallState& state, MaterialPtr mateiral);
+		void ApplyMaterialParameters(NVRHI::DrawCallState& state, MaterialPtr mateiral);
 
-		static void SetMaterialShaders(NVRHI::DrawCallState& state, MaterialPtr mateiral);
-		static void ApplyMaterialParameters(NVRHI::DrawCallState& state, MaterialPtr mateiral);
+		void SetClearFlags(NVRHI::DrawCallState& state, const ColorRGBA& color);
 
-		static void SetClearFlags(NVRHI::DrawCallState& state, const ColorRGBA& color);
+		NVRHI::ConstantBufferHandle CreateConstantBuffer(uint32_t size, const String& mappedName = String_None, const unsigned int specificBinding = 0, int slot = -1);
 
-		static NVRHI::ConstantBufferHandle CreateConstantBuffer(uint32_t size, const String& mappedName = String_None, const unsigned int specificBinding = 0, int slot = -1);
+		void WriteConstantBufferData(NVRHI::ConstantBufferHandle handle, const void* data, uint32_t size);
+		void WriteConstantBufferData(          const String& mappedName, const void* data);
+		void WriteConstantBufferDataAndBind(NVRHI::DrawCallState& state, const String& mappedName, const void* data);
 
-		static void WriteConstantBufferData(NVRHI::ConstantBufferHandle handle, const void* data, uint32_t size);
-		static void WriteConstantBufferData(          const String& mappedName, const void* data);
-		static void WriteConstantBufferDataAndBind(NVRHI::DrawCallState& state, const String& mappedName, const void* data);
+		void BindConstantBuffer(NVRHI::PipelineStageBindings& ds, uint32_t slot, NVRHI::ConstantBufferHandle handle);
+		void BindConstantBuffer(NVRHI::DrawCallState& state, const String& mappedName, uint32_t slot = 0, bool slotOverride = false);
 
-		static void BindConstantBuffer(NVRHI::PipelineStageBindings& ds, uint32_t slot, NVRHI::ConstantBufferHandle handle);
-		static void BindConstantBuffer(NVRHI::DrawCallState& state, const String& mappedName, uint32_t slot = 0, bool slotOverride = false);
+		ConstantBufferPtr GetConstantBuffer(const String& mappedName);
 
-		static ConstantBufferPtr GetConstantBuffer(const String& mappedName);
+		TexturePtr CreateRenderTarget(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, const NVRHI::Color& clearColor, UINT sampleCount);
+		TexturePtr CreateRenderTarget2DArray(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, int mipCount, int arrSize);
+		TexturePtr CreateRenderTargetCubeMap(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, const NVRHI::Color& clearColor, int mipLevels = 1);
+		TexturePtr CreateUAVTexture(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, const NVRHI::Color& clearColor = NVRHI::Color(0.0f), int mipLevels = 1);
+		TexturePtr CreateUAVTexture3D(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, UINT depth, const NVRHI::Color& clearColor = NVRHI::Color(0.0f), int mipLevels = 1);
 
-		static TexturePtr CreateRenderTarget(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, const NVRHI::Color& clearColor, UINT sampleCount);
-		static TexturePtr CreateRenderTarget2DArray(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, int mipCount, int arrSize);
-		static TexturePtr CreateRenderTargetCubeMap(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, const NVRHI::Color& clearColor, int mipLevels = 1);
-		static TexturePtr CreateUAVTexture(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, const NVRHI::Color& clearColor = NVRHI::Color(0.0f), int mipLevels = 1);
-		static TexturePtr CreateUAVTexture3D(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, UINT depth, const NVRHI::Color& clearColor = NVRHI::Color(0.0f), int mipLevels = 1);
+		TexturePtr GetRenderTarget(const String& name);
+		void ReleaseRenderTarget(const String& name);
+		void BindRenderTarget(NVRHI::DrawCallState& state, const String& name, int index);
 
-		static TexturePtr GetRenderTarget(const String& name);
-		static void ReleaseRenderTarget(const String& name);
-		static void BindRenderTarget(NVRHI::DrawCallState& state, const String& name, int index);
+		InputLayoutPtr CreateInputLayout(const String& name, const NVRHI::VertexAttributeDesc* d, uint32_t attributeCount, MaterialPtr material);
+		InputLayoutPtr GetInputLayout(const String& name);
 
-		static InputLayoutPtr CreateInputLayout(const String& name, const NVRHI::VertexAttributeDesc* d, uint32_t attributeCount, MaterialPtr material);
-		static InputLayoutPtr GetInputLayout(const String& name);
-
-		static SamplerPtr CreateSampler(const String& name, const WrapMode& wrapX = WrapMode::WRAP_MODE_WRAP, const WrapMode& wrapY = WrapMode::WRAP_MODE_WRAP, const WrapMode& wrapZ = WrapMode::WRAP_MODE_WRAP, bool minFilter = true, bool magFilter = true, bool mipFilter = true, int anisotropy = 16);
-		static SamplerPtr CreateShadowCompareSampler(const String& name);
-		static SamplerPtr GetSampler(const String& name);
-		static void BindSampler(NVRHI::DrawCallState& state, const String& name, int slot);
+		SamplerPtr CreateSampler(const String& name, const WrapMode& wrapX = WrapMode::WRAP_MODE_WRAP, const WrapMode& wrapY = WrapMode::WRAP_MODE_WRAP, const WrapMode& wrapZ = WrapMode::WRAP_MODE_WRAP, bool minFilter = true, bool magFilter = true, bool mipFilter = true, int anisotropy = 16);
+		SamplerPtr CreateShadowCompareSampler(const String& name);
+		SamplerPtr GetSampler(const String& name);
+		void BindSampler(NVRHI::DrawCallState& state, const String& name, int slot);
 	};
 }

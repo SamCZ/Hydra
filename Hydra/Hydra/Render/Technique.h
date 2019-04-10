@@ -8,10 +8,13 @@
 namespace Hydra
 {
 	class Shader;
+	class EngineContext;
 
 	class Technique
 	{
 	private:
+		EngineContext* _Context;
+
 		File _Source;
 		bool _Precompile;
 
@@ -23,7 +26,7 @@ namespace Hydra
 
 		Map<uint32, List<Shader*>> _VaryingShaders;
 	public:
-		Technique(const File& file, bool precompile);
+		Technique(EngineContext* context, const File& file, bool precompile);
 		~Technique();
 
 		uint32 GetDefinesHash(Map<String, String>& defines);
@@ -32,6 +35,8 @@ namespace Hydra
 		List<Shader*>& GetShaders(Map<String, String>& defines, bool recompile);
 
 		bool IsPrecompiled() const;
+
+		EngineContext* GetEngineContext();
 
 	private:
 

@@ -1,5 +1,5 @@
 #include "Mesh.h"
-#include "Hydra/Engine.h"
+#include "Hydra/EngineContext.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
@@ -12,22 +12,12 @@
 
 namespace Hydra
 {
-	Mesh::Mesh() : PrimitiveType(NVRHI::PrimitiveType::TRIANGLE_LIST), _IndexHandle(nullptr), _VertexBuffer(nullptr), _IsIndexed(true), _ComplexCollider(nullptr)
+	Mesh::Mesh() : PrimitiveType(NVRHI::PrimitiveType::TRIANGLE_LIST), _AutoCreateBuffers(true), _IndexHandle(nullptr), _VertexBuffer(nullptr), _IsIndexed(true), _ComplexCollider(nullptr)
 	{
 	}
 
 	Mesh::~Mesh()
 	{
-		if (_IndexHandle != nullptr)
-		{
-			Engine::GetRenderInterface()->destroyBuffer(_IndexHandle);
-		}
-
-		if (_VertexBuffer != nullptr)
-		{
-			Engine::GetRenderInterface()->destroyBuffer(_VertexBuffer);
-		}
-
 		if (_ComplexCollider != nullptr)
 		{
 			delete _ComplexCollider;
@@ -231,16 +221,16 @@ namespace Hydra
 		return _ComplexCollider;
 	}
 
-	void Mesh::UpdateBuffers()
+	void Mesh::UpdateBuffers(EngineContext* context)
 	{
 		if (_IndexHandle != nullptr)
 		{
-			Engine::GetRenderInterface()->destroyBuffer(_IndexHandle);
+			context->GetRenderInterface()->destroyBuffer(_IndexHandle);
 		}
 
 		if (_VertexBuffer != nullptr)
 		{
-			Engine::GetRenderInterface()->destroyBuffer(_VertexBuffer);
+			context->GetRenderInterface()->destroyBuffer(_VertexBuffer);
 		}
 
 		if (VertexData.size() == 0 || Indices.size() == 0) return;
@@ -250,13 +240,13 @@ namespace Hydra
 		NVRHI::BufferDesc indexBufferDesc;
 		indexBufferDesc.isIndexBuffer = true;
 		indexBufferDesc.byteSize = uint32_t(Indices.size() * sizeof(unsigned int));
-		_IndexHandle = Engine::GetRenderInterface()->createBuffer(indexBufferDesc, &Indices[0]);
+		_IndexHandle = context->GetRenderInterface()->createBuffer(indexBufferDesc, &Indices[0]);
 
 
 		NVRHI::BufferDesc vertexBufferDesc;
 		vertexBufferDesc.isVertexBuffer = true;
 		vertexBufferDesc.byteSize = uint32_t(VertexData.size() * sizeof(VertexBufferEntry));
-		_VertexBuffer = Engine::GetRenderInterface()->createBuffer(vertexBufferDesc, &VertexData[0]);
+		_VertexBuffer = context->GetRenderInterface()->createBuffer(vertexBufferDesc, &VertexData[0]);
 	}
 
 	Mesh* Mesh::CreatePrimitive(const PrimitiveType::Enum & type, const Vector3& scale)
@@ -377,8 +367,6 @@ namespace Hydra
 					mesh->VertexData.emplace_back(entry);
 				}
 
-				mesh->UpdateBuffers();
-
 				return mesh;
 
 				break;
@@ -445,8 +433,6 @@ namespace Hydra
 					mesh->VertexData.emplace_back(entry);
 				}
 
-				mesh->UpdateBuffers();
-
 				return mesh;
 
 				break;
@@ -474,6 +460,16 @@ namespace Hydra
 	void Mesh::SetVertexBuffer(NVRHI::BufferHandle buffer)
 	{
 		_VertexBuffer = buffer;
+	}
+
+	bool Mesh::CanAutoCreateBuffers() const
+	{
+		return _AutoCreateBuffers;
+	}
+
+	void Mesh::SetAutoCreateBuffers(bool state)
+	{
+		_AutoCreateBuffers = state;
 	}
 
 	void Mesh::SetIndexed(bool indexed)

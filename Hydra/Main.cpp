@@ -6,7 +6,7 @@
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI_D3D11.h"
 #include "Hydra/Render/Pipeline/BindingHelpers.h"
 #include "Hydra/Render/Graphics.h"
-#include "Hydra/Engine.h"
+#include "Hydra/EngineContext.h"
 
 #include "Hydra/Scene/Spatial.h"
 
@@ -16,8 +16,8 @@
 #include "Hydra/Render/TextureLayoutDef.h"
 #include "Hydra/Render/Material.h"
 
-#include "Hydra/Import/MeshImporter.h"
-#include "Hydra/Import/TextureImporter.h"
+#include "Hydra/Assets/Loaders/MeshImporter.h"
+#include "Hydra/Assets/Loaders/TextureImporter.h"
 
 #include "Hydra/Scene/Components/Renderer.h"
 #include "Hydra/Scene/Components/Camera.h"
@@ -108,6 +108,8 @@ struct CollisionBuffer
 
 static CollisionBuffer storeColl = {};
 
+static EngineContext* Context;
+
 class UIRenderView : public IVisualController
 {
 private:
@@ -123,7 +125,7 @@ public:
 			_renderInterface = MakeShared<NVRHI::RendererInterfaceD3D11>(&g_ErrorCallback, _deviceManager->GetImmediateContext());
 		}
 
-		_UIRenderer = new UIRendererDX11(_deviceManager->GetDevice());
+		_UIRenderer = new UIRendererDX11(Context);
 		_UIRenderer->Create();
 
 
@@ -146,7 +148,7 @@ public:
 
 		_UIRenderer->Begin();
 
-		//_UIRenderer->DrawImage(Graphics::GetRenderTarget("DirLight_ShadowMa_ColorTest"), 0, 0, 100, 100, 0.0f);
+		//_UIRenderer->DrawImage(Context->GetGraphics()->GetRenderTarget("DirLight_ShadowMa_ColorTest"), 0, 0, 100, 100, 0.0f);
 
 		//_UIRenderer->DrawImage(uavTex, 0, 105, 100, 100, 0.0f);
 
@@ -163,7 +165,7 @@ public:
 
 		_UIRenderer->DrawString("Paint size: " + ToString(paintRadius), 5, 5, 16, Colors::Black);
 
-		_UIRenderer->DrawOval(Engine::ScreenSize.x * 0.5f, Engine::ScreenSize.y * 0.5f, 2, 2, Colors::White);
+		_UIRenderer->DrawOval(Context->ScreenSize.x * 0.5f, Context->ScreenSize.y * 0.5f, 2, 2, Colors::White);
 
 		_UIRenderer->End();
 
@@ -172,7 +174,7 @@ public:
 
 	inline void BackBufferResized(uint32_t width, uint32_t height, uint32_t sampleCount) override
 	{
-		Engine::ScreenSize = Vector2(width, height);
+		Context->ScreenSize = Vector2(width, height);
 	}
 };
 
@@ -309,7 +311,7 @@ public:
 
 	inline void BackBufferResized(uint32_t width, uint32_t height, uint32_t sampleCount) override
 	{
-		Engine::ScreenSize = Vector2(width, height);
+		Context->ScreenSize = Vector2(width, height);
 	}
 };
 
@@ -342,12 +344,12 @@ public:
 	{
 		Log("RecompileDefaultShader");
 
-		/*TechniquePtr tech = Graphics::GetTechnique("DefaultPBRShader");
+		/*TechniquePtr tech = Context->GetGraphics()->GetTechnique("DefaultPBRShader");
 
 		tech->SetKeywordByHash(tech->GetKeywordHash({ "USE_ALBEDO_TEX" }));
 		tech->Recompile(true);
 
-		Graphics::GetTechnique("SSAO")->Recompile(true);*/
+		Context->GetGraphics()->GetTechnique("SSAO")->Recompile(true);*/
 	}
 
 	inline void RotX(float val)
@@ -382,16 +384,16 @@ public:
 		paint3d->SetVector3("_ArrPos", storeColl.V1);
 		paint3d->SetFloat("_Mode", mode);
 		paint3d->SetFloat("_Size", paintRadius);
-		Graphics::Dispatch(paint3d, 64 / 8, 64 / 8, 64 / 8);
+		Context->GetGraphics()->Dispatch(paint3d, 64 / 8, 64 / 8, 64 / 8);
 
 		MaterialPtr clearMat = Material::CreateOrGet("Clear3D", (File)"Assets/Shaders/Utils/GPU/ClearProceduralMesh.hlsl");
-		Graphics::Dispatch(clearMat, 64 / 8, 64 / 8, 64 / 8);
+		Context->GetGraphics()->Dispatch(clearMat, 64 / 8, 64 / 8, 64 / 8);
 
 		MaterialPtr normalGen = Material::CreateOrGet("nmpf3d", (File)"Assets/Shaders/Utils/GPU/NormalMapFrom3DNoise.hlsl");
-		Graphics::Dispatch(normalGen, 64 / 8, 64 / 8, 64 / 8);
+		Context->GetGraphics()->Dispatch(normalGen, 64 / 8, 64 / 8, 64 / 8);
 
 		MaterialPtr mcm = Material::CreateOrGet("amsflkas", (File)"Assets/Shaders/Utils/GPU/MarchingCubes.hlsl");
-		Graphics::Dispatch(mcm, 64 / 8, 64 / 8, 64 / 8);
+		Context->GetGraphics()->Dispatch(mcm, 64 / 8, 64 / 8, 64 / 8);
 	}
 
 	inline void MouseDown()
@@ -433,10 +435,10 @@ public:
 		paintMat->SetTexture("_HeightMap", heigthMap);
 		paintMat->SetVector2("_Position", pos);
 		paintMat->SetFloat("_Radius", paintRadius);
-		Graphics::Dispatch(paintMat, 16, 16, 1);
+		Context->GetGraphics()->Dispatch(paintMat, 16, 16, 1);
 
 		MaterialPtr computeMat = Material::CreateOrGet("NormalMapCmp", (File)"Assets/Shaders/Utils/GPU/NormalMapFromHeightMap.hlsl");
-		Graphics::Dispatch(computeMat, 16, 16, 1);
+		Context->GetGraphics()->Dispatch(computeMat, 16, 16, 1);
 	}
 
 	inline HRESULT DeviceCreated() override
@@ -488,7 +490,7 @@ public:
 		_InputManager->AddActionMapping("Space", Keys::SpaceBar);
 		_InputManager->BindAction("Space", IE_Pressed, this, &MainRenderView::AddPointLight);
 
-		Engine::SetInputManager(_InputManager);
+		Context->SetInputManager(_InputManager);
 
 		//_InputManager->SetMouseCapture(true);
 
@@ -497,10 +499,11 @@ public:
 			_renderInterface = MakeShared<NVRHI::RendererInterfaceD3D11>(&g_ErrorCallback, _deviceManager->GetImmediateContext());
 		}
 
-		Engine::SetRenderInterface(_renderInterface);
-		Engine::SetDeviceManager(_deviceManager);
+		Context->SetRenderInterface(_renderInterface);
+		Context->SetDeviceManager(_deviceManager);
 
-		Graphics::Create();
+		Graphics* g = new Graphics(Context);
+		Context->SetGraphics(g);
 
 		rm = MakeShared<RenderManager>();
 		rm->MainScene = MakeShared<Spatial>("Main");
@@ -556,7 +559,7 @@ public:
 		MaterialPtr terrainMat = Material::CreateOrGet("Assets/Shaders/VoxelTerrain.hlsl");
 		terrainMat->SetTexture("_GrassTex", TextureImporter::Import("Assets/IndustryEmpire/Textures/TilePatine_D.TGA"));
 		terrainMat->SetTexture("_GrassNormalTex", TextureImporter::Import("Assets/IndustryEmpire/Textures/TilePatine_N.TGA"));
-		terrainMat->SetSampler("DefaultSampler", Graphics::CreateSampler("TerrainSampler"));
+		terrainMat->SetSampler("DefaultSampler", Context->GetGraphics()->CreateSampler("TerrainSampler"));
 
 		terrainMat->SetTexture("_LayerTex0", TextureImporter::Import("Assets/Textures/Terrain/Grass.png"));
 		terrainMat->SetTexture("_LayerTex1", TextureImporter::Import("Assets/Textures/Terrain/Rocks 1.png"));
@@ -630,7 +633,7 @@ public:
 		NVRHI::BufferDesc bufferDesc;
 		bufferDesc.byteSize = size;
 		bufferDesc.canHaveUAVs = !readOnly;
-		return Engine::GetRenderInterface()->createBuffer(bufferDesc, data);
+		return Context->GetRenderInterface()->createBuffer(bufferDesc, data);
 	}
 	
 	inline void CreateVoxelTerrainInGPU()
@@ -669,21 +672,21 @@ public:
 		NVRHI::BufferDesc bufferDescMap;
 		bufferDescMap.byteSize = N * N * N * sizeof(float);
 		bufferDescMap.canHaveUAVs = true;
-		NVRHI::BufferHandle heightMap3D = Engine::GetRenderInterface()->createBuffer(bufferDescMap, heightMap);
+		NVRHI::BufferHandle heightMap3D = Context->GetRenderInterface()->createBuffer(bufferDescMap, heightMap);
 		delete[] heightMap;
 
 		/*MaterialPtr genMapMat = Material::CreateOrGet("Assets/Shaders/Utils/GPU/GenerateMap.hlsl");
 		genMapMat->SetBuffer("_VoxelMap", heightMap3D);	
-		Graphics::Dispatch(genMapMat, N / 8, N / 8, N / 8);*/
+		Context->GetGraphics()->Dispatch(genMapMat, N / 8, N / 8, N / 8);*/
 		
-		TexturePtr normalMap = Graphics::CreateUAVTexture3D("3DHeightmap", NVRHI::Format::RGBA32_FLOAT, N, N, N);
+		TexturePtr normalMap = Context->GetGraphics()->CreateUAVTexture3D("3DHeightmap", NVRHI::Format::RGBA32_FLOAT, N, N, N);
 
 		MaterialPtr normalGen = Material::CreateOrGet("nmpf3d", (File)"Assets/Shaders/Utils/GPU/NormalMapFrom3DNoise.hlsl");
 		normalGen->SetInt("_Width", N);
 		normalGen->SetInt("_Height", N);
 		normalGen->SetBuffer("_Noise", heightMap3D);
 		normalGen->SetTexture("_Result", normalMap);
-		Graphics::Dispatch(normalGen, N / 8, N / 8, N / 8);
+		Context->GetGraphics()->Dispatch(normalGen, N / 8, N / 8, N / 8);
 
 		MaterialPtr paint3d = Material::CreateOrGet("Paint3D", (File)"Assets/Shaders/Utils/GPU/Paint3D.hlsl");
 		paint3d->SetBuffer("_Voxels", heightMap3D);
@@ -701,7 +704,7 @@ public:
 		NVRHI::BufferDesc bufferDesc;
 		bufferDesc.byteSize = SIZE * sizeof(VoxelBuffer);
 		bufferDesc.canHaveUAVs = true;
-		NVRHI::BufferHandle buffer = Engine::GetRenderInterface()->createBuffer(bufferDesc, EmptyData);
+		NVRHI::BufferHandle buffer = Context->GetRenderInterface()->createBuffer(bufferDesc, EmptyData);
 
 		//delete[] EmptyData;
 
@@ -724,7 +727,7 @@ public:
 		mcm->SetBuffer("_Voxels", heightMap3D);
 		mcm->SetBuffer("_CubeEdgeFlags", CreateBuffer(256 * sizeof(int), MarchingCubesTable::CubeEdgeFlags));
 		mcm->SetBuffer("_TriangleConnectionTable", CreateBuffer(256 * 16 * sizeof(int), MarchingCubesTable::TriangleConnectionTable));
-		Graphics::Dispatch(mcm, N / 8, N / 8, N / 8);
+		Context->GetGraphics()->Dispatch(mcm, N / 8, N / 8, N / 8);
 
 
 		MaterialPtr mat = Material::CreateOrGet("Assets/Shaders/ProceduralDeffered.hlsl");
@@ -743,7 +746,7 @@ public:
 		NVRHI::BufferDesc bufferDesc2;
 		bufferDesc2.byteSize = sizeof(CollisionBuffer);
 		bufferDesc2.canHaveUAVs = true;
-		NVRHI::BufferHandle collHandle = Engine::GetRenderInterface()->createBuffer(bufferDesc2, &emptyBuff);
+		NVRHI::BufferHandle collHandle = Context->GetRenderInterface()->createBuffer(bufferDesc2, &emptyBuff);
 
 		MaterialPtr colMat = Material::CreateOrGet("PCollison", (File)"Assets/Shaders/Utils/GPU/ProceduralCollision.hlsl");
 		colMat->SetBuffer("_Buffer", buffer);
@@ -759,7 +762,7 @@ public:
 		if (false) // Use complex collisions
 		{
 			size_t bufferSize = SIZE * sizeof(VoxelBuffer);
-			Engine::GetRenderInterface()->readBuffer(buffer, EmptyData, &bufferSize);
+			Context->GetRenderInterface()->readBuffer(buffer, EmptyData, &bufferSize);
 
 			int index = 0;
 			for (int i = 0; i < SIZE; i++)
@@ -796,7 +799,7 @@ public:
 	inline void AddChunk(const MeshSettings& meshSettings, MaterialPtr material, float x, float y, int levelOfDetail)
 	{
 		HeightMap* hMap = NoiseMap::GenerateHeightMap(meshSettings, Vector2(x, -y));
-		hMap->InitalizeTexture(true);
+		hMap->InitalizeTexture(Context, true);
 		hMap->UploadTextureData();
 
 		material->SetTexture("_HeightMap", hMap->Texture);
@@ -812,14 +815,14 @@ public:
 
 		//Generate Normal map
 
-		uavTex = Graphics::CreateUAVTexture("TestNormalMap", NVRHI::Format::RGBA16_FLOAT, hMap->Width - 2, hMap->Height - 2);
+		uavTex = Context->GetGraphics()->CreateUAVTexture("TestNormalMap", NVRHI::Format::RGBA16_FLOAT, hMap->Width - 2, hMap->Height - 2);
 
 		MaterialPtr computeMat = Material::CreateOrGet("NormalMapCmp", (File)"Assets/Shaders/Utils/GPU/NormalMapFromHeightMap.hlsl");
 		computeMat->SetTexture("_OutNormalMap", uavTex);
 		computeMat->SetTexture("_HeightMap", hMap->Texture);
 		computeMat->SetFloat("_Strength", 5.0f);
 
-		Graphics::Dispatch(computeMat, hMap->Width / 16, hMap->Height / 16, 1);
+		Context->GetGraphics()->Dispatch(computeMat, hMap->Width / 16, hMap->Height / 16, 1);
 
 		material->SetTexture("_GlobalNormalMap", uavTex);
 
@@ -842,7 +845,7 @@ public:
 	{
 		Log("MainRenderView::BackBufferResized", ToString(width) + ", " + ToString(height) + ", " + ToString(sampleCount), "DeviceCreated");
 
-		Engine::ScreenSize = Vector2(width, height);
+		Context->ScreenSize = Vector2(width, height);
 
 		for (CameraPtr camera : Camera::AllCameras)
 		{
@@ -851,10 +854,10 @@ public:
 
 		rsd->AllocateViewDependentResources(width, height, sampleCount);
 
-		Graphics::AllocateViewDependentResources(width, height, sampleCount);
+		Context->GetGraphics()->AllocateViewDependentResources(width, height, sampleCount);
 
-		Graphics::ReleaseRenderTarget("Sky");
-		Graphics::CreateRenderTarget("Sky", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(0.0f), sampleCount);
+		Context->GetGraphics()->ReleaseRenderTarget("Sky");
+		Context->GetGraphics()->CreateRenderTarget("Sky", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(0.0f), sampleCount);
 	}
 
 	inline void DeviceDestroyed() override
@@ -863,7 +866,7 @@ public:
 
 		_SkyMaterial.reset();
 
-		Graphics::Destroy();
+		delete Context->GetGraphics();
 	}
 
 	float _Time = 0;
@@ -877,8 +880,8 @@ public:
 
 		rsd->Render(rm);
 
-		Graphics::Composite(_SkyMaterial, [this](NVRHI::DrawCallState& state) {
-			_SkyMaterial->SetVector2("g_ViewPort", Engine::ScreenSize);
+		Context->GetGraphics()->Composite(_SkyMaterial, [this](NVRHI::DrawCallState& state) {
+			_SkyMaterial->SetVector2("g_ViewPort", Context->ScreenSize);
 			_SkyMaterial->SetMatrix4("g_InvProjection", glm::inverse(Camera::MainCamera->GetProjectionMatrix()));
 			_SkyMaterial->SetMatrix4("g_InvView", glm::inverse(Camera::MainCamera->GetViewMatrix()));
 			_SkyMaterial->SetVector3("g_ViewPos", Camera::MainCamera->GameObject->Position);
@@ -894,8 +897,8 @@ public:
 
 		_Time += 0.01f;
 
-		Graphics::Blit("Sky", mainRenderTarget);
-		Graphics::Blit(rsd->GetOutputName(), mainRenderTarget);
+		Context->GetGraphics()->Blit("Sky", mainRenderTarget);
+		Context->GetGraphics()->Blit(rsd->GetOutputName(), mainRenderTarget);
 
 		_renderInterface->forgetAboutTexture(pMainResource);
 	}
@@ -907,7 +910,7 @@ public:
 		_InputManager->Update();
 		rm->MainScene->Update();
 
-		Ray r = Camera::MainCamera->GetRay(Engine::ScreenSize.x * 0.5f, Engine::ScreenSize.y * 0.5f);
+		Ray r = Camera::MainCamera->GetRay(Context->ScreenSize.x * 0.5f, Context->ScreenSize.y * 0.5f);
 		CollisionResults results;
 
 		/*if (rm->MainScene->CollideWith(r, results) > 0)
@@ -923,12 +926,12 @@ public:
 		colMat->SetVector3("_Origin", r.Origin);
 		colMat->SetVector3("_Direction", r.Direction);
 
-		Graphics::Dispatch(colMat, 1, 1, 1);
+		Context->GetGraphics()->Dispatch(colMat, 1, 1, 1);
 
 		NVRHI::BufferHandle buff = colMat->GetBuffer("_Collisions");
 
 		size_t size = sizeof(CollisionBuffer);
-		Engine::GetRenderInterface()->readBuffer(buff, &storeColl, &size);
+		Context->GetRenderInterface()->readBuffer(buff, &storeColl, &size);
 
 		ic++;
 
@@ -951,7 +954,9 @@ int main()
 	deviceParams.enableDebugRuntime = false;
 	deviceParams.refreshRate = 120;
 
-	Engine::ScreenSize = Vector2(deviceParams.backBufferWidth, deviceParams.backBufferHeight);
+	Context = new EngineContext();
+
+	Context->ScreenSize = Vector2(deviceParams.backBufferWidth, deviceParams.backBufferHeight);
 
 	MainRenderView mainRenderView;
 	_deviceManager->AddControllerToFront(&mainRenderView);

@@ -1,5 +1,5 @@
 #include "Hydra/Render/Graphics.h"
-#include "Hydra/Engine.h"
+#include "Hydra/EngineContext.h"
 
 #include "Hydra/Render/Pipeline/BindingHelpers.h"
 
@@ -7,33 +7,25 @@
 
 namespace Hydra
 {
-	Map<String, ConstantBufferInfo> Graphics::_ConstantBuffers;
-	Map<String, NVRHI::TextureHandle> Graphics::_RenderViewTargets;
-	Map<String, InputLayoutPtr> Graphics::_InputLayouts;
-	Map<String, SamplerPtr> Graphics::_Samplers;
-
-	MaterialPtr Graphics::_BlitMaterial;
-	MaterialPtr Graphics::_BlurMaterial;
-
-	void Graphics::Destroy()
+	Graphics::~Graphics()
 	{
 		ITER(_ConstantBuffers, it)
 		{
-			Engine::GetRenderInterface()->destroyConstantBuffer(it->second.Handle);
+			_Context->GetRenderInterface()->destroyConstantBuffer(it->second.Handle);
 		}
 
 		ITER(_RenderViewTargets, it)
 		{
-			Engine::GetRenderInterface()->destroyTexture(it->second);
+			_Context->GetRenderInterface()->destroyTexture(it->second);
 		}
 
 		ITER(_InputLayouts, it)
 		{
-			Engine::GetRenderInterface()->destroyInputLayout(it->second);
+			_Context->GetRenderInterface()->destroyInputLayout(it->second);
 		}
 	}
 
-	void Graphics::Create()
+	Graphics::Graphics(EngineContext* context) : _Context(context)
 	{
 		_BlitMaterial = Material::CreateOrGet("Assets/Shaders/Blit.hlsl", true, true);
 		_BlurMaterial = Material::CreateOrGet("Assets/Shaders/PostProcess/GaussianBlur.hlsl", true, true);
@@ -55,7 +47,7 @@ namespace Hydra
 		state.renderState.targetCount = 1;
 		state.renderState.targets[0] = pDest;
 		state.renderState.viewportCount = 1;
-		state.renderState.viewports[0] = NVRHI::Viewport(float(Engine::ScreenSize.x), float(Engine::ScreenSize.y));
+		state.renderState.viewports[0] = NVRHI::Viewport(float(_Context->ScreenSize.x), float(_Context->ScreenSize.y));
 		state.renderState.depthStencilState.depthEnable = false;
 		state.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_NONE;
 
@@ -65,7 +57,7 @@ namespace Hydra
 
 		NVRHI::DrawArguments args;
 		args.vertexCount = 4;
-		Engine::GetRenderInterface()->draw(state, &args, 1);
+		_Context->GetRenderInterface()->draw(state, &args, 1);
 	}
 
 	void Graphics::Blit(const String & name, TexturePtr pDest)
@@ -84,11 +76,11 @@ namespace Hydra
 
 		NVRHI::TextureDesc desc = pDest->GetDesc();
 
-		float width = (float)Engine::ScreenSize.x;
-		float height = (float)Engine::ScreenSize.y;
+		float width = (float)_Context->ScreenSize.x;
+		float height = (float)_Context->ScreenSize.y;
 
 		// Horizontal blur
-		Composite(_BlurMaterial, [pSource, width, height](NVRHI::DrawCallState& state) {
+		Composite(_BlurMaterial, [this, pSource, width, height](NVRHI::DrawCallState& state) {
 			_BlurMaterial->SetTexture("_Texture", pSource);
 
 			_BlurMaterial->SetVector2("_Direction", Vector2(1, 0));
@@ -99,7 +91,7 @@ namespace Hydra
 		}, "G_MEM_BLUR_PASS");
 
 		// Vertical blur
-		Composite(_BlurMaterial, [pSource, width, height](NVRHI::DrawCallState& state)
+		Composite(_BlurMaterial, [this, pSource, width, height](NVRHI::DrawCallState& state)
 		{
 			_BlurMaterial->SetTexture("_Texture", GetRenderTarget("G_MEM_BLUR_PASS"));
 
@@ -125,7 +117,7 @@ namespace Hydra
 		state.renderState.targetCount = 1;
 		state.renderState.targets[0] = pDest;
 		state.renderState.viewportCount = 1;
-		state.renderState.viewports[0] = NVRHI::Viewport(float(Engine::ScreenSize.x), float(Engine::ScreenSize.y));
+		state.renderState.viewports[0] = NVRHI::Viewport(float(_Context->ScreenSize.x), float(_Context->ScreenSize.y));
 		state.renderState.depthStencilState.depthEnable = false;
 		state.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_NONE;
 
@@ -136,7 +128,7 @@ namespace Hydra
 
 		NVRHI::DrawArguments args;
 		args.vertexCount = 4;
-		Engine::GetRenderInterface()->draw(state, &args, 1);
+		_Context->GetRenderInterface()->draw(state, &args, 1);
 	}
 
 	void Graphics::Composite(MaterialPtr material, Function<void(NVRHI::DrawCallState&)> preRenderFunction, const String& outputName)
@@ -172,12 +164,12 @@ namespace Hydra
 
 		material->ApplyParams(state);
 
-		Engine::GetRenderInterface()->dispatch(state, groupsX, groupsY, groupsZ);
+		_Context->GetRenderInterface()->dispatch(state, groupsX, groupsY, groupsZ);
 	}
 
 	void Graphics::RenderCubeMap(MaterialPtr material, InputLayoutPtr inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, TexturePtr pDest)
 	{
-		Engine::GetRenderInterface()->beginRenderingPass();
+		_Context->GetRenderInterface()->beginRenderingPass();
 
 		NVRHI::DrawCallState state;
 		Graphics::SetClearFlags(state, MakeRGBf(0.2f, 0.2f, 0.2f));
@@ -212,7 +204,7 @@ namespace Hydra
 			}
 		}
 
-		Engine::GetRenderInterface()->endRenderingPass();
+		_Context->GetRenderInterface()->endRenderingPass();
 	}
 
 	void Graphics::RenderCubeMap(MaterialPtr material, const String& inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, const String & outputName)
@@ -254,7 +246,7 @@ namespace Hydra
 		info.DataSize = size;
 		info.Slot = slot;
 		info.SpecificBinding = specificBinding;
-		info.Handle = Engine::GetRenderInterface()->createConstantBuffer(NVRHI::ConstantBufferDesc(size, nullptr), nullptr);
+		info.Handle = _Context->GetRenderInterface()->createConstantBuffer(NVRHI::ConstantBufferDesc(size, nullptr), nullptr);
 
 		_ConstantBuffers[mappedName] = info;
 
@@ -263,7 +255,7 @@ namespace Hydra
 
 	void Graphics::WriteConstantBufferData(NVRHI::ConstantBufferHandle handle, const void* data, uint32_t size)
 	{
-		Engine::GetRenderInterface()->writeConstantBuffer(handle, data, size);
+		_Context->GetRenderInterface()->writeConstantBuffer(handle, data, size);
 	}
 
 	void Graphics::WriteConstantBufferData(const String& mappedName, const void* data)
@@ -276,7 +268,7 @@ namespace Hydra
 
 		ConstantBufferInfo& info = _ConstantBuffers[mappedName];
 
-		Engine::GetRenderInterface()->writeConstantBuffer(info.Handle, data, info.DataSize);
+		_Context->GetRenderInterface()->writeConstantBuffer(info.Handle, data, info.DataSize);
 	}
 
 	void Graphics::WriteConstantBufferDataAndBind(NVRHI::DrawCallState& state, const String& mappedName, const void* data)
@@ -367,7 +359,7 @@ namespace Hydra
 		gbufferDesc.format = format;
 		gbufferDesc.clearValue = clearColor;
 		gbufferDesc.debugName = name.c_str();
-		NVRHI::TextureHandle handle = Engine::GetRenderInterface()->createTexture(gbufferDesc, NULL);
+		NVRHI::TextureHandle handle = _Context->GetRenderInterface()->createTexture(gbufferDesc, NULL);
 		_RenderViewTargets[name] = handle;
 		return handle;
 	}
@@ -395,7 +387,7 @@ namespace Hydra
 		gbufferDesc.format = format;
 		gbufferDesc.debugName = name.c_str();
 
-		NVRHI::TextureHandle handle = Engine::GetRenderInterface()->createTexture(gbufferDesc, NULL);
+		NVRHI::TextureHandle handle = _Context->GetRenderInterface()->createTexture(gbufferDesc, NULL);
 
 		_RenderViewTargets[name] = handle;
 
@@ -427,7 +419,7 @@ namespace Hydra
 		gbufferDesc.format = format;
 		gbufferDesc.debugName = name.c_str();
 
-		NVRHI::TextureHandle handle = Engine::GetRenderInterface()->createTexture(gbufferDesc, NULL);
+		NVRHI::TextureHandle handle = _Context->GetRenderInterface()->createTexture(gbufferDesc, NULL);
 
 		_RenderViewTargets[name] = handle;
 
@@ -454,7 +446,7 @@ namespace Hydra
 		gbufferDesc.format = format;
 		gbufferDesc.clearValue = clearColor;
 		gbufferDesc.debugName = name.c_str();
-		NVRHI::TextureHandle handle = Engine::GetRenderInterface()->createTexture(gbufferDesc, NULL);
+		NVRHI::TextureHandle handle = _Context->GetRenderInterface()->createTexture(gbufferDesc, NULL);
 		_RenderViewTargets[name] = handle;
 		return handle;
 	}
@@ -480,7 +472,7 @@ namespace Hydra
 		gbufferDesc.format = format;
 		gbufferDesc.clearValue = clearColor;
 		gbufferDesc.debugName = name.c_str();
-		NVRHI::TextureHandle handle = Engine::GetRenderInterface()->createTexture(gbufferDesc, NULL);
+		NVRHI::TextureHandle handle = _Context->GetRenderInterface()->createTexture(gbufferDesc, NULL);
 		_RenderViewTargets[name] = handle;
 		return handle;
 	}
@@ -500,7 +492,7 @@ namespace Hydra
 		{
 			TexturePtr rt = _RenderViewTargets[name];
 
-			Engine::GetRenderInterface()->destroyTexture(rt);
+			_Context->GetRenderInterface()->destroyTexture(rt);
 
 			_RenderViewTargets.erase(name);
 		}
@@ -525,7 +517,7 @@ namespace Hydra
 
 		ID3DBlob* blob = material->GetShader(NVRHI::ShaderType::SHADER_VERTEX)->GetBlob();
 
-		InputLayoutPtr layout = Engine::GetRenderInterface()->createInputLayout(d, attributeCount, blob->GetBufferPointer(), blob->GetBufferSize());
+		InputLayoutPtr layout = _Context->GetRenderInterface()->createInputLayout(d, attributeCount, blob->GetBufferPointer(), blob->GetBufferSize());
 
 		_InputLayouts[name] = layout;
 
@@ -558,7 +550,7 @@ namespace Hydra
 		samplerDesc.mipFilter = mipFilter;
 		samplerDesc.anisotropy = 16;
 
-		SamplerPtr sampler = Engine::GetRenderInterface()->createSampler(samplerDesc);
+		SamplerPtr sampler = _Context->GetRenderInterface()->createSampler(samplerDesc);
 
 		_Samplers[name] = sampler;
 
@@ -580,7 +572,7 @@ namespace Hydra
 		samplerComparisonDesc.shadowCompare = true;
 		samplerComparisonDesc.borderColor = NVRHI::Color(0.f);
 
-		SamplerPtr sampler = Engine::GetRenderInterface()->createSampler(samplerComparisonDesc);
+		SamplerPtr sampler = _Context->GetRenderInterface()->createSampler(samplerComparisonDesc);
 
 		_Samplers[name] = sampler;
 

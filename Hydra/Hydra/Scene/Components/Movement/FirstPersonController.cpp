@@ -1,8 +1,6 @@
 #include "Hydra/Scene/Components/Movement/FirstPersonController.h"
 #include "Hydra/Scene/Spatial.h"
 
-#include "Hydra/Engine.h"
-
 namespace Hydra
 {
 	void FirstPersonController::Start()
@@ -15,7 +13,7 @@ namespace Hydra
 			return;
 		}
 
-		InputManagerPtr inputManager = Engine::GetInputManager();
+		/*InputManagerPtr inputManager = Engine::GetInputManager();
 
 		if (inputManager)
 		{
@@ -25,15 +23,15 @@ namespace Hydra
 			inputManager->BindAxis("LookLeftRight", this, &FirstPersonController::LookLeftRight);
 
 			_MouseCaptured = inputManager->IsMouseCaptured();
-		}
+		}*/
 	}
 
 	void FirstPersonController::Update()
 	{
 		if (!Enabled) return;
 
-		InputManagerPtr inputManager = Engine::GetInputManager();
-		_MouseCaptured = inputManager->IsMouseCaptured();
+		//InputManagerPtr inputManager = Engine::GetInputManager();
+		//_MouseCaptured = inputManager->IsMouseCaptured();
 	}
 
 	static float moveSpeed = 0.5f;

@@ -5,11 +5,11 @@
 
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI_D3D11.h"
 
-#include "Hydra/Engine.h"
+#include "Hydra/EngineContext.h"
 
 namespace Hydra
 {
-	UIRendererDX11::UIRendererDX11(ID3D11Device* device) : _Device(device)
+	UIRendererDX11::UIRendererDX11(EngineContext* context) : _Context(context), _Device(context->GetDeviceManager()->GetDevice())
 	{
 		
 	}
@@ -39,7 +39,7 @@ namespace Hydra
 
 		NVRHI::TextureDesc desc = handle->GetDesc();
 
-		NVRHI::RendererInterfaceD3D11* renderInterface = (NVRHI::RendererInterfaceD3D11*)Engine::GetRenderInterface().get();
+		NVRHI::RendererInterfaceD3D11* renderInterface = (NVRHI::RendererInterfaceD3D11*)_Context->GetRenderInterface().get();
 
 		newTexStruct->width = desc.width;
 		newTexStruct->height = desc.height;

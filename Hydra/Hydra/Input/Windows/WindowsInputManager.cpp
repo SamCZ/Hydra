@@ -4,10 +4,13 @@
 #include <windowsx.h>
 
 #include "Hydra/Core/Vector.h"
-#include "Hydra/Engine.h"
+#include "Hydra/EngineContext.h"
 
 namespace Hydra
 {
+	WindowsInputManager::WindowsInputManager(EngineContext * context) : _Context(context)
+	{
+	}
 	LRESULT WindowsInputManager::MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		if (IsInputMessage(msg))
@@ -758,7 +761,7 @@ namespace Hydra
 				while (::ShowCursor(false) >= 0);
 			}
 
-			HWND hWnd = Engine::GetDeviceManager()->GetHWND();
+			HWND hWnd = _Context->GetDeviceManager()->GetHWND();
 
 			RECT rect;
 			GetWindowRect(hWnd, &rect);

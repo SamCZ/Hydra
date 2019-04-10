@@ -3,8 +3,6 @@
 
 #include <iostream>
 
-#include "Hydra/Engine.h"
-
 namespace Hydra
 {
 	CameraPtr Camera::MainCamera;
@@ -17,8 +15,8 @@ namespace Hydra
 
 	void Camera::Start()
 	{
-		_Width = Engine::ScreenSize.x;
-		_Height = Engine::ScreenSize.y;
+		_Width = 1280;
+		_Height = 720;
 		SetCameraMode(CameraMode::Perspective);
 	}
 

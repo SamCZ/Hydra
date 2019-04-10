@@ -1,6 +1,6 @@
 #include "Hydra/Render/Shader.h"
 
-#include "Hydra/Engine.h"
+#include "Hydra/EngineContext.h"
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
@@ -23,7 +23,7 @@ namespace Hydra
 
 		if (_Handle)
 		{
-			Engine::GetRenderInterface()->destroyShader(_Handle);
+			// Handle deleted in Technique
 			_Handle = nullptr;
 		}
 

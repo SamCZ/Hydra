@@ -6,6 +6,8 @@
 
 namespace Hydra
 {
+	class EngineContext;
+
 	struct EModifierKey
 	{
 		enum Type
@@ -24,8 +26,11 @@ namespace Hydra
 	class WindowsInputManager : public InputManager
 	{
 	private:
+		EngineContext* _Context;
+
 		bool ModifierKeyState[EModifierKey::Count];
 	public:
+		WindowsInputManager(EngineContext* context);
 
 		LRESULT MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

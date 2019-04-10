@@ -28,7 +28,7 @@ namespace Hydra
 		void BeginGroup(const String& name);
 		void EndGroup();
 
-		bool DeleteGroup(const String& name, bool destroyTextures = false);
+		bool DeleteGroup(const String& name);
 
 		void Add(const String& name, const String shaderDefname, NVRHI::TextureHandle texture, const String& componentDef);
 

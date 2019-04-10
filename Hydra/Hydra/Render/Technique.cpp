@@ -5,7 +5,7 @@
 #include <d3dcompiler.h>
 #pragma comment(lib,"d3dcompiler.lib")
 
-#include "Hydra/Engine.h"
+#include "Hydra/EngineContext.h"
 
 #include "Hydra/Render/Shader.h"
 
@@ -45,7 +45,7 @@ namespace Hydra
 		return hr;
 	}
 
-	Technique::Technique(const File& file, bool precompile) : _Source(file), _Precompile(precompile), _NextDefineId(0)
+	Technique::Technique(EngineContext* context, const File& file, bool precompile) : _Context(context), _Source(file), _Precompile(precompile), _NextDefineId(0)
 	{
 		ReadShaderSource();
 	}
@@ -56,6 +56,13 @@ namespace Hydra
 		{
 			for (Shader* shader : it->second)
 			{
+				NVRHI::ShaderHandle sHandle = shader->GetRaw();
+
+				if (sHandle)
+				{
+					_Context->GetRenderInterface()->destroyShader(sHandle);
+				}
+
 				delete shader;
 			}
 		}
@@ -139,7 +146,7 @@ namespace Hydra
 					continue;
 				}
 
-				NVRHI::ShaderHandle shaderHandle = Engine::GetRenderInterface()->createShader(NVRHI::ShaderDesc(type), shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize());
+				NVRHI::ShaderHandle shaderHandle = _Context->GetRenderInterface()->createShader(NVRHI::ShaderDesc(type), shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize());
 
 				if (shaderHandle != nullptr)
 				{
@@ -155,6 +162,11 @@ namespace Hydra
 	bool Technique::IsPrecompiled() const
 	{
 		return _Precompile;
+	}
+
+	EngineContext* Hydra::Technique::GetEngineContext()
+	{
+		return _Context;
 	}
 
 	void Technique::ReadShaderSource()

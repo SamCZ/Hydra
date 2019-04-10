@@ -21,11 +21,14 @@ namespace Hydra
 
 	class BIHTree;
 
+	class EngineContext;
+
 	class Mesh : public Resource
 	{
 	private:
 		NVRHI::BufferHandle _IndexHandle;
 		NVRHI::BufferHandle _VertexBuffer;
+		bool _AutoCreateBuffers;
 		bool _IsIndexed;
 		int _IndexCount;
 
@@ -51,7 +54,7 @@ namespace Hydra
 		void CreateComplexCollider();
 		BIHTree* GetComplexCollider();
 
-		void UpdateBuffers();
+		void UpdateBuffers(EngineContext* context);
 
 		static Mesh* CreatePrimitive(const PrimitiveType::Enum& type, const Vector3& scale = Vector3(1.0f, 1.0f, 1.0f));
 
@@ -60,6 +63,9 @@ namespace Hydra
 
 		void SetIndexBuffer(NVRHI::BufferHandle buffer);
 		void SetVertexBuffer(NVRHI::BufferHandle buffer);
+
+		bool CanAutoCreateBuffers() const;
+		void SetAutoCreateBuffers(bool state);
 
 		void SetIndexed(bool indexed);
 		bool IsIndexed();
