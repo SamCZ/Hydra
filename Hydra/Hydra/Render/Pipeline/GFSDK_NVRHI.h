@@ -11,6 +11,8 @@
 #ifndef GFSDK_NVRHI_H_
 #define GFSDK_NVRHI_H_
 
+#include "Hydra/Core/Library.h"
+
 #include <stdint.h>
 #include <memory.h>
 #include <math.h>
@@ -59,7 +61,7 @@ namespace NVRHI
         Rect(const Viewport& viewport) : minX(int(floor(viewport.minX))), maxX(int(ceil(viewport.maxX))), minY(int(floor(viewport.minY))), maxY(int(ceil(viewport.maxY))) { }
     };
 
-    class IResource
+    class HYDRA_EXPORT IResource
     {
     public:
         virtual unsigned long AddRef() = 0;
@@ -69,7 +71,7 @@ namespace NVRHI
 
 #ifdef NVRHI_WITH_WRL
     template<typename T>
-    class RefCountPtr : public Microsoft::WRL::ComPtr<T>
+    class HYDRA_EXPORT RefCountPtr : public Microsoft::WRL::ComPtr<T>
     {
     public:
 
@@ -185,7 +187,7 @@ namespace NVRHI
         }
     };
 
-    class ITexture : public IResource
+    class HYDRA_EXPORT ITexture : public IResource
     {
     public:
         virtual const TextureDesc& GetDesc() const = 0;
@@ -213,7 +215,7 @@ namespace NVRHI
         bool isInstanced;
     };
 
-    class IInputLayout : public IResource
+    class HYDRA_EXPORT IInputLayout : public IResource
     {
     };
 
@@ -243,7 +245,7 @@ namespace NVRHI
         BufferDesc()  { memset(this, 0, sizeof(*this)); }
     };
 
-    class IBuffer : public IResource
+    class HYDRA_EXPORT IBuffer : public IResource
     {
     public:
         virtual const BufferDesc& GetDesc() const = 0;
@@ -267,7 +269,7 @@ namespace NVRHI
         ConstantBufferDesc()  { memset(this, 0, sizeof(*this)); }
     };
 
-    class IConstantBuffer : public IResource
+    class HYDRA_EXPORT IConstantBuffer : public IResource
     {
     };
 
@@ -345,7 +347,7 @@ namespace NVRHI
         { }
     };
 
-    class IShader : public IResource
+    class HYDRA_EXPORT IShader : public IResource
     {
     };
 
@@ -586,7 +588,7 @@ namespace NVRHI
         }
     };
 
-    class ISampler : public IResource
+    class HYDRA_EXPORT ISampler : public IResource
     {
     };
 
@@ -819,7 +821,7 @@ namespace NVRHI
         };
     };
 
-    class IPerformanceQuery : public IResource
+    class HYDRA_EXPORT IPerformanceQuery : public IResource
     {
     };
 
@@ -848,7 +850,7 @@ namespace NVRHI
     // Should be implemented by the application.
     // Clients will call signalError(...) on every error it encounters, in addition to returning one of the 
     // failure status codes. The application can display a message box in case of errors.
-    class IErrorCallback
+    class HYDRA_EXPORT IErrorCallback
     {
         IErrorCallback& operator=(const IErrorCallback& other); //undefined
     protected:
@@ -862,7 +864,7 @@ namespace NVRHI
     // IRendererInterface
     //////////////////////////////////////////////////////////////////////////
 
-    class IRendererInterface
+    class HYDRA_EXPORT IRendererInterface
     {
         IRendererInterface& operator=(const IRendererInterface& other); //undefined
     protected:

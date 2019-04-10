@@ -18,7 +18,7 @@ namespace Hydra
 		Top
 	};
 
-	class UIRenderer
+	class HYDRA_EXPORT UIRenderer
 	{
 	private:
 		NVGcontext* _Context;

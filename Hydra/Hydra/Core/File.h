@@ -3,12 +3,13 @@
 #include <string>
 #include <vector>
 
+#include "Hydra/Core/Library.h"
 #include "Hydra/Core/String.h"
 #include "Hydra/Core/Container.h"
 
 namespace Hydra
 {
-	class File
+	class HYDRA_EXPORT File
 	{
 	public:
 		~File();
@@ -42,7 +43,7 @@ namespace Hydra
 		String _rootPath;
 	};
 
-	std::ostream& operator<<(std::ostream& os, const File& obj);
-	bool operator==(const File& left, const File& right);
-	bool operator!=(const File& left, const File& right);
+	HYDRA_EXPORT std::ostream& operator<<(std::ostream& os, const File& obj);
+	HYDRA_EXPORT bool operator==(const File& left, const File& right);
+	HYDRA_EXPORT bool operator!=(const File& left, const File& right);
 }

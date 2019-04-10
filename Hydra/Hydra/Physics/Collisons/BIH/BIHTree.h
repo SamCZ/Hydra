@@ -12,7 +12,7 @@ namespace Hydra
 
 	constexpr int MAX_BIH_SWAP_TMP = 9;
 
-	class BIHTree
+	class HYDRA_EXPORT BIHTree
 	{
 	private:
 		const int MAX_TREE_DEPTH = 100;

@@ -1,10 +1,11 @@
 #pragma once
 
+#include "Hydra/Core/Library.h"
 #include "Hydra/Core/String.h"
 
 namespace Hydra
 {
-	class Resource
+	class HYDRA_EXPORT Resource
 	{
 	protected:
 		String _Source;

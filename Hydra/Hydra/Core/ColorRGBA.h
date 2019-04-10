@@ -1,10 +1,11 @@
 #pragma once
 
+#include "Hydra/Core/Library.h"
 #include "Hydra/Core/Vector.h"
 
 namespace Hydra
 {
-	struct ColorRGBA
+	struct HYDRA_EXPORT ColorRGBA
 	{
 		float r, g, b, a;
 
@@ -18,13 +19,13 @@ namespace Hydra
 		}
 	};
 
-	ColorRGBA MakeRGB(int r, int g, int b);
-	ColorRGBA MakeRGBA(int r, int g, int b, int a);
-	ColorRGBA MakeRGBf(float r, float g, float b);
-	ColorRGBA MakeRGBAf(float r, float g, float b, float a);
-	ColorRGBA MakeHEX(const char* hex);
+	HYDRA_EXPORT ColorRGBA MakeRGB(int r, int g, int b);
+	HYDRA_EXPORT ColorRGBA MakeRGBA(int r, int g, int b, int a);
+	HYDRA_EXPORT ColorRGBA MakeRGBf(float r, float g, float b);
+	HYDRA_EXPORT ColorRGBA MakeRGBAf(float r, float g, float b, float a);
+	HYDRA_EXPORT ColorRGBA MakeHEX(const char* hex);
 
-	struct Colors
+	struct HYDRA_EXPORT Colors
 	{
 		static ColorRGBA White;
 		static ColorRGBA Black;

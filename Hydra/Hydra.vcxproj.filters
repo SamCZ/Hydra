@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ImGui\stb_truetype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -315,11 +312,12 @@
     <ClInclude Include="Hydra\Render\Pipeline\DX11\DeviceManager11.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Hydra.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
+    <ClInclude Include="Hydra\Engine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Core\Library.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ImGui\imgui.cpp">
@@ -484,9 +482,6 @@
     <ClCompile Include="Yaml\src\contrib\graphbuilderadapter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MainYamlTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Hydra\Render\TextureLayoutDef.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -523,9 +518,6 @@
     <ClCompile Include="Hydra\EngineContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Hydra\Assets\AssetManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -535,8 +527,5 @@
     <ClCompile Include="Hydra\Render\Pipeline\DX11\DeviceManager11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

@@ -42,7 +42,7 @@ namespace NVRHI
 
   struct ShaderResourceLimits;
 
-  class RendererInterfaceD3D11 : public IRendererInterface
+  class HYDRA_EXPORT RendererInterfaceD3D11 : public IRendererInterface
   {
   public:
     //The user-visible API

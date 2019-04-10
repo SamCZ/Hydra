@@ -23,7 +23,7 @@ namespace Hydra
 
 	class EngineContext;
 
-	class Mesh : public Resource
+	class HYDRA_EXPORT Mesh : public Resource
 	{
 	private:
 		NVRHI::BufferHandle _IndexHandle;

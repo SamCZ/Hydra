@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Hydra/Core/Library.h"
+
 #include "Hydra/Core/Vector.h"
 #include "Hydra/Core/String.h"
 
@@ -10,7 +12,7 @@ namespace Hydra
 {
 	#define BBMM 0,
 
-	class Box
+	class HYDRA_EXPORT Box
 	{
 	private:
 		float _ClipTemp[3];

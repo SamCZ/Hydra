@@ -2,6 +2,7 @@
 
 #include <d3d11.h>
 
+#include "Hydra/Core/Library.h"
 #include "Hydra/Core/String.h"
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
 #include "Hydra/Render/VarType.h"
@@ -66,7 +67,7 @@ namespace Hydra
 		Map<String, VarType::Type> VariableTypes;
 	};
 
-	class Shader
+	class HYDRA_EXPORT Shader
 	{
 	private:
 		String _Name;

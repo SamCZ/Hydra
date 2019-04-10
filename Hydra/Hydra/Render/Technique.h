@@ -10,7 +10,7 @@ namespace Hydra
 	class Shader;
 	class EngineContext;
 
-	class Technique
+	class HYDRA_EXPORT Technique
 	{
 	private:
 		EngineContext* _Context;

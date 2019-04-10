@@ -75,7 +75,7 @@ namespace Hydra
 
 		int constantBufferRealCount = 0;
 
-		for (int i = 0; i < shaderDesc.ConstantBuffers; i++)
+		for (unsigned int i = 0; i < shaderDesc.ConstantBuffers; i++)
 		{
 			ID3D11ShaderReflectionConstantBuffer* cb = reflection->GetConstantBufferByIndex(i);
 

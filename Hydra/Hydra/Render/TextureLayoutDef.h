@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Hydra/Core/Library.h"
 #include "Hydra/Core/String.h"
 #include "Hydra/Core/Container.h"
 #include "Hydra/Core/SmartPointer.h"
@@ -18,7 +19,7 @@ namespace Hydra
 		String ComponentDef;
 	};
 
-	class TextureLayoutDef
+	class HYDRA_EXPORT TextureLayoutDef
 	{
 	private:
 		Map<String, TextureLayout> LayoutDefs;

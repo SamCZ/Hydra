@@ -39,7 +39,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -87,7 +87,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)Yaml\include;$(ProjectDir);$(ProjectDir)nvapi-public;$(ProjectDir)assimp-c4d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>USE_D3D11=1;NVRHI_WITH_WRL;NOMINMAX;WIN32;_DEBUG;DEBUG;PROFILE;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_D3D11=1;NVRHI_WITH_WRL;NOMINMAX;WIN32;_DEBUG;DEBUG;PROFILE;_WINDOWS;_CRT_SECURE_NO_WARNINGS;HYDRA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;assimp-vc140-mt.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -135,6 +135,7 @@
     <ClInclude Include="Hydra\Core\EObject.h" />
     <ClInclude Include="Hydra\Core\FastNoise.h" />
     <ClInclude Include="Hydra\Core\Function.h" />
+    <ClInclude Include="Hydra\Core\Library.h" />
     <ClInclude Include="Hydra\Core\Log.h" />
     <ClInclude Include="Hydra\Core\Math\Box.h" />
     <ClInclude Include="Hydra\Core\Math\Triangle.h" />
@@ -145,6 +146,7 @@
     <ClInclude Include="Hydra\Core\Sort.h" />
     <ClInclude Include="Hydra\Core\Timing.h" />
     <ClInclude Include="Hydra\Core\YamlConvertors.h" />
+    <ClInclude Include="Hydra\Engine.h" />
     <ClInclude Include="Hydra\EngineContext.h" />
     <ClInclude Include="Hydra\HydraEngine.h" />
     <ClInclude Include="Hydra\Input\GenericPlatformInput.h" />
@@ -204,7 +206,6 @@
     <ClInclude Include="NanoVG\nanovg.h" />
     <ClInclude Include="NanoVG\nanovg_d3d11.h" />
     <ClInclude Include="NanoVG\stb_image.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="Yaml\src\collectionstack.h" />
     <ClInclude Include="Yaml\src\contrib\graphbuilderadapter.h" />
     <ClInclude Include="Yaml\src\directives.h" />
@@ -229,9 +230,6 @@
     <ClInclude Include="Yaml\src\token.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Hydra.rc" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="Hydra\Assets\AssetManager.cpp" />
     <ClCompile Include="Hydra\Core\FastNoise.cpp" />
     <ClCompile Include="Hydra\Core\Math\Box.cpp" />
@@ -246,8 +244,6 @@
     <ClCompile Include="Hydra\Render\Technique.cpp" />
     <ClCompile Include="Hydra\Render\TextureLayoutDef.cpp" />
     <ClCompile Include="Hydra\Render\UI\UIRenderer.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="MainYamlTest.cpp" />
     <ClCompile Include="Hydra\Render\Material.cpp" />
     <ClCompile Include="Hydra\Render\RenderManager.cpp" />
     <ClCompile Include="IndustryEmpire\IndustryEmpire.cpp" />
@@ -303,9 +299,6 @@
     <ClCompile Include="Yaml\src\singledocparser.cpp" />
     <ClCompile Include="Yaml\src\stream.cpp" />
     <ClCompile Include="Yaml\src\tag.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

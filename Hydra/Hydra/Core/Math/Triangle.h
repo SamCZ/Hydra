@@ -1,10 +1,11 @@
 #pragma once
 
+#include "Hydra/Core/Library.h"
 #include "Hydra/Core/Vector.h"
 
 namespace Hydra
 {
-	struct Triangle
+	struct HYDRA_EXPORT Triangle
 	{
 		Vector3 V0;
 		Vector3 V1;

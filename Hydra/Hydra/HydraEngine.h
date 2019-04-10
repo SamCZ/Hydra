@@ -1,8 +1,10 @@
 #pragma once
 
+#include "Hydra/Core/Library.h"
+
 namespace Hydra
 {
-	class HydraEngine
+	class HYDRA_EXPORT HydraEngine
 	{
 	protected:
 

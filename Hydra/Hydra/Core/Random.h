@@ -1,11 +1,12 @@
 #pragma once
 
 #include <random>
+#include "Hydra/Core/Library.h"
 #include "Hydra/Core/Vector.h"
 
 namespace Hydra
 {
-	class Random
+	class HYDRA_EXPORT Random
 	{
 	private:
 		unsigned int _Seed;

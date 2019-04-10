@@ -51,7 +51,7 @@ namespace Hydra
 
 	DEFINE_PTR(Material)
 
-	class Material
+	class HYDRA_EXPORT Material
 	{
 	private:
 		static Map<String, SharedPtr<Technique>> _TechniqueCache;

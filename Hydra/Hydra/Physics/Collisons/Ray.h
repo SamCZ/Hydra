@@ -5,7 +5,7 @@
 
 namespace Hydra
 {
-	class Ray : public Collidable
+	class HYDRA_EXPORT Ray : public Collidable
 	{
 	public:
 		Vector3 Origin;

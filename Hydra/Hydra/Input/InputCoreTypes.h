@@ -1,10 +1,11 @@
 #pragma once
 
+#include "Hydra/Core/Library.h"
 #include "Hydra/Core/Common.h"
 
 namespace Hydra
 {
-	struct Key
+	struct HYDRA_EXPORT Key
 	{
 	private:
 		String KeyName;
@@ -44,7 +45,7 @@ namespace Hydra
 		mutable SharedPtr<struct KeyDetails> KeyDetails;
 	};
 
-	struct KeyDetails
+	struct HYDRA_EXPORT KeyDetails
 	{
 	public:
 		enum class InputAxisType : uint8
@@ -101,7 +102,7 @@ namespace Hydra
 
 	DEFINE_PTR(KeyDetails)
 
-	struct Keys
+	struct HYDRA_EXPORT Keys
 	{
 	private:
 		static Map<Key, KeyDetailsPtr> InputKeys;
@@ -310,7 +311,7 @@ namespace Hydra
 		static KeyDetailsPtr GetKeyDetails(const Key& key);
 	};
 
-	class InputKeyManager
+	class HYDRA_EXPORT InputKeyManager
 	{
 		public:
 			static InputKeyManager& Get();

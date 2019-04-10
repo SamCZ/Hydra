@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Hydra/Core/Library.h"
 #include "Hydra/Core/EObject.h"
 #include "Hydra/Core/Common.h"
 #include "Hydra/Core/Delegate.h"
@@ -47,7 +48,7 @@ namespace Hydra
 	class InputManager;
 	DEFINE_PTR(InputManager)
 
-	class InputManager
+	class HYDRA_EXPORT InputManager
 	{
 	protected:
 		List<InputActionKeyMapping> _ActionMappings;

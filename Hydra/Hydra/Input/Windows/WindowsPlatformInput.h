@@ -4,7 +4,7 @@
 
 namespace Hydra
 {
-	class WindowsPlatformInput : public GenericPlatformInput
+	class HYDRA_EXPORT WindowsPlatformInput : public GenericPlatformInput
 	{
 	public:
 		static uint32 GetKeyMap(uint32* KeyCodes, String* KeyNames, uint32 MaxMappings);

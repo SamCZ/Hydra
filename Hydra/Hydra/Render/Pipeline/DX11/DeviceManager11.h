@@ -14,6 +14,7 @@
 #include <D3D11.h>
 #include <list>
 
+#include "Hydra/Core/Library.h"
 
 struct DeviceCreationParameters
 {
@@ -58,7 +59,7 @@ typedef ID3D11RenderTargetView* RenderTargetView;
 
 #pragma warning(push)
 #pragma warning(disable: 4100) // unreferenced formal parameter
-class IVisualController
+class HYDRA_EXPORT IVisualController
 {
 private:
     bool            m_Enabled;
@@ -78,7 +79,7 @@ public:
 };
 #pragma warning(pop)
 
-class DeviceManager
+class HYDRA_EXPORT DeviceManager
 {
 public:
     enum WindowState

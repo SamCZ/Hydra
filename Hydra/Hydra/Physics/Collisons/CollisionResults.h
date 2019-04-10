@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Hydra/Core/Library.h"
 #include "Hydra/Core/Vector.h"
 #include "Hydra/Core/Container.h"
 
@@ -17,7 +18,7 @@ namespace Hydra
 		int TriangleIndex;
 	};
 
-	class CollisionResults
+	class HYDRA_EXPORT CollisionResults
 	{
 	public:
 		CollisionResults();

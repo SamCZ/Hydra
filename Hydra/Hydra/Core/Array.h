@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Hydra/Core/Library.h"
 #include <vector>
 
 namespace Hydra

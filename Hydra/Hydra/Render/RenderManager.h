@@ -1,10 +1,11 @@
 #pragma once
 
+#include "Hydra/Core/Library.h"
 #include "Hydra/Core/Common.h"
 
 namespace Hydra {
 
-	class RenderManager
+	class HYDRA_EXPORT RenderManager
 	{
 	public:
 

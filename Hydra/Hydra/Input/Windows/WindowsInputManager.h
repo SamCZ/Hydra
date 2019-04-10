@@ -23,7 +23,7 @@ namespace Hydra
 		};
 	};
 
-	class WindowsInputManager : public InputManager
+	class HYDRA_EXPORT WindowsInputManager : public InputManager
 	{
 	private:
 		EngineContext* _Context;
