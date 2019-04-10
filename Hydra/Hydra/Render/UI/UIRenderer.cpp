@@ -2,8 +2,6 @@
 
 #include "NanoVG/nanovg.h"
 
-#include "Hydra/Scene/Components/Camera.h"
-
 namespace Hydra
 {
 	UIRenderer::UIRenderer() : _Context(nullptr)
@@ -32,7 +30,7 @@ namespace Hydra
 
 	void UIRenderer::Begin()
 	{
-		nvgBeginFrame(_Context, Camera::MainCamera->GetWidth(), Camera::MainCamera->GetHeight(), 1.0f);
+		nvgBeginFrame(_Context, 0, 0, 1.0f); //TODO: Fix width and height
 	}
 
 	void UIRenderer::End()

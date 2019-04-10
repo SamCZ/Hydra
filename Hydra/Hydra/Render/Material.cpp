@@ -557,46 +557,6 @@ namespace Hydra
 
 	}
 
-	SharedPtr<Material> Material::CreateOrGet(const String & name, const File & source, bool precompile, bool isInternalMaterial)
-	{
-		if (AllMaterials.find(name) != AllMaterials.end())
-		{
-			return AllMaterials[name];
-		}
-
-		SharedPtr<Technique> tech = nullptr;
-
-		if (!source.IsExist())
-		{
-			throw;
-		}
-
-		String fileName = source.GetPath();
-
-		if (_TechniqueCache.find(fileName) != _TechniqueCache.end())
-		{
-			tech = _TechniqueCache[fileName];
-		}
-		else
-		{
-			tech = MakeShared<Technique>(source, precompile);
-			_TechniqueCache[fileName] = tech;
-		}
-
-		MaterialPtr material = MakeShared<Material>(name, tech);
-
-		material->IsInternalMaterial = isInternalMaterial;
-
-		AllMaterials[name] = material;
-
-		return material;
-	}
-
-	SharedPtr<Material> Material::CreateOrGet(const File & source, bool precompile, bool isInternalMaterial)
-	{
-		return CreateOrGet(source.GetPath(), source, precompile, isInternalMaterial);
-	}
-
 	NVRHI::PipelineStageBindings* Material::GetPipelineStageBindingsForShaderType(NVRHI::DrawCallState& state, const NVRHI::ShaderType::Enum & type)
 	{
 		switch (type)

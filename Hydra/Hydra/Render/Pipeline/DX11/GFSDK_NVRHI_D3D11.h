@@ -9,7 +9,7 @@
 */ 
 
 #pragma once
-#include "GFSDK_NVRHI.h"
+#include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
 #include <d3d11_1.h>
 #include <wrl.h>
 #include <map>

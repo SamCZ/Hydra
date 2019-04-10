@@ -48,31 +48,10 @@
     <ClInclude Include="ImGui\stb_textedit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hydra\Scene\Spatial.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Scene\Transformable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Scene\Component.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Scene\Components\Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Scene\Components\Renderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Hydra\Render\Pipeline\BindingHelpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hydra\Render\Pipeline\DeviceManager11.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Hydra\Render\Pipeline\GFSDK_NVRHI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Render\Pipeline\GFSDK_NVRHI_D3D11.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Hydra\Render\Mesh.h">
@@ -156,12 +135,6 @@
     <ClInclude Include="Hydra\Input\Windows\WindowsInputManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hydra\Scene\Components\Movement\FirstPersonController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Terrain\Erosion.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Hydra\Core\Random.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -172,9 +145,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Hydra\HydraEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Scene\Components\LodGroup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Hydra\Core\Math\Box.h">
@@ -264,24 +234,6 @@
     <ClInclude Include="Hydra\Core\YamlConvertors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hydra\Render\RenderStage\RenderStageDeffered.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Render\RenderStage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Render\RenderStage\RenderStagePostProcess.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Render\PostProcess\PostEffect.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Render\PostProcess\EmissionPostEffect.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Render\PostProcess\SSAOPostEffect.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Hydra\Render\TextureLayoutDef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -315,61 +267,7 @@
     <ClInclude Include="Hydra\Render\Technique.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hydra\Scene\Components\Light.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Render\TestVars.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Terrain\Voxel\VoxelTerrain.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Terrain\Marching\Marching.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Terrain\Marching\MarchingCubes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Terrain\Marching\MarchingCubesTable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Terrain\Marching\MarchingTable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Terrain\Marching\MarchingTertrahedron.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Terrain\Marching\MarchingTertrahedronTable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Terrain\Voxel\World\VoxelWorld.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Terrain\Voxel\World\VoxelChunk.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Terrain\Generator\MeshBuilder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Terrain\Render\VoxelChunkRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Terrain\Generator\Noise\NoiseMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Terrain\Generator\MeshSettings.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Terrain\Generator\MeshGenerator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Terrain\Generator\MeshData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Hydra\Core\Array.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Terrain\Generator\HeightMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Hydra\Render\VarType.h">
@@ -405,19 +303,16 @@
     <ClInclude Include="Hydra\Assets\AssetManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hydra\Assets\Loaders\MeshImporter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Assets\Loaders\TextureImporter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Assets\Loaders\UnityAssetManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Hydra\Assets\IAssetImporter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Hydra\Assets\IAssetLocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Render\Pipeline\DX11\GFSDK_NVRHI_D3D11.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Render\Pipeline\DX11\DeviceManager11.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -440,27 +335,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ImGui\ImGuizmo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Scene\Spatial.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Scene\Transformable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Scene\Components\Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Scene\Component.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Scene\Components\Renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Render\Pipeline\DeviceManager11.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Render\Pipeline\GFSDK_NVRHI_D3D11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Render\Mesh.cpp">
@@ -502,12 +376,6 @@
     <ClCompile Include="Hydra\Input\Windows\WindowsInputManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hydra\Scene\Components\Movement\FirstPersonController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Terrain\Erosion.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Hydra\Core\Random.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -518,9 +386,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\HydraEngine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Scene\Components\LodGroup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Render\RenderManager.cpp">
@@ -622,19 +487,7 @@
     <ClCompile Include="MainYamlTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hydra\Render\RenderStage\RenderStageDeffered.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Render\RenderStage\RenderStagePostProcess.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Render\PostProcess\PostEffect.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Hydra\Render\TextureLayoutDef.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Render\RenderStage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Render\Technique.cpp">
@@ -650,45 +503,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Render\Pipeline\DX11\UIRendererDX11.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Scene\Components\Light.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Render\Test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Terrain\Voxel\VoxelTerrain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Terrain\Marching\Marching.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Terrain\Marching\MarchingCubes.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Terrain\Marching\MarchingTertrahedron.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Terrain\Voxel\World\VoxelWorld.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Terrain\Voxel\World\VoxelChunk.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Terrain\Generator\MeshBuilder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Terrain\Generator\Noise\NoiseMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Terrain\Generator\MeshGenerator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Terrain\Generator\MeshData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Terrain\Generator\HeightMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Physics\Collisons\Ray.cpp">
@@ -709,22 +523,16 @@
     <ClCompile Include="Hydra\EngineContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hydra\Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Assets\AssetManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hydra\Assets\Loaders\MeshImporter.cpp">
+    <ClCompile Include="Hydra\Render\Pipeline\DX11\GFSDK_NVRHI_D3D11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hydra\Assets\Loaders\TextureImporter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Assets\Loaders\UnityAssetManager.cpp">
+    <ClCompile Include="Hydra\Render\Pipeline\DX11\DeviceManager11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

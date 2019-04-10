@@ -134,9 +134,6 @@ namespace Hydra
 		void ApplyParams(NVRHI::DispatchState& state);
 		void ApplyParams(NVRHI::DrawCallState& state);
 
-		static SharedPtr<Material> CreateOrGet(const String& name, const File& source, bool precompile = true, bool isInternalMaterial = false);
-		static SharedPtr<Material> CreateOrGet(const File& source, bool precompile = true, bool isInternalMaterial = false);
-
 	private:
 
 		NVRHI::PipelineStageBindings* GetPipelineStageBindingsForShaderType(NVRHI::DrawCallState& state, const NVRHI::ShaderType::Enum& type);

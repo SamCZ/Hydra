@@ -2,7 +2,7 @@
 
 #include "Hydra/Core/Log.h"
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
-#include "Hydra/Render/Pipeline/DeviceManager11.h"
+#include "Hydra/Render/Pipeline/DX11/DeviceManager11.h"
 #include "Hydra/Core/SmartPointer.h"
 #include "Hydra/Input/InputManager.h"
 

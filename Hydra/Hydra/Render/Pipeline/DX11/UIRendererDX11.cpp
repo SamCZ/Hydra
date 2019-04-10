@@ -3,7 +3,7 @@
 #define NANOVG_D3D11_IMPLEMENTATION
 #include "NanoVG/nanovg_d3d11.h"
 
-#include "Hydra/Render/Pipeline/GFSDK_NVRHI_D3D11.h"
+#include "Hydra/Render/Pipeline/DX11/GFSDK_NVRHI_D3D11.h"
 
 #include "Hydra/EngineContext.h"
 
