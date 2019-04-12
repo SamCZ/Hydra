@@ -2,5 +2,7 @@
 
 namespace Hydra
 {
-
+	void HydraEngine::PrepareForEngineStart(EngineStartParams& params)
+	{
+	}
 }

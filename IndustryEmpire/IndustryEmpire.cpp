@@ -1,15 +1,10 @@
-#include <iostream>
+#include "IndustryEmpire.h"
 
-#include "Hydra/Core/Math/Box.h"
-#include "Hydra/Core/Math/Triangle.h"
-#include "Hydra/Core/ColorRGBA.h"
-#include "Hydra/Core/FastNoise.h"
-
-using namespace Hydra;
-
-int main()
+void IndustryEmpire::SceneInit()
 {
-	ColorRGBA c = MakeRGB(0, 4, 0);
+	HWorld* world = WorldContext->CreateWorld("Main");
 
-	FastNoise m;
+	world->SpawnPawn<BasicPlayerPawn>("Hráč", Vector3(), Vector3());
+
+	world->OverrideGameMode<MyGameMode>();
 }
