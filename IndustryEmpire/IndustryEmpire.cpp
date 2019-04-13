@@ -1,10 +1,13 @@
 #include "IndustryEmpire.h"
 
+#include "Hydra/Framework/World.h"
+#include "Hydra/Framework/GameModeBase.h"
+
 void IndustryEmpire::SceneInit()
 {
-	HWorld* world = WorldContext->CreateWorld("Main");
+	FWorld* world = nullptr;
 
-	world->SpawnPawn<BasicPlayerPawn>("Hráč", Vector3(), Vector3());
+	world->SpawnActor<AActor>("Player", Vector3(), Vector3());
 
-	world->OverrideGameMode<MyGameMode>();
+	world->OverrideGameMode<HGameModeBase>();
 }
