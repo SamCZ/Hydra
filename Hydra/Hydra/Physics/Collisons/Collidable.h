@@ -4,7 +4,7 @@
 
 namespace Hydra
 {
-	class HYDRA_EXPORT Collidable
+	class HYDRA_API Collidable
 	{
 	public:
 		virtual inline ~Collidable()

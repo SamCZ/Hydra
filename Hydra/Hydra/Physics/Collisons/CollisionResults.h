@@ -18,7 +18,7 @@ namespace Hydra
 		int TriangleIndex;
 	};
 
-	class HYDRA_EXPORT CollisionResults
+	class HYDRA_API CollisionResults
 	{
 	public:
 		CollisionResults();

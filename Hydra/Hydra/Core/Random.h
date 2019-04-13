@@ -6,7 +6,7 @@
 
 namespace Hydra
 {
-	class HYDRA_EXPORT Random
+	class HYDRA_API Random
 	{
 	private:
 		unsigned int _Seed;

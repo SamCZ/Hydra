@@ -19,7 +19,7 @@ namespace Hydra
 		String ComponentDef;
 	};
 
-	class HYDRA_EXPORT TextureLayoutDef
+	class HYDRA_API TextureLayoutDef
 	{
 	private:
 		Map<String, TextureLayout> LayoutDefs;

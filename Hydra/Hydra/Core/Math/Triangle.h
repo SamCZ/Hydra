@@ -5,7 +5,7 @@
 
 namespace Hydra
 {
-	struct HYDRA_EXPORT Triangle
+	struct HYDRA_API Triangle
 	{
 		Vector3 V0;
 		Vector3 V1;

@@ -5,7 +5,7 @@
 
 namespace Hydra
 {
-	struct HYDRA_EXPORT Key
+	struct HYDRA_API Key
 	{
 	private:
 		String KeyName;
@@ -45,7 +45,7 @@ namespace Hydra
 		mutable SharedPtr<struct KeyDetails> KeyDetails;
 	};
 
-	struct HYDRA_EXPORT KeyDetails
+	struct HYDRA_API KeyDetails
 	{
 	public:
 		enum class InputAxisType : uint8
@@ -102,7 +102,7 @@ namespace Hydra
 
 	DEFINE_PTR(KeyDetails)
 
-	struct HYDRA_EXPORT Keys
+	struct HYDRA_API Keys
 	{
 	private:
 		static Map<Key, KeyDetailsPtr> InputKeys;
@@ -311,7 +311,7 @@ namespace Hydra
 		static KeyDetailsPtr GetKeyDetails(const Key& key);
 	};
 
-	class HYDRA_EXPORT InputKeyManager
+	class HYDRA_API InputKeyManager
 	{
 		public:
 			static InputKeyManager& Get();

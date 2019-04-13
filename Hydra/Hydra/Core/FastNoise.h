@@ -44,7 +44,7 @@ typedef double FN_DECIMAL;
 typedef float FN_DECIMAL;
 #endif
 
-class HYDRA_EXPORT FastNoise
+class HYDRA_API FastNoise
 {
 public:
 	explicit FastNoise(int seed = 1337) { SetSeed(seed); CalculateFractalBounding(); }

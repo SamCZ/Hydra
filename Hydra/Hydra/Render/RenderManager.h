@@ -5,7 +5,7 @@
 
 namespace Hydra {
 
-	class HYDRA_EXPORT RenderManager
+	class HYDRA_API RenderManager
 	{
 	public:
 

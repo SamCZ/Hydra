@@ -12,7 +12,7 @@ namespace Hydra
 
 	class Graphics;
 
-	class HYDRA_EXPORT EngineContext
+	class HYDRA_API EngineContext
 	{
 	private:
 		IRendererInterface _RenderInterface;

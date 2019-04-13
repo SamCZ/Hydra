@@ -16,17 +16,10 @@ namespace Hydra
 		EngineStartParams() : Width(1280), Height(720), AutoPercentScale(70), AutoScale(false), FullScreen(false), Maximized(false) { }
 	};
 
-	class HWorldContext
-	{
-
-	};
-
-	class HYDRA_EXPORT HydraEngine
+	class HYDRA_API HydraEngine
 	{
 	protected:
-		HWorldContext WorldContext;
-
-
+		
 	public:
 		virtual void PrepareForEngineStart(EngineStartParams& params);
 

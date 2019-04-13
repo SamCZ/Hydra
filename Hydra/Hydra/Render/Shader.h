@@ -67,7 +67,7 @@ namespace Hydra
 		Map<String, VarType::Type> VariableTypes;
 	};
 
-	class HYDRA_EXPORT Shader
+	class HYDRA_API Shader
 	{
 	private:
 		String _Name;

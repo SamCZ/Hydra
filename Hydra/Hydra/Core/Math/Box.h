@@ -12,7 +12,7 @@ namespace Hydra
 {
 	#define BBMM 0,
 
-	class HYDRA_EXPORT Box
+	class HYDRA_API Box
 	{
 	private:
 		float _ClipTemp[3];

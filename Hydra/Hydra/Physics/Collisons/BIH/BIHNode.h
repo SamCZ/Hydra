@@ -7,7 +7,7 @@ namespace Hydra
 {
 	class BIHTree;
 
-	class HYDRA_EXPORT BIHNode
+	class HYDRA_API BIHNode
 	{
 	public:
 		int LeftIndex;

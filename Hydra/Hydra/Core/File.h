@@ -9,7 +9,7 @@
 
 namespace Hydra
 {
-	class HYDRA_EXPORT File
+	class HYDRA_API File
 	{
 	public:
 		~File();
@@ -43,7 +43,7 @@ namespace Hydra
 		String _rootPath;
 	};
 
-	HYDRA_EXPORT std::ostream& operator<<(std::ostream& os, const File& obj);
-	HYDRA_EXPORT bool operator==(const File& left, const File& right);
-	HYDRA_EXPORT bool operator!=(const File& left, const File& right);
+	HYDRA_API std::ostream& operator<<(std::ostream& os, const File& obj);
+	HYDRA_API bool operator==(const File& left, const File& right);
+	HYDRA_API bool operator!=(const File& left, const File& right);
 }

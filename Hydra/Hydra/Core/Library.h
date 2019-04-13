@@ -7,7 +7,7 @@
 #pragma warning(disable:4102) // Disable unreferenced label
 
 #ifdef HYDRA_EXPORTS
-#define HYDRA_EXPORT __declspec(dllexport)
+#define HYDRA_API __declspec(dllexport)
 #else
-#define HYDRA_EXPORT __declspec(dllimport)
+#define HYDRA_API __declspec(dllimport)
 #endif

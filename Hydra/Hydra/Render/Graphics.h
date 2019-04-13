@@ -41,7 +41,7 @@ namespace Hydra
 		ConstantBufferPtr Handle;
 	};
 
-	class HYDRA_EXPORT Graphics
+	class HYDRA_API Graphics
 	{
 	private:
 		EngineContext* _Context;

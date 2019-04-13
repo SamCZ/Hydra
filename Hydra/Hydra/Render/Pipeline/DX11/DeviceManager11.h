@@ -59,7 +59,7 @@ typedef ID3D11RenderTargetView* RenderTargetView;
 
 #pragma warning(push)
 #pragma warning(disable: 4100) // unreferenced formal parameter
-class HYDRA_EXPORT IVisualController
+class HYDRA_API IVisualController
 {
 private:
     bool            m_Enabled;
@@ -79,7 +79,7 @@ public:
 };
 #pragma warning(pop)
 
-class HYDRA_EXPORT DeviceManager
+class HYDRA_API DeviceManager
 {
 public:
     enum WindowState

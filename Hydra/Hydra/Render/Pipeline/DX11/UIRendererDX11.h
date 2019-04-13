@@ -9,7 +9,7 @@ namespace Hydra
 {
 	class EngineContext;
 
-	class HYDRA_EXPORT UIRendererDX11 : public UIRenderer
+	class HYDRA_API UIRendererDX11 : public UIRenderer
 	{
 	private:
 		EngineContext* _Context;

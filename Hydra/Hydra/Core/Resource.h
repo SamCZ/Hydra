@@ -5,7 +5,7 @@
 
 namespace Hydra
 {
-	class HYDRA_EXPORT Resource
+	class HYDRA_API Resource
 	{
 	protected:
 		String _Source;

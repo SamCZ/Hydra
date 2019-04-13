@@ -5,7 +5,7 @@
 
 namespace Hydra
 {
-	struct HYDRA_EXPORT ColorRGBA
+	struct HYDRA_API ColorRGBA
 	{
 		float r, g, b, a;
 
@@ -19,13 +19,13 @@ namespace Hydra
 		}
 	};
 
-	HYDRA_EXPORT ColorRGBA MakeRGB(int r, int g, int b);
-	HYDRA_EXPORT ColorRGBA MakeRGBA(int r, int g, int b, int a);
-	HYDRA_EXPORT ColorRGBA MakeRGBf(float r, float g, float b);
-	HYDRA_EXPORT ColorRGBA MakeRGBAf(float r, float g, float b, float a);
-	HYDRA_EXPORT ColorRGBA MakeHEX(const char* hex);
+	HYDRA_API ColorRGBA MakeRGB(int r, int g, int b);
+	HYDRA_API ColorRGBA MakeRGBA(int r, int g, int b, int a);
+	HYDRA_API ColorRGBA MakeRGBf(float r, float g, float b);
+	HYDRA_API ColorRGBA MakeRGBAf(float r, float g, float b, float a);
+	HYDRA_API ColorRGBA MakeHEX(const char* hex);
 
-	struct HYDRA_EXPORT Colors
+	struct HYDRA_API Colors
 	{
 		static ColorRGBA White;
 		static ColorRGBA Black;

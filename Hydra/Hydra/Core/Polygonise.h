@@ -25,6 +25,6 @@ namespace Hydra
 	 0 will be returned if the grid cell is either totally above
 	 of totally below the isolevel.
 	 */
-	HYDRA_EXPORT int Polygonise(GRIDCELL& grid, double isolevel, TRIANGLE *triangles);
-	HYDRA_EXPORT Vector3 VertexInterp(double isolevel, const Vector3& p1, const Vector3& p2, double valp1, double valp2);
+	HYDRA_API int Polygonise(GRIDCELL& grid, double isolevel, TRIANGLE *triangles);
+	HYDRA_API Vector3 VertexInterp(double isolevel, const Vector3& p1, const Vector3& p2, double valp1, double valp2);
 }
