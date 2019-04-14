@@ -51,8 +51,8 @@ namespace Hydra
 		Map<String, InputLayoutPtr> _InputLayouts;
 		Map<String, SamplerPtr> _Samplers;
 
-		MaterialPtr _BlitMaterial;
-		MaterialPtr _BlurMaterial;
+		Material* _BlitMaterial;
+		Material* _BlurMaterial;
 	public:
 		Graphics(EngineContext* context);
 		~Graphics();
@@ -66,18 +66,18 @@ namespace Hydra
 		void BlurTexture(TexturePtr pSource, TexturePtr pDest);
 		void BlurTexture(const String pSource, const String pDest);
 
-		void Composite(MaterialPtr mateiral, Function<void(NVRHI::DrawCallState&)> preRenderFunction, TexturePtr pDest);
-		void Composite(MaterialPtr mateiral, Function<void(NVRHI::DrawCallState&)> preRenderFunction, const String& outputName);
-		void Composite(MaterialPtr mateiral, TexturePtr slot0Texture, TexturePtr pDest);
-		void Composite(MaterialPtr mateiral, const String& slot0Texture, const String& pDest);
+		void Composite(Material* mateiral, Function<void(NVRHI::DrawCallState&)> preRenderFunction, TexturePtr pDest);
+		void Composite(Material* mateiral, Function<void(NVRHI::DrawCallState&)> preRenderFunction, const String& outputName);
+		void Composite(Material* mateiral, TexturePtr slot0Texture, TexturePtr pDest);
+		void Composite(Material* mateiral, const String& slot0Texture, const String& pDest);
 
-		void Dispatch(MaterialPtr material, uint32_t groupsX, uint32_t groupsY, uint32_t groupsZ);
+		void Dispatch(Material* material, uint32_t groupsX, uint32_t groupsY, uint32_t groupsZ);
 
-		void RenderCubeMap(MaterialPtr mateiral, InputLayoutPtr inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, TexturePtr pDest);
-		void RenderCubeMap(MaterialPtr mateiral, const String& inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, const String& outputName);
+		void RenderCubeMap(Material* mateiral, InputLayoutPtr inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, TexturePtr pDest);
+		void RenderCubeMap(Material* mateiral, const String& inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, const String& outputName);
 
-		void SetMaterialShaders(NVRHI::DrawCallState& state, MaterialPtr mateiral);
-		void ApplyMaterialParameters(NVRHI::DrawCallState& state, MaterialPtr mateiral);
+		void SetMaterialShaders(NVRHI::DrawCallState& state, Material* mateiral);
+		void ApplyMaterialParameters(NVRHI::DrawCallState& state, Material* mateiral);
 
 		void SetClearFlags(NVRHI::DrawCallState& state, const ColorRGBA& color);
 
@@ -102,7 +102,7 @@ namespace Hydra
 		void ReleaseRenderTarget(const String& name);
 		void BindRenderTarget(NVRHI::DrawCallState& state, const String& name, int index);
 
-		InputLayoutPtr CreateInputLayout(const String& name, const NVRHI::VertexAttributeDesc* d, uint32_t attributeCount, MaterialPtr material);
+		InputLayoutPtr CreateInputLayout(const String& name, const NVRHI::VertexAttributeDesc* d, uint32_t attributeCount, Material* material);
 		InputLayoutPtr GetInputLayout(const String& name);
 
 		SamplerPtr CreateSampler(const String& name, const WrapMode& wrapX = WrapMode::WRAP_MODE_WRAP, const WrapMode& wrapY = WrapMode::WRAP_MODE_WRAP, const WrapMode& wrapZ = WrapMode::WRAP_MODE_WRAP, bool minFilter = true, bool magFilter = true, bool mipFilter = true, int anisotropy = 16);

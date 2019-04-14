@@ -49,8 +49,6 @@ namespace Hydra
 
 	class Material;
 
-	DEFINE_PTR(Material)
-
 	class HYDRA_API Material
 	{
 	private:
@@ -71,7 +69,7 @@ namespace Hydra
 
 		List<Var*> _VarsToMarkClean;
 	public:
-		static Map<String, MaterialPtr> AllMaterials;
+		static Map<String, Material*> AllMaterials;
 
 		String Name;
 		bool IsInternalMaterial;

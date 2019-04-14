@@ -6,8 +6,8 @@ namespace Hydra
 {
 	struct WinTiming
 	{
-		static double getTime();
-		static void sleep(uint32 milliseconds);
+		HYDRA_API static double getTime();
+		HYDRA_API static void sleep(uint32 milliseconds);
 	};
 
 	typedef WinTiming PlatformTiming;

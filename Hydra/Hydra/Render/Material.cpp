@@ -8,7 +8,7 @@
 namespace Hydra
 {
 	Map<String, SharedPtr<Technique>> Material::_TechniqueCache;
-	Map<String, MaterialPtr> Material::AllMaterials;
+	Map<String, Material*> Material::AllMaterials;
 
 	Material::Material(const String & name, SharedPtr<Technique> technique) : Name(name), _Technique(technique), IsInternalMaterial(false)
 	{

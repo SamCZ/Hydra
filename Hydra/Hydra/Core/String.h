@@ -2,11 +2,34 @@
 
 #include <string>
 #include <sstream>
+#include <fstream>
 
 #include "Container.h"
 
 namespace Hydra
 {
+	class FString
+	{
+	private:
+
+	public:
+		FString();
+		FString(const char* str);
+		FString(const FString& str);
+		FString(const FString&& str);
+		~FString();
+
+		void Append(const char* str);
+		void Append(const FString& str);
+		void Append(const char c);
+
+		int Length();
+
+		const char* GetRawString();
+
+		std::ostream operator<<(std::ostream& left);
+	};
+
 	typedef std::string String;
 	typedef std::wstring WString;
 

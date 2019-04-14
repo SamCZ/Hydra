@@ -2,6 +2,8 @@
 
 #include "IndustryEmpire.h"
 
+#include <string>
+
 int main()
 {
 	IndustryEmpire game;

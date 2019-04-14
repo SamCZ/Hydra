@@ -147,7 +147,12 @@
     <ClInclude Include="Hydra\Core\YamlConvertors.h" />
     <ClInclude Include="Hydra\Engine.h" />
     <ClInclude Include="Hydra\EngineContext.h" />
+    <ClInclude Include="Hydra\Framework\Character.h" />
     <ClInclude Include="Hydra\Framework\Actor.h" />
+    <ClInclude Include="Hydra\Framework\Components\ActorComponent.h" />
+    <ClInclude Include="Hydra\Framework\Components\MeshComponent.h" />
+    <ClInclude Include="Hydra\Framework\Components\PrimitiveComponent.h" />
+    <ClInclude Include="Hydra\Framework\Components\SceneComponent.h" />
     <ClInclude Include="Hydra\Framework\GameModeBase.h" />
     <ClInclude Include="Hydra\Framework\Object.h" />
     <ClInclude Include="Hydra\Framework\Pawn.h" />
@@ -237,6 +242,7 @@
     <ClCompile Include="Hydra\Assets\AssetManager.cpp" />
     <ClCompile Include="Hydra\Core\FastNoise.cpp" />
     <ClCompile Include="Hydra\Core\Math\Box.cpp" />
+    <ClCompile Include="Hydra\Core\String.cpp" />
     <ClCompile Include="Hydra\EngineContext.cpp" />
     <ClCompile Include="Hydra\Framework\Actor.cpp" />
     <ClCompile Include="Hydra\Framework\Pawn.cpp" />
