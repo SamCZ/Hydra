@@ -2,13 +2,14 @@
 
 #include "Hydra/Core/Log.h"
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
-#include "Hydra/Render/Pipeline/DX11/DeviceManager11.h"
+#include "Hydra/Render/Pipeline/Windows/DX11/DeviceManager11.h"
 #include "Hydra/Core/SmartPointer.h"
 #include "Hydra/Input/InputManager.h"
+#include "Hydra/Render/UI/UIRenderer.h"
 
 namespace Hydra
 {
-	typedef SharedPtr<NVRHI::IRendererInterface> IRendererInterface;
+	typedef NVRHI::IRendererInterface* IRendererInterface;
 
 	class Graphics;
 
@@ -16,22 +17,29 @@ namespace Hydra
 	{
 	private:
 		IRendererInterface _RenderInterface;
-		SharedPtr<DeviceManager> _DeviceManager;
-		InputManagerPtr _InputManager;
+		DeviceManager* _DeviceManager;
+		InputManager* _InputManager;
 		Graphics* _Graphics;
+		UIRenderer* _UIRenderer;
 	public:
 		Vector2i ScreenSize;
+
+	public:
+		EngineContext();
 
 		void SetRenderInterface(IRendererInterface renderInterface);
 		IRendererInterface GetRenderInterface();
 
-		void SetDeviceManager(SharedPtr<DeviceManager> deviceManager);
-		SharedPtr<DeviceManager> GetDeviceManager();
+		void SetDeviceManager(DeviceManager* deviceManager);
+		DeviceManager* GetDeviceManager();
 
-		void SetInputManager(InputManagerPtr inputManager);
-		InputManagerPtr GetInputManager();
+		void SetInputManager(InputManager* inputManager);
+		InputManager* GetInputManager();
 
 		void SetGraphics(Graphics* graphics);
 		Graphics* GetGraphics();
+
+		void SetUIRenderer(UIRenderer* uiRenderer);
+		UIRenderer* GetUIRenderer();
 	};
 }

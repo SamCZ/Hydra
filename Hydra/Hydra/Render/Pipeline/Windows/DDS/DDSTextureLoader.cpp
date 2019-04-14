@@ -16,6 +16,10 @@
 
 #pragma once
 
+#include "Hydra/Core/Platform.h"
+
+#ifdef OPERATING_SYSTEM_WINDOWS
+
 // Off by default warnings
 #pragma warning(disable : 4619 4616 4061 4265 4365 4571 4623 4625 4626 4628 4668 4710 4711 4746 4774 4820 4987 5026 5027 5031 5032 5039 5045)
 // C4619/4616 #pragma warning warnings
@@ -1462,3 +1466,4 @@ DDS_ALPHA_MODE* alphaMode)
 
 	return hr;
 }
+#endif

@@ -2,6 +2,11 @@
 
 namespace Hydra
 {
+	EngineContext::EngineContext() : _RenderInterface(nullptr), _DeviceManager(nullptr), _InputManager(nullptr), _Graphics(nullptr), _UIRenderer(nullptr)
+	{
+
+	}
+
 	void EngineContext::SetRenderInterface(IRendererInterface renderInterface)
 	{
 		_RenderInterface = renderInterface;
@@ -12,22 +17,22 @@ namespace Hydra
 		return _RenderInterface;
 	}
 
-	void EngineContext::SetDeviceManager(SharedPtr<DeviceManager> deviceManager)
+	void EngineContext::SetDeviceManager(DeviceManager* deviceManager)
 	{
 		_DeviceManager = deviceManager;
 	}
 
-	SharedPtr<DeviceManager> EngineContext::GetDeviceManager()
+	DeviceManager* EngineContext::GetDeviceManager()
 	{
 		return _DeviceManager;
 	}
 
-	void EngineContext::SetInputManager(InputManagerPtr inputManager)
+	void EngineContext::SetInputManager(InputManager* inputManager)
 	{
 		_InputManager = inputManager;
 	}
 
-	InputManagerPtr EngineContext::GetInputManager()
+	InputManager* EngineContext::GetInputManager()
 	{
 		return _InputManager;
 	}
@@ -40,5 +45,15 @@ namespace Hydra
 	Graphics* EngineContext::GetGraphics()
 	{
 		return _Graphics;
+	}
+
+	void EngineContext::SetUIRenderer(UIRenderer* uiRenderer)
+	{
+		_UIRenderer = uiRenderer;
+	}
+
+	UIRenderer* EngineContext::GetUIRenderer()
+	{
+		return _UIRenderer;
 	}
 }

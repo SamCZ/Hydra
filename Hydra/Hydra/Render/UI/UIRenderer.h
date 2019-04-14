@@ -29,7 +29,7 @@ namespace Hydra
 		void Create();
 		void Destroy();
 
-		void Begin();
+		void Begin(const Vector2& screenSize);
 		void End();
 
 		void DrawImage(NVRHI::TextureHandle tex, float x, float y, float width, float height, float borderRadius, float alpha = 1.0f);

@@ -12,6 +12,10 @@
 
 #pragma once
 
+#include "Hydra/Core/Platform.h"
+
+#ifdef OPERATING_SYSTEM_WINDOWS
+
 #include "DDS.h"
 #include "DDSTextureLoader.h"
 
@@ -897,3 +901,4 @@ namespace DirectX
 
 	}
 }
+#endif

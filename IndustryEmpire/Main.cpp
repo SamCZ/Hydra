@@ -8,5 +8,7 @@ int main()
 {
 	IndustryEmpire game;
 
+	game.Start();
+
 	return 0;
 }

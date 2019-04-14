@@ -30,7 +30,7 @@ namespace Hydra
 
 	#define CmpFnc Function<void(NVRHI::DrawCallState&, int, int)>
 
-	class EngineContext;
+	class HYDRA_API EngineContext;
 
 	struct ConstantBufferInfo
 	{

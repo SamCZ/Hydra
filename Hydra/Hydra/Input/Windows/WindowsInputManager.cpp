@@ -6,6 +6,8 @@
 #include "Hydra/Core/Vector.h"
 #include "Hydra/EngineContext.h"
 
+#include "Hydra/Render/Pipeline/Windows/DX11/DeviceManager11.h"
+
 namespace Hydra
 {
 	WindowsInputManager::WindowsInputManager(EngineContext * context) : _Context(context)
@@ -761,7 +763,7 @@ namespace Hydra
 				while (::ShowCursor(false) >= 0);
 			}
 
-			HWND hWnd = _Context->GetDeviceManager()->GetHWND();
+			HWND hWnd = (static_cast<DeviceManagerDX11*>(_Context->GetDeviceManager()))->GetHWND();
 
 			RECT rect;
 			GetWindowRect(hWnd, &rect);

@@ -9,6 +9,10 @@
 
 #pragma once
 
+#include "Hydra/Core/Platform.h"
+
+#ifdef OPERATING_SYSTEM_WINDOWS
+
 #if defined(_XBOX_ONE) && defined(_TITLE)
 #include <d3d11_x.h>
 #else
@@ -169,3 +173,4 @@ namespace DirectX
 		return size;
 	}
 }
+#endif

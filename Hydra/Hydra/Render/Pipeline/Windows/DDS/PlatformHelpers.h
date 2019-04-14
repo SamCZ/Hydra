@@ -10,6 +10,10 @@
 
 #pragma once
 
+#include "Hydra/Core/Platform.h"
+
+#ifdef OPERATING_SYSTEM_WINDOWS
+
 #pragma warning(disable : 4324)
 
 #include <exception>
@@ -87,3 +91,4 @@ namespace DirectX
 
 	inline HANDLE safe_handle(HANDLE h) noexcept{ return (h == INVALID_HANDLE_VALUE) ? nullptr : h; }
 }
+#endif

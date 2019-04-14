@@ -1,6 +1,7 @@
 #include "Hydra/Render/UI/UIRenderer.h"
 
 #include "NanoVG/nanovg.h"
+#include "Hydra/Core/File.h"
 
 namespace Hydra
 {
@@ -28,9 +29,9 @@ namespace Hydra
 		}
 	}
 
-	void UIRenderer::Begin()
+	void UIRenderer::Begin(const Vector2& screenSize)
 	{
-		nvgBeginFrame(_Context, 0, 0, 1.0f); //TODO: Fix width and height
+		nvgBeginFrame(_Context, screenSize.x, screenSize.y, 1.0f);
 	}
 
 	void UIRenderer::End()

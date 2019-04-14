@@ -1,15 +1,16 @@
-#include "Hydra/Render/Pipeline/DX11/UIRendererDX11.h"
+#include "UIRendererDX11.h"
 
 #define NANOVG_D3D11_IMPLEMENTATION
 #include "NanoVG/nanovg_d3d11.h"
 
-#include "Hydra/Render/Pipeline/DX11/GFSDK_NVRHI_D3D11.h"
+#include "GFSDK_NVRHI_D3D11.h"
+#include "Hydra/Render/Pipeline/Windows/DX11/DeviceManager11.h"
 
 #include "Hydra/EngineContext.h"
 
 namespace Hydra
 {
-	UIRendererDX11::UIRendererDX11(EngineContext* context) : _Context(context), _Device(context->GetDeviceManager()->GetDevice())
+	UIRendererDX11::UIRendererDX11(EngineContext* context) : _Context(context), _Device((static_cast<DeviceManagerDX11*>(context->GetDeviceManager()))->GetDevice())
 	{
 		
 	}
@@ -39,7 +40,7 @@ namespace Hydra
 
 		NVRHI::TextureDesc desc = handle->GetDesc();
 
-		NVRHI::RendererInterfaceD3D11* renderInterface = (NVRHI::RendererInterfaceD3D11*)_Context->GetRenderInterface().get();
+		NVRHI::RendererInterfaceD3D11* renderInterface = (NVRHI::RendererInterfaceD3D11*)_Context->GetRenderInterface();
 
 		newTexStruct->width = desc.width;
 		newTexStruct->height = desc.height;

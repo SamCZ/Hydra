@@ -207,7 +207,7 @@ namespace NVRHI
        /* enum { MAX_NAME_LENGTH = 256 };
 
         char name[MAX_NAME_LENGTH];*/
-		LPCSTR name;
+		const char* name;
         uint32_t semanticIndex;
         Format::Enum format;
         uint32_t bufferIndex;
@@ -867,9 +867,8 @@ namespace NVRHI
     class HYDRA_API IRendererInterface
     {
         IRendererInterface& operator=(const IRendererInterface& other); //undefined
-    protected:
-        virtual ~IRendererInterface() {};
     public:
+		virtual ~IRendererInterface() {};
 
         virtual TextureHandle createTexture(const TextureDesc& d, const void* data) = 0;
         virtual const TextureDesc& describeTexture(TextureHandle t) = 0;

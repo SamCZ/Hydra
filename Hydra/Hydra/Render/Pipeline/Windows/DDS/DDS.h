@@ -18,6 +18,9 @@
 
 #pragma once
 
+#include "Hydra/Core/Platform.h"
+
+#ifdef OPERATING_SYSTEM_WINDOWS
 
 namespace DirectX
 {
@@ -222,3 +225,5 @@ namespace DirectX
 	static_assert(sizeof(DDS_HEADER_DXT10) == 20, "DDS DX10 Extended Header size mismatch");
 
 } // namespace
+
+#endif

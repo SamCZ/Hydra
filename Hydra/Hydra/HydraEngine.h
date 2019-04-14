@@ -1,28 +1,21 @@
 #pragma once
 
 #include "Hydra/Core/Library.h"
+#include "Hydra/Render/Pipeline/DeviceCreationParameters.h"
+#include "Hydra/EngineContext.h"
 
 namespace Hydra
 {
-	struct EngineStartParams
-	{
-		int Width;
-		int Height;
-		int AutoPercentScale;
-		bool AutoScale;
-		bool FullScreen;
-		bool Maximized;
-
-		EngineStartParams() : Width(1280), Height(720), AutoPercentScale(70), AutoScale(false), FullScreen(false), Maximized(false) { }
-	};
-
 	class HYDRA_API HydraEngine
 	{
 	protected:
+		EngineContext* Context;
+
+	public:
+		void Start();
 		
 	public:
-		virtual void PrepareForEngineStart(EngineStartParams& params);
-
+		virtual void PrepareForEngineStart(DeviceCreationParameters& params);
 		virtual void SceneInit() = 0;
 	};
 }
