@@ -11,4 +11,14 @@ namespace Hydra
 	{
 		_World = world;
 	}
+
+	void AActor::BeginPlay()
+	{
+
+	}
+
+	void AActor::Tick(float DeltaTime)
+	{
+
+	}
 }

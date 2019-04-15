@@ -5,12 +5,12 @@
 
 void IndustryEmpire::SceneInit()
 {
-	FWorld* world = nullptr;
+	/*FWorld* world = nullptr;
 
 	const char* str = "hello";
 	std::string s = str;
 
 	world->SpawnActor<AActor>("Player", Vector3(), Vector3());
 
-	world->OverrideGameMode<HGameModeBase>();
+	world->OverrideGameMode<HGameModeBase>();*/
 }

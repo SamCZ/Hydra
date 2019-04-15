@@ -13,5 +13,8 @@ namespace Hydra
 	public:
 		FWorld* GetWorld();
 		void SetWorld(FWorld* world);
+
+		virtual void BeginPlay();
+		virtual void Tick(float DeltaTime);
 	};
 }
