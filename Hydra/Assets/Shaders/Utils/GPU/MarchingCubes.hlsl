@@ -78,6 +78,61 @@ float GetOffset(float v1, float v2)
 	return (delta == 0.0f) ? 0.5f : (_Target - v1) / delta;
 }
 
+float GetDensity(int x, int y, int z)
+{
+	return _Voxels[x + y * _Width + z * _Width * _Height];
+}
+
+float trilinear(float x, float y, float z)
+{
+	int xBase = (int)floor(x);
+	int yBase = (int)floor(y);
+	int zBase = (int)floor(z);
+	int xTop = (int)ceil(x);
+	int yTop = (int)ceil(y);
+	int zTop = (int)ceil(z);
+
+	float c000 = GetDensity(xBase, yBase, zBase);
+	float c100 = GetDensity(xTop, yBase, zBase);
+	float c101 = GetDensity(xTop, yBase, zTop);
+	float c001 = GetDensity(xBase, yBase, zTop);
+	float c010 = GetDensity(xBase, yTop, zBase);
+	float c110 = GetDensity(xTop, yTop, zBase);
+	float c111 = GetDensity(xTop, yTop, zTop);
+	float c011 = GetDensity(xBase, yTop, zTop);
+
+	float xPart = x - xBase;
+	float c00 = c000 + (c100 - c000) * xPart;
+	float c01 = c001 + (c101 - c001) * xPart;
+
+	float c10 = c010 + (c110 - c010) * xPart;
+	float c11 = c011 + (c111 - c011) * xPart;
+
+	float yPart = y - yBase;
+	float c0 = c00 + (c10 - c00) * yPart;
+	float c1 = c11 + (c11 - c01) * yPart;
+
+	float zPart = z - zBase;
+	float c = c0 + (c1 - c0) * zPart;
+
+	return c;
+}
+
+float3 GenNormal(float3 pos)
+{
+	float x = pos.x;
+	float y = pos.y;
+	float z = pos.z;
+
+	float d = 1.0F;
+
+	float nx = trilinear(x + d, y, z) - trilinear(x - d, y, z);
+	float ny = trilinear(x, y + d, z) - trilinear(x, y - d, z);
+	float nz = trilinear(x, y, z + d) - trilinear(x, y, z - d);
+
+	return normalize(float3(nx, ny, nz));
+}
+
 VoxelBuffer CreateVertex(float3 position, float3 centre, float3 size
 #if CMP_TRI_NORMALS
 	, float3 triNorm
@@ -89,6 +144,8 @@ VoxelBuffer CreateVertex(float3 position, float3 centre, float3 size
 
 	float3 uv = position / size;
 	vert.Normal = _Normals.SampleLevel(_LinearClamp, uv, 0).xyz;
+
+	vert.Normal = GenNormal(position);
 
 #if CMP_TRI_NORMALS
 	vert.Normal = triNorm;
