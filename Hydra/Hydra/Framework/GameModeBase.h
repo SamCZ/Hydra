@@ -7,6 +7,6 @@ namespace Hydra
 	class HYDRA_API HGameModeBase : public AActor
 	{
 	public:
-
+		HGameModeBase();
 	};
 }

@@ -1,10 +1,11 @@
 #include "MainRenderView.h"
+#include "Hydra/HydraEngine.h"
 
 namespace Hydra
 {
 	void MainRenderView::OnCreated()
 	{
-
+		Engine->SceneInit();
 	}
 
 	void MainRenderView::OnDestroy()

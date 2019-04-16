@@ -8,6 +8,8 @@ namespace Hydra
 {
 	class HYDRA_API HSceneComponent : public HActorComponent
 	{
+	private:
+		List<HSceneComponent*> Childrens;
 	public:
 		Vector3 Location;
 		Vector3 Rotation;
@@ -18,13 +20,12 @@ namespace Hydra
 		uint8 AbsoluteScale : 1;
 
 		uint8 IsVisible : 1;
+
+		HSceneComponent* Parent;
 	public:
-
-		Vector3 GetForwardVector() const;
-		Vector3 GetUpVector() const;
-		Vector3 GetRightVector() const;
-
-		HSceneComponent* GetParent() const;
+		HSceneComponent();
+		
+		virtual void BeginDestroy();
 
 		const List<HSceneComponent*>& GetChildrens() const;
 		void GetParentComponents(List<HSceneComponent*>& ParentComponent) const;
@@ -35,8 +36,6 @@ namespace Hydra
 		bool AttachToComponent(HSceneComponent* InParent);
 		void DetachFromComponent();
 
-		bool IsVisible() const;
-
 		virtual void OnVisibilityChanged();
 
 		void SetVisibility(bool bNewVisibility, bool bPropagateToChildren = false);
@@ -45,7 +44,7 @@ namespace Hydra
 		{
 			SetVisibility(!IsVisible, bPropagateToChildren);
 		}
-
+		
 
 	};
 }

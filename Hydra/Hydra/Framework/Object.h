@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Hydra/Core/Common.h"
+#include "Hydra/Framework/Class.h"
 
 namespace Hydra
 {
