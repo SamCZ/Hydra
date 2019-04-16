@@ -22,10 +22,12 @@ namespace Hydra
 	public:
 		FWorld(EngineContext* context);
 
-		template<class T>
-		T* SpawnActor(const String& Name, const Vector3& Position, const Vector3& Rotation, const Vector3& Scale = Vector3(0.0f))
+		template<class AActor>
+		AActor* SpawnActor(const String& Name, const Vector3& Position, const Vector3& Rotation, const Vector3& Scale = Vector3(0.0f))
 		{
-			T* actor = BeginSpawnActor<T>(Name, Position, Rotation, Scale);
+			AActor* actor = BeginSpawnActor<AActor>(Name, Position, Rotation, Scale);
+
+			actor->Name = Name;
 
 			FinishSpawningActor(actor);
 
@@ -70,5 +72,10 @@ namespace Hydra
 
 			FinishSpawningActor(actor);
 		}
+
+		List<AActor*>& GetActors();
+		List<HPrimitiveComponent*>& GetPrimitiveComponents();
+
+		HGameModeBase* GetGameMode();
 	};
 }

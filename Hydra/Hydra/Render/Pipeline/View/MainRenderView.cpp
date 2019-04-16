@@ -1,6 +1,9 @@
 #include "MainRenderView.h"
 #include "Hydra/HydraEngine.h"
 
+#include "Hydra/Framework/World.h"
+#include "Hydra/Framework/Components/MeshComponent.h"
+
 namespace Hydra
 {
 	void MainRenderView::OnCreated()
@@ -15,7 +18,12 @@ namespace Hydra
 
 	void MainRenderView::OnRender(NVRHI::TextureHandle mainRenderTarget)
 	{
+		List<HPrimitiveComponent*>& components = Engine->GetWorld()->GetPrimitiveComponents();
 
+		for (HPrimitiveComponent* cmp : components)
+		{
+			
+		}
 	}
 
 	void MainRenderView::OnTick(float Delta)

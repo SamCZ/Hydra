@@ -6,10 +6,13 @@
 
 namespace Hydra
 {
+	class FWorld;
+
 	class HYDRA_API HydraEngine
 	{
 	protected:
 		EngineContext* Context;
+		FWorld* World;
 
 	public:
 		void Start();
@@ -17,5 +20,8 @@ namespace Hydra
 	public:
 		virtual void PrepareForEngineStart(DeviceCreationParameters& params);
 		virtual void SceneInit() = 0;
+
+		FWorld* GetWorld() const;
+		EngineContext* GetContext() const;
 	};
 }

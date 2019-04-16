@@ -2,6 +2,8 @@
 #include "Hydra/Render/Pipeline/View/MainRenderView.h"
 #include "Hydra/Render/Pipeline/View/UIRenderView.h"
 
+#include "Hydra/Framework/World.h"
+
 namespace Hydra
 {
 
@@ -17,11 +19,22 @@ namespace Hydra
 		deviceManager->AddVisualController(new MainRenderView(Context, this));
 		deviceManager->AddVisualController(new UIRenderView(Context, this));
 
+		World = new FWorld(Context);
 		deviceManager->InitContext();
 	}
 
 	void HydraEngine::PrepareForEngineStart(DeviceCreationParameters& params)
 	{
 		Context->ScreenSize = Vector2i(params.Width, params.Height);
+	}
+
+	FWorld* HydraEngine::GetWorld() const
+	{
+		return World;
+	}
+
+	EngineContext * HydraEngine::GetContext() const
+	{
+		return Context;
 	}
 }

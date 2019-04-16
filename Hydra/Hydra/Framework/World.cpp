@@ -31,4 +31,16 @@ namespace Hydra
 			}
 		}
 	}
+	List<AActor*>& FWorld::GetActors()
+	{
+		return _Actors;
+	}
+	List<HPrimitiveComponent*>& FWorld::GetPrimitiveComponents()
+	{
+		return _PrimitiveComponents;
+	}
+	HGameModeBase* FWorld::GetGameMode()
+	{
+		return _GameMode;
+	}
 }

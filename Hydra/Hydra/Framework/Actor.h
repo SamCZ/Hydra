@@ -33,9 +33,15 @@ namespace Hydra
 
 			HSceneComponent* component = reinterpret_cast<HSceneComponent*>(componentRaw);
 
+			component->Name = name;
+
 			InitilizeComponent(component);
 			Components.push_back(component);
-			component->AttachToComponent(RootComponent);
+			
+			if (RootComponent)
+			{
+				component->AttachToComponent(RootComponent);
+			}
 
 			return componentRaw;
 		}

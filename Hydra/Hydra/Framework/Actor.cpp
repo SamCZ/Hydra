@@ -4,7 +4,7 @@
 
 namespace Hydra
 {
-	AActor::AActor() : HObject(), Engine(nullptr), World(nullptr), IsIndestructible(false), IsActive(true), IsEditorOnly(false)
+	AActor::AActor() : HObject(), Engine(nullptr), World(nullptr), RootComponent(nullptr), IsIndestructible(false), IsActive(true), IsEditorOnly(false)
 	{
 
 	}

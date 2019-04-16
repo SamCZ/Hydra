@@ -10,6 +10,6 @@ namespace Hydra
 	private:
 
 	public:
-
+		String Name;
 	};
 }
