@@ -10,6 +10,7 @@ namespace Hydra
 
 	class HYDRA_API AActor : public HObject
 	{
+		HCLASS_BODY(AActor)
 	public:
 		EngineContext* Engine;
 		FWorld* World;

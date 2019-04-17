@@ -101,4 +101,6 @@ namespace Hydra
 	#define EVENT(ClassName, MethodName) NammedDelegate<void> { EVENT_NAME(ClassName, MethodName), new Delegate<ClassName, void>(this, &ClassName::MethodName) }
 	#define EVENT_ARGS(ClassName, MethodName, ...) NammedDelegate<void, __VA_ARGS__> { EVENT_NAME(ClassName, MethodName), new Delegate<ClassName, void, __VA_ARGS__>(this, &ClassName::MethodName) }
 
+	#define FUNC_POINTER(Name, ReturnType, ...) ReturnType* (*Name)(__VA_ARGS__)
+
 }

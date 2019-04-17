@@ -11,4 +11,5 @@ void IndustryEmpire::SceneInit()
 	World->SpawnActor<ACubeActor>("Cube2", Vector3(0, 0, 1.5f), Vector3());
 
 	World->OverrideGameMode<HGameModeBase>();
+
 }

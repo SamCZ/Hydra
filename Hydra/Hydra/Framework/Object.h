@@ -7,9 +7,16 @@ namespace Hydra
 {
 	class HYDRA_API HObject
 	{
+		HCLASS_BODY(HObject)
 	private:
 
 	public:
 		String Name;
+
+		template<class T>
+		bool IsA()
+		{
+			return GetClass() == T::StaticClass();
+		}
 	};
 }

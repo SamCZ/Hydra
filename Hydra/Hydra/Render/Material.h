@@ -47,9 +47,9 @@ namespace Hydra
 		bool HasChnaged;
 	};
 
-	class Material;
+	class MaterialInterface;
 
-	class HYDRA_API Material
+	class HYDRA_API MaterialInterface
 	{
 	private:
 		static Map<String, SharedPtr<Technique>> _TechniqueCache;
@@ -69,13 +69,15 @@ namespace Hydra
 
 		List<Var*> _VarsToMarkClean;
 	public:
-		static Map<String, Material*> AllMaterials;
+		static Map<String, MaterialInterface*> AllMaterialInterfaces;
 
 		String Name;
-		bool IsInternalMaterial;
+		bool IsInternalMaterialInterface;
+
+		static const MaterialInterface NullMaterial;
 	public:
-		Material(const String& name, SharedPtr<Technique> technique);
-		~Material();
+		MaterialInterface(const String& name, SharedPtr<Technique> technique);
+		~MaterialInterface();
 
 		void SetInt(const String& name, const int& i);
 		bool GetInt(const String& name, int* outInt);

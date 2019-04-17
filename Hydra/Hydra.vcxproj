@@ -160,6 +160,7 @@
     <ClInclude Include="Hydra\Framework\Object.h" />
     <ClInclude Include="Hydra\Framework\Pawn.h" />
     <ClInclude Include="Hydra\Framework\StaticMesh.h" />
+    <ClInclude Include="Hydra\Framework\StaticMeshResources.h" />
     <ClInclude Include="Hydra\Framework\World.h" />
     <ClInclude Include="Hydra\HydraEngine.h" />
     <ClInclude Include="Hydra\Input\GenericPlatformInput.h" />

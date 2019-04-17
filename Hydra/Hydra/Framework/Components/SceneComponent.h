@@ -8,6 +8,7 @@ namespace Hydra
 {
 	class HYDRA_API HSceneComponent : public HActorComponent
 	{
+		HCLASS_BODY(HSceneComponent)
 	private:
 		List<HSceneComponent*> Childrens;
 	public:

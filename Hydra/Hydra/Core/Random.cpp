@@ -36,8 +36,13 @@ namespace Hydra
 		return GetFloat(0, 100) >= percent;
 	}
 
-	Vector3 Random::GetRandomUnitVector()
+	Vector3 Random::GetRandomUnitVector3()
 	{
-		return glm::normalize(Vector3(GetFloat(0.0f, 1.0f), GetFloat(0.0f, 1.0f), GetFloat(0.0f, 1.0f)));
+		return glm::normalize(Vector3(GetFloat(-1.0f, 1.0f), GetFloat(-1.0f, 1.0f), GetFloat(-1.0f, 1.0f)));
+	}
+
+	Vector2 Random::GetRandomUnitVector2()
+	{
+		return Vector2(GetFloat(-1.0f, 1.0f), GetFloat(-1.0f, 1.0f));
 	}
 }

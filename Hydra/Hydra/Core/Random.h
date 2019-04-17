@@ -18,6 +18,7 @@ namespace Hydra
 		int GetInt(int min, int max);
 		float GetFloat(float min, float max);
 		bool GetByPercent(float percent);
-		Vector3 GetRandomUnitVector();
+		Vector3 GetRandomUnitVector3();
+		Vector2 GetRandomUnitVector2();
 	};
 }

@@ -68,10 +68,10 @@ namespace Hydra
 		return MakeRGB(255, 255, 255);
 	}
 
-	ColorRGBA Colors::White = MakeRGB(255, 255, 255);
-	ColorRGBA Colors::Black = MakeRGB(0, 0, 0);
+	const ColorRGBA ColorRGBA::White = MakeRGB(255, 255, 255);
+	const ColorRGBA ColorRGBA::Black = MakeRGB(0, 0, 0);
 
-	ColorRGBA Colors::Red = MakeRGB(255, 0, 0);
-	ColorRGBA Colors::Green = MakeRGB(0, 255, 0);
-	ColorRGBA Colors::Blue = MakeRGB(0, 0, 255);
+	const ColorRGBA ColorRGBA::Red = MakeRGB(255, 0, 0);
+	const ColorRGBA ColorRGBA::Green = MakeRGB(0, 255, 0);
+	const ColorRGBA ColorRGBA::Blue = MakeRGB(0, 0, 255);
 }

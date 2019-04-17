@@ -8,6 +8,7 @@ namespace Hydra
 
 	class HYDRA_API APawn : public AActor
 	{
+		HCLASS_BODY(APawn)
 	private:
 
 	public:

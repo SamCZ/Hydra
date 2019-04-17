@@ -3,4 +3,9 @@
 namespace Hydra
 {
 
+	class FStaticMeshRenderData
+	{
+
+	};
+
 }

@@ -6,6 +6,7 @@ namespace Hydra
 {
 	class HYDRA_API HMeshComponent : public HPrimitiveComponent
 	{
+		HCLASS_BODY(HMeshComponent)
 	public:
 
 		/*virtual List<class Material*> GetMaterials() const;

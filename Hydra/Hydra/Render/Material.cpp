@@ -7,10 +7,10 @@
 
 namespace Hydra
 {
-	Map<String, SharedPtr<Technique>> Material::_TechniqueCache;
-	Map<String, Material*> Material::AllMaterials;
+	Map<String, SharedPtr<Technique>> MaterialInterface::_TechniqueCache;
+	Map<String, MaterialInterface*> MaterialInterface::AllMaterialInterfaces;
 
-	Material::Material(const String & name, SharedPtr<Technique> technique) : Name(name), _Technique(technique), IsInternalMaterial(false)
+	MaterialInterface::MaterialInterface(const String & name, SharedPtr<Technique> technique) : Name(name), _Technique(technique), IsInternalMaterialInterface(false)
 	{
 		if (_Technique->IsPrecompiled())
 		{
@@ -27,7 +27,7 @@ namespace Hydra
 		}
 	}
 
-	Material::~Material()
+	MaterialInterface::~MaterialInterface()
 	{
 		ITER(_Variables, it)
 		{
@@ -57,117 +57,117 @@ namespace Hydra
 		}
 	}
 
-	void Material::SetInt(const String& name, const int& i)
+	void MaterialInterface::SetInt(const String& name, const int& i)
 	{
 		SetVariable<int>(name, VarType::Int, i);
 	}
 
-	bool Material::GetInt(const String& name, int* outInt)
+	bool MaterialInterface::GetInt(const String& name, int* outInt)
 	{
 		return GetVariable(name, VarType::Int, outInt);
 	}
 
-	void Material::SetUInt(const String& name, const unsigned int & i)
+	void MaterialInterface::SetUInt(const String& name, const unsigned int & i)
 	{
 		SetVariable<unsigned int>(name, VarType::UInt, i);
 	}
 
-	bool Material::GetUInt(const String& name, unsigned int * outInt)
+	bool MaterialInterface::GetUInt(const String& name, unsigned int * outInt)
 	{
 		return GetVariable(name, VarType::UInt, outInt);
 	}
 
-	void Material::SetFloat(const String& name, const float& f)
+	void MaterialInterface::SetFloat(const String& name, const float& f)
 	{
 		SetVariable<float>(name, VarType::Float, f);
 	}
 
-	bool Material::GetFloat(const String& name, float* outFloat)
+	bool MaterialInterface::GetFloat(const String& name, float* outFloat)
 	{
 		return GetVariable<float>(name, VarType::Float, outFloat);
 	}
 
-	void Material::SetBool(const String& name, const bool& b)
+	void MaterialInterface::SetBool(const String& name, const bool& b)
 	{
 		SetVariable(name, VarType::Bool, b);
 	}
 
-	bool Material::GetBool(const String& name, bool* outBool)
+	bool MaterialInterface::GetBool(const String& name, bool* outBool)
 	{
 		return GetVariable<bool>(name, VarType::Bool, outBool);
 	}
 
-	void Material::SetVector2(const String& name, const Vector2& vec)
+	void MaterialInterface::SetVector2(const String& name, const Vector2& vec)
 	{
 		SetVariable(name, VarType::Vector2, vec);
 	}
 
-	bool Material::GetVector2(const String& name, Vector2* outVec)
+	bool MaterialInterface::GetVector2(const String& name, Vector2* outVec)
 	{
 		return GetVariable<Vector2>(name, VarType::Vector2, outVec);
 	}
 
-	void Material::SetVector3(const String& name, const Vector3& vec)
+	void MaterialInterface::SetVector3(const String& name, const Vector3& vec)
 	{
 		SetVariable(name, VarType::Vector3, vec);
 	}
 
-	bool Material::GetVector3(const String & name, Vector3* outVec)
+	bool MaterialInterface::GetVector3(const String & name, Vector3* outVec)
 	{
 		return GetVariable<Vector3>(name, VarType::Vector3, outVec);
 	}
 
-	void Material::SetVector4(const String& name, const Vector4& vec)
+	void MaterialInterface::SetVector4(const String& name, const Vector4& vec)
 	{
 		SetVariable(name, VarType::Vector4, vec);
 	}
 
-	bool Material::GetVector4(const String& name, Vector4* outVec)
+	bool MaterialInterface::GetVector4(const String& name, Vector4* outVec)
 	{
 		return GetVariable<Vector4>(name, VarType::Vector4, outVec);
 	}
 
-	void Material::SetVector4Array(const String & name, Vector4* vecArr, size_t arrSize)
+	void MaterialInterface::SetVector4Array(const String & name, Vector4* vecArr, size_t arrSize)
 	{
 		SetVariable(name, VarType::Vector4Array, vecArr, sizeof(Vector4) * arrSize);
 	}
 
-	bool Material::GetVector4Array(const String & name, Vector4* vector, size_t arrSize)
+	bool MaterialInterface::GetVector4Array(const String & name, Vector4* vector, size_t arrSize)
 	{
 		return GetVariable(name, VarType::Vector4Array, vector, false, sizeof(Vector4) * arrSize);
 	}
 
-	void Material::SetMatrix3(const String& name, const Matrix3& mat)
+	void MaterialInterface::SetMatrix3(const String& name, const Matrix3& mat)
 	{
 		SetVariable(name, VarType::Matrix3, mat);
 	}
 
-	bool Material::GetMatrix3(const String& name, Matrix3* outMat)
+	bool MaterialInterface::GetMatrix3(const String& name, Matrix3* outMat)
 	{
 		return GetVariable<Matrix3>(name, VarType::Matrix3, outMat);
 	}
 
-	void Material::SetMatrix4(const String& name, const Matrix4& mat)
+	void MaterialInterface::SetMatrix4(const String& name, const Matrix4& mat)
 	{
 		SetVariable(name, VarType::Matrix4, mat);
 	}
 
-	bool Material::GetMatrix4(const String& name, Matrix4* outMat)
+	bool MaterialInterface::GetMatrix4(const String& name, Matrix4* outMat)
 	{
 		return GetVariable<Matrix4>(name, VarType::Matrix4, outMat);
 	}
 
-	void Material::SetStruct(const String & name, StorageStruct & s, size_t size)
+	void MaterialInterface::SetStruct(const String & name, StorageStruct & s, size_t size)
 	{
 		SetVariable(name, VarType::StorageStruct, (void*)(&s), size);
 	}
 
-	void Hydra::Material::SetStructArray(const String & name, void* s, size_t size)
+	void Hydra::MaterialInterface::SetStructArray(const String & name, void* s, size_t size)
 	{
 		SetVariable(name, VarType::StorageStructArray, s, size);
 	}
 
-	void Material::SetTexture(const String& name, NVRHI::TextureHandle texture)
+	void MaterialInterface::SetTexture(const String& name, NVRHI::TextureHandle texture)
 	{
 		if (_TextureVariables.find(name) == _TextureVariables.end())
 		{
@@ -179,7 +179,7 @@ namespace Hydra
 		var.HasChnaged = true;
 	}
 
-	NVRHI::TextureHandle Material::GetTexture(const String& name)
+	NVRHI::TextureHandle MaterialInterface::GetTexture(const String& name)
 	{
 		if (_TextureVariables.find(name) != _TextureVariables.end())
 		{
@@ -189,7 +189,7 @@ namespace Hydra
 		return nullptr;
 	}
 
-	void Material::SetSampler(const String& name, NVRHI::SamplerHandle sampler)
+	void MaterialInterface::SetSampler(const String& name, NVRHI::SamplerHandle sampler)
 	{
 		if (_SamplerVariables.find(name) == _SamplerVariables.end())
 		{
@@ -201,7 +201,7 @@ namespace Hydra
 		var.HasChnaged = true;
 	}
 
-	NVRHI::SamplerHandle Material::GetSampler(const String& name)
+	NVRHI::SamplerHandle MaterialInterface::GetSampler(const String& name)
 	{
 		if (_SamplerVariables.find(name) != _SamplerVariables.end())
 		{
@@ -211,7 +211,7 @@ namespace Hydra
 		return nullptr;
 	}
 
-	void Material::SetBuffer(const String & name, NVRHI::BufferHandle buffer)
+	void MaterialInterface::SetBuffer(const String & name, NVRHI::BufferHandle buffer)
 	{
 		if (_BufferVariables.find(name) == _BufferVariables.end())
 		{
@@ -223,7 +223,7 @@ namespace Hydra
 		var.HasChnaged = true;
 	}
 
-	NVRHI::BufferHandle Material::GetBuffer(const String & name)
+	NVRHI::BufferHandle MaterialInterface::GetBuffer(const String & name)
 	{
 		if (_BufferVariables.find(name) != _BufferVariables.end())
 		{
@@ -233,7 +233,7 @@ namespace Hydra
 		return nullptr;
 	}
 
-	Var* Hydra::Material::GetRawVar(const String & name)
+	Var* Hydra::MaterialInterface::GetRawVar(const String & name)
 	{
 		if (_Variables.find(name) != _Variables.end())
 		{
@@ -242,7 +242,7 @@ namespace Hydra
 		return nullptr;
 	}
 
-	unsigned char* Hydra::Material::GetRawVarData(const String & name)
+	unsigned char* Hydra::MaterialInterface::GetRawVarData(const String & name)
 	{
 		if (_Variables.find(name) != _Variables.end())
 		{
@@ -253,7 +253,7 @@ namespace Hydra
 		return nullptr;
 	}
 
-	Map<String, VarType::Type> Hydra::Material::GetVarTypes()
+	Map<String, VarType::Type> Hydra::MaterialInterface::GetVarTypes()
 	{
 		Map<String, VarType::Type> map;
 
@@ -265,7 +265,7 @@ namespace Hydra
 		return map;
 	}
 
-	void Material::SetDefine(const String& name, const String& value)
+	void MaterialInterface::SetDefine(const String& name, const String& value)
 	{
 		bool updateShader = false;
 
@@ -317,7 +317,7 @@ namespace Hydra
 		}
 	}
 
-	Shader* Material::GetShader(const NVRHI::ShaderType::Enum & type)
+	Shader* MaterialInterface::GetShader(const NVRHI::ShaderType::Enum & type)
 	{
 		auto it = _ActiveShaders.find(type);
 
@@ -329,7 +329,7 @@ namespace Hydra
 		return nullptr;
 	}
 
-	NVRHI::ShaderHandle Material::GetRawShader(const NVRHI::ShaderType::Enum & type)
+	NVRHI::ShaderHandle MaterialInterface::GetRawShader(const NVRHI::ShaderType::Enum & type)
 	{
 		Shader* shader = GetShader(type);
 
@@ -341,7 +341,7 @@ namespace Hydra
 		return nullptr;
 	}
 
-	void Hydra::Material::ApplyParams(NVRHI::DispatchState & state)
+	void Hydra::MaterialInterface::ApplyParams(NVRHI::DispatchState & state)
 	{
 		//TODO: Optimize this method
 
@@ -455,7 +455,7 @@ namespace Hydra
 		}
 	}
 
-	void Material::ApplyParams(NVRHI::DrawCallState& state)
+	void MaterialInterface::ApplyParams(NVRHI::DrawCallState& state)
 	{
 		//TODO: Optimize this method
 
@@ -557,7 +557,7 @@ namespace Hydra
 
 	}
 
-	NVRHI::PipelineStageBindings* Material::GetPipelineStageBindingsForShaderType(NVRHI::DrawCallState& state, const NVRHI::ShaderType::Enum & type)
+	NVRHI::PipelineStageBindings* MaterialInterface::GetPipelineStageBindingsForShaderType(NVRHI::DrawCallState& state, const NVRHI::ShaderType::Enum & type)
 	{
 		switch (type)
 		{
@@ -577,12 +577,12 @@ namespace Hydra
 			return &state.PS;
 			break;
 		default:
-			LogError("Material::GetPipelineStageBindingsForShaderType", "Cannot find pipeline stage bindings for shader type : " + ToString((int)type));
+			LogError("MaterialInterface::GetPipelineStageBindingsForShaderType", "Cannot find pipeline stage bindings for shader type : " + ToString((int)type));
 			return nullptr;
 		}
 	}
 
-	void Material::SetActiveShaderVars(List<Shader*>& shaders, uint32 packId)
+	void MaterialInterface::SetActiveShaderVars(List<Shader*>& shaders, uint32 packId)
 	{
 		if (_ShaderVarsForVaryingShaders.find(packId) != _ShaderVarsForVaryingShaders.end())
 		{
@@ -613,7 +613,7 @@ namespace Hydra
 		}
 	}
 
-	bool Material::SetVariable(const String & name, const VarType::Type & type, const void* data, size_t size)
+	bool MaterialInterface::SetVariable(const String & name, const VarType::Type & type, const void* data, size_t size)
 	{
 		Var* var = nullptr;
 
@@ -632,13 +632,13 @@ namespace Hydra
 
 		if (var->Type != type)
 		{
-			LogError("Material::SetVariable", name + ", " + ToString((int)type), "Type cannot be chnaged from(" + ToString((int)var->Type) + ") to(" + ToString((int)type) + ") !");
+			LogError("MaterialInterface::SetVariable", name + ", " + ToString((int)type), "Type cannot be chnaged from(" + ToString((int)var->Type) + ") to(" + ToString((int)type) + ") !");
 			return false;
 		}
 
 		if (var->DataSize != size)
 		{
-			LogError("Material::SetVariable", name + ", " + ToString((int)type), "Illegal type detected ! Old data size(" + ToString(var->DataSize) + ") new(" + ToString(size) + ")");
+			LogError("MaterialInterface::SetVariable", name + ", " + ToString((int)type), "Illegal type detected ! Old data size(" + ToString(var->DataSize) + ") new(" + ToString(size) + ")");
 			return false;
 		}
 

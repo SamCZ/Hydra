@@ -7,6 +7,7 @@ namespace Hydra
 {
 	class HYDRA_API HStaticMeshComponent : public HMeshComponent
 	{
+		HCLASS_BODY(HStaticMeshComponent)
 	public:
 		HStaticMesh* StaticMesh;
 

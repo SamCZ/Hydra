@@ -8,6 +8,7 @@ namespace Hydra
 
 	class HYDRA_API HPrimitiveComponent : public HSceneComponent
 	{
+		HCLASS_BODY(HPrimitiveComponent)
 	public:
 		float LDMaxDrawDistance;
 

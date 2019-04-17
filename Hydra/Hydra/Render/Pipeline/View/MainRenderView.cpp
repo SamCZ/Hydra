@@ -4,6 +4,11 @@
 #include "Hydra/Framework/World.h"
 #include "Hydra/Framework/Components/MeshComponent.h"
 
+#include "Hydra/Framework/StaticMesh.h"
+#include "Hydra/Framework/StaticMeshResources.h"
+
+#include "Hydra/Framework/Components/StaticMeshComponent.h"
+
 namespace Hydra
 {
 	void MainRenderView::OnCreated()
@@ -22,7 +27,10 @@ namespace Hydra
 
 		for (HPrimitiveComponent* cmp : components)
 		{
-			
+			if (cmp->IsA<HStaticMeshComponent>())
+			{
+				
+			}
 		}
 	}
 

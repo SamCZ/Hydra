@@ -13,6 +13,7 @@ namespace Hydra
 
 	class HYDRA_API HActorComponent : public HObject
 	{
+		HCLASS_BODY(HActorComponent)
 	private:
 		uint8 RenderTransformDirty : 1;
 	public:

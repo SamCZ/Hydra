@@ -32,7 +32,7 @@ namespace Hydra
 			SwapChainBufferCount(1),
 			EnableDebugRuntime(false),
 			Title("Hydra Engine v0.0.5"),
-			ClearColor(Colors::Black)
+			ClearColor(ColorRGBA::Black)
 		{
 		}
 	};

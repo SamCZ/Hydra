@@ -8,7 +8,7 @@
 
 namespace Hydra
 {
-	class Material;
+	class MaterialInterface;
 
 	struct TextureLayout
 	{
@@ -33,7 +33,7 @@ namespace Hydra
 
 		void Add(const String& name, const String shaderDefname, NVRHI::TextureHandle texture, const String& componentDef);
 
-		void ApplyToMaterial(const String& name, SharedPtr<Material> material, const String& shaderVarName);
+		void ApplyToMaterial(const String& name, MaterialInterface* material, const String& shaderVarName);
 	};
 
 	DEFINE_PTR(TextureLayoutDef)

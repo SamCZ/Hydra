@@ -62,7 +62,7 @@ namespace Hydra
 		LayoutDefs[name] = *layout;
 	}
 
-	void TextureLayoutDef::ApplyToMaterial(const String& name, SharedPtr<Material> material, const String& shaderVarName)
+	void TextureLayoutDef::ApplyToMaterial(const String& name, MaterialInterface* material, const String& shaderVarName)
 	{
 		if (LayoutDefs.find(name) != LayoutDefs.end())
 		{

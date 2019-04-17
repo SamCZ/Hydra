@@ -108,7 +108,7 @@ namespace Hydra
 		BlurTexture(GetRenderTarget(pSource), GetRenderTarget(pDest));
 	}
 
-	void Graphics::Composite(Material* material, Function<void(NVRHI::DrawCallState&)> preRenderFunction, TexturePtr pDest)
+	void Graphics::Composite(MaterialInterface* material, Function<void(NVRHI::DrawCallState&)> preRenderFunction, TexturePtr pDest)
 	{
 		NVRHI::DrawCallState state;
 
@@ -131,12 +131,12 @@ namespace Hydra
 		_Context->GetRenderInterface()->draw(state, &args, 1);
 	}
 
-	void Graphics::Composite(Material* material, Function<void(NVRHI::DrawCallState&)> preRenderFunction, const String& outputName)
+	void Graphics::Composite(MaterialInterface* material, Function<void(NVRHI::DrawCallState&)> preRenderFunction, const String& outputName)
 	{
 		Composite(material, preRenderFunction, GetRenderTarget(outputName));
 	}
 
-	void Graphics::Composite(Material* material, TexturePtr slot0Texture, TexturePtr pDest)
+	void Graphics::Composite(MaterialInterface* material, TexturePtr slot0Texture, TexturePtr pDest)
 	{
 		Composite(material, [material, slot0Texture](NVRHI::DrawCallState& state)
 		{
@@ -144,12 +144,12 @@ namespace Hydra
 		}, pDest);
 	}
 
-	void Graphics::Composite(Material* material, const String & slot0Texture, const String & pDest)
+	void Graphics::Composite(MaterialInterface* material, const String & slot0Texture, const String & pDest)
 	{
 		Composite(material, GetRenderTarget(slot0Texture), GetRenderTarget(pDest));
 	}
 
-	void Hydra::Graphics::Dispatch(Material* material, uint32_t groupsX, uint32_t groupsY, uint32_t groupsZ)
+	void Hydra::Graphics::Dispatch(MaterialInterface* material, uint32_t groupsX, uint32_t groupsY, uint32_t groupsZ)
 	{
 		NVRHI::DispatchState state;
 
@@ -167,7 +167,7 @@ namespace Hydra
 		_Context->GetRenderInterface()->dispatch(state, groupsX, groupsY, groupsZ);
 	}
 
-	void Graphics::RenderCubeMap(Material* material, InputLayoutPtr inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, TexturePtr pDest)
+	void Graphics::RenderCubeMap(MaterialInterface* material, InputLayoutPtr inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, TexturePtr pDest)
 	{
 		_Context->GetRenderInterface()->beginRenderingPass();
 
@@ -207,12 +207,12 @@ namespace Hydra
 		_Context->GetRenderInterface()->endRenderingPass();
 	}
 
-	void Graphics::RenderCubeMap(Material* material, const String& inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, const String & outputName)
+	void Graphics::RenderCubeMap(MaterialInterface* material, const String& inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, const String & outputName)
 	{
 		RenderCubeMap(material, GetInputLayout(inputLayout), viewPort, preRenderFunction, GetRenderTarget(outputName));
 	}
 
-	void Graphics::SetMaterialShaders(NVRHI::DrawCallState& state, Material* material)
+	void Graphics::SetMaterialShaders(NVRHI::DrawCallState& state, MaterialInterface* material)
 	{
 		state.VS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_VERTEX);
 		state.HS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_HULL);
@@ -221,7 +221,7 @@ namespace Hydra
 		state.PS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_PIXEL);
 	}
 
-	void Graphics::ApplyMaterialParameters(NVRHI::DrawCallState & state, Material* mateiral)
+	void Graphics::ApplyMaterialParameters(NVRHI::DrawCallState & state, MaterialInterface* mateiral)
 	{
 		mateiral->ApplyParams(state);
 	}
@@ -508,7 +508,7 @@ namespace Hydra
 		}
 	}
 
-	InputLayoutPtr Graphics::CreateInputLayout(const String& name, const NVRHI::VertexAttributeDesc * d, uint32_t attributeCount, Material* material)
+	InputLayoutPtr Graphics::CreateInputLayout(const String& name, const NVRHI::VertexAttributeDesc * d, uint32_t attributeCount, MaterialInterface* material)
 	{
 		if (_InputLayouts.find(name) != _InputLayouts.end())
 		{
