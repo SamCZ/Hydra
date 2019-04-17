@@ -8,6 +8,12 @@ namespace Hydra
 {
 	class HObject;
 
+	template<typename T, typename From>
+	FORCEINLINE static T* Cast(From* from)
+	{
+		return static_cast<T*>(from);
+	}
+
 	class HYDRA_API HClass
 	{
 	private:

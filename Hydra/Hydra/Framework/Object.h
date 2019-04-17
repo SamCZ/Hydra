@@ -18,5 +18,17 @@ namespace Hydra
 		{
 			return GetClass() == T::StaticClass();
 		}
+
+		template<typename T>
+		T* SafeCast()
+		{
+			if (IsA<T>())
+			{
+				return static_cast<T*>(this);
+			}
+
+			return nullptr;
+		}
+
 	};
 }
