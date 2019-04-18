@@ -48,8 +48,9 @@ namespace Hydra
 		}
 	};
 
-	#define HCLASS_BODY(Name) public: \
+	#define HCLASS_BODY(Name) protected: \
 							  static HObject* Factory_##Name() { return new Name(); } \
+							  public: \
 							  static HClass StaticClass() { return HClass(#Name, Name::Factory_##Name); } \
 							  virtual HClass GetClass() { return HClass(#Name, Name::Factory_##Name); }
 }
