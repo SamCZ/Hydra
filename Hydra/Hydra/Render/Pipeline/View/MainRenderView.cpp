@@ -27,16 +27,14 @@ namespace Hydra
 
 		for (HPrimitiveComponent* cmp : components)
 		{
-			if (cmp->IsA<HStaticMeshComponent>())
-			{
-				HStaticMeshComponent* staticMeshComponent = Cast<HStaticMeshComponent>(cmp);
-
-				//Do something...
-			}
-
 			if (HStaticMeshComponent* staticMeshComponent = cmp->SafeCast<HStaticMeshComponent>())
 			{
-				//Do something...
+				HStaticMesh* mesh = staticMeshComponent->StaticMesh;
+
+				if (mesh)
+				{
+					
+				}
 			}
 		}
 	}
