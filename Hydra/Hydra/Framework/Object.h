@@ -3,32 +3,29 @@
 #include "Hydra/Core/Common.h"
 #include "Hydra/Framework/Class.h"
 
-namespace Hydra
+class HYDRA_API HObject
 {
-	class HYDRA_API HObject
+	HCLASS_BODY(HObject)
+private:
+
+public:
+	String Name;
+
+	template<class T>
+	bool IsA()
 	{
-		HCLASS_BODY(HObject)
-	private:
+		return GetClass() == T::StaticClass();
+	}
 
-	public:
-		String Name;
-
-		template<class T>
-		bool IsA()
+	template<typename T>
+	T* SafeCast()
+	{
+		if (IsA<T>())
 		{
-			return GetClass() == T::StaticClass();
+			return static_cast<T*>(this);
 		}
 
-		template<typename T>
-		T* SafeCast()
-		{
-			if (IsA<T>())
-			{
-				return static_cast<T*>(this);
-			}
+		return nullptr;
+	}
 
-			return nullptr;
-		}
-
-	};
-}
+};

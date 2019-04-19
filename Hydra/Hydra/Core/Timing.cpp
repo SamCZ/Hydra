@@ -33,50 +33,47 @@ static const long NANOSECONDS_PER_SECOND = 1000000000L;
 static std::chrono::system_clock::time_point m_epoch = std::chrono::high_resolution_clock::now();
 #endif
 
-namespace Hydra
+double WinTiming::getTime()
 {
-	double WinTiming::getTime()
-	{
 #ifdef OS_WINDOWS
-		if (!g_timerInitialized)
-		{
-			LARGE_INTEGER li;
-			if (!QueryPerformanceFrequency(&li))
-				std::cerr << "QueryPerformanceFrequency failed in timer initialization" << std::endl;
-
-			g_freq = double(li.QuadPart);
-			g_timerInitialized = true;
-		}
-
+	if (!g_timerInitialized)
+	{
 		LARGE_INTEGER li;
-		if (!QueryPerformanceCounter(&li))
-			std::cerr << "QueryPerformanceCounter failed in get time!" << std::endl;
+		if (!QueryPerformanceFrequency(&li))
+			std::cerr << "QueryPerformanceFrequency failed in timer initialization" << std::endl;
 
-		return double(li.QuadPart) / g_freq;
+		g_freq = double(li.QuadPart);
+		g_timerInitialized = true;
+	}
+
+	LARGE_INTEGER li;
+	if (!QueryPerformanceCounter(&li))
+		std::cerr << "QueryPerformanceCounter failed in get time!" << std::endl;
+
+	return double(li.QuadPart) / g_freq;
 #endif
 
 #ifdef OS_LINUX
-		timespec ts;
-		clock_gettime(CLOCK_REALTIME, &ts);
-		return (double)(((long)ts.tv_sec * NANOSECONDS_PER_SECOND) + ts.tv_nsec) / ((double)(NANOSECONDS_PER_SECOND));
+	timespec ts;
+	clock_gettime(CLOCK_REALTIME, &ts);
+	return (double)(((long)ts.tv_sec * NANOSECONDS_PER_SECOND) + ts.tv_nsec) / ((double)(NANOSECONDS_PER_SECOND));
 #endif
 
 #ifdef OS_OTHER_CPP11
-		return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - m_epoch).count() / 1000000000.0;
+	return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - m_epoch).count() / 1000000000.0;
 #endif
 
 #ifdef OS_OTHER
-		return (double)SDL_GetTicks() / 1000.0;
+	return (double)SDL_GetTicks() / 1000.0;
 #endif
-	}
+}
 
-	void WinTiming::sleep(uint32 milliseconds)
-	{
+void WinTiming::sleep(uint32 milliseconds)
+{
 #ifdef OS_WINDOWS
-		Sleep(milliseconds);
+	Sleep(milliseconds);
 #endif
 #ifdef OS_OTHER
-		SDL_Delay(milliseconds);
+	SDL_Delay(milliseconds);
 #endif
-	}
 }

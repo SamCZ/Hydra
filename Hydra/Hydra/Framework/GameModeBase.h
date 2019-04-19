@@ -2,12 +2,9 @@
 
 #include "Hydra/Framework/Actor.h"
 
-namespace Hydra
+class HYDRA_API HGameModeBase : public AActor
 {
-	class HYDRA_API HGameModeBase : public AActor
-	{
-		HCLASS_BODY(HGameModeBase)
-	public:
-		HGameModeBase();
-	};
-}
+	HCLASS_BODY(HGameModeBase)
+public:
+	HGameModeBase();
+};

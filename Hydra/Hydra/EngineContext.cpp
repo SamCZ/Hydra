@@ -1,69 +1,66 @@
 #include "Hydra/EngineContext.h"
 
-namespace Hydra
+EngineContext::EngineContext() : _RenderInterface(nullptr), _DeviceManager(nullptr), _InputManager(nullptr), _Graphics(nullptr), _UIRenderer(nullptr), _AssetManager(nullptr)
 {
-	EngineContext::EngineContext() : _RenderInterface(nullptr), _DeviceManager(nullptr), _InputManager(nullptr), _Graphics(nullptr), _UIRenderer(nullptr) : _AssetManager(nullptr)
-	{
 
-	}
+}
 
-	void EngineContext::SetRenderInterface(IRendererInterface renderInterface)
-	{
-		_RenderInterface = renderInterface;
-	}
+void EngineContext::SetRenderInterface(IRendererInterface renderInterface)
+{
+	_RenderInterface = renderInterface;
+}
 
-	IRendererInterface EngineContext::GetRenderInterface()
-	{
-		return _RenderInterface;
-	}
+IRendererInterface EngineContext::GetRenderInterface()
+{
+	return _RenderInterface;
+}
 
-	void EngineContext::SetDeviceManager(DeviceManager* deviceManager)
-	{
-		_DeviceManager = deviceManager;
-	}
+void EngineContext::SetDeviceManager(DeviceManager* deviceManager)
+{
+	_DeviceManager = deviceManager;
+}
 
-	DeviceManager* EngineContext::GetDeviceManager()
-	{
-		return _DeviceManager;
-	}
+DeviceManager* EngineContext::GetDeviceManager()
+{
+	return _DeviceManager;
+}
 
-	void EngineContext::SetInputManager(InputManager* inputManager)
-	{
-		_InputManager = inputManager;
-	}
+void EngineContext::SetInputManager(InputManager* inputManager)
+{
+	_InputManager = inputManager;
+}
 
-	InputManager* EngineContext::GetInputManager()
-	{
-		return _InputManager;
-	}
+InputManager* EngineContext::GetInputManager()
+{
+	return _InputManager;
+}
 
-	void EngineContext::SetGraphics(Graphics * graphics)
-	{
-		_Graphics = graphics;
-	}
+void EngineContext::SetGraphics(Graphics * graphics)
+{
+	_Graphics = graphics;
+}
 
-	Graphics* EngineContext::GetGraphics()
-	{
-		return _Graphics;
-	}
+Graphics* EngineContext::GetGraphics()
+{
+	return _Graphics;
+}
 
-	void EngineContext::SetUIRenderer(UIRenderer* uiRenderer)
-	{
-		_UIRenderer = uiRenderer;
-	}
+void EngineContext::SetUIRenderer(UIRenderer* uiRenderer)
+{
+	_UIRenderer = uiRenderer;
+}
 
-	UIRenderer* EngineContext::GetUIRenderer()
-	{
-		return _UIRenderer;
-	}
+UIRenderer* EngineContext::GetUIRenderer()
+{
+	return _UIRenderer;
+}
 
-	void EngineContext::SetAssetManager(AssetManager* assetManager)
-	{
-		_AssetManager = assetManager;
-	}
+void EngineContext::SetAssetManager(AssetManager* assetManager)
+{
+	_AssetManager = assetManager;
+}
 
-	AssetManager* EngineContext::GetAssetManager()
-	{
-		return _AssetManager;
-	}
+AssetManager* EngineContext::GetAssetManager()
+{
+	return _AssetManager;
 }

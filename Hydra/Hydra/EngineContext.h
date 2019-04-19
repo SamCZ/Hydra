@@ -8,43 +8,40 @@
 #include "Hydra/Render/UI/UIRenderer.h"
 #include "Hydra/Assets/AssetManager.h"
 
-namespace Hydra
+typedef NVRHI::IRendererInterface* IRendererInterface;
+
+class Graphics;
+
+class HYDRA_API EngineContext
 {
-	typedef NVRHI::IRendererInterface* IRendererInterface;
+private:
+	IRendererInterface _RenderInterface;
+	DeviceManager* _DeviceManager;
+	InputManager* _InputManager;
+	Graphics* _Graphics;
+	UIRenderer* _UIRenderer;
+	AssetManager* _AssetManager;
+public:
+	Vector2i ScreenSize;
 
-	class Graphics;
+public:
+	EngineContext();
 
-	class HYDRA_API EngineContext
-	{
-	private:
-		IRendererInterface _RenderInterface;
-		DeviceManager* _DeviceManager;
-		InputManager* _InputManager;
-		Graphics* _Graphics;
-		UIRenderer* _UIRenderer;
-		AssetManager* _AssetManager;
-	public:
-		Vector2i ScreenSize;
+	void SetRenderInterface(IRendererInterface renderInterface);
+	IRendererInterface GetRenderInterface();
 
-	public:
-		EngineContext();
+	void SetDeviceManager(DeviceManager* deviceManager);
+	DeviceManager* GetDeviceManager();
 
-		void SetRenderInterface(IRendererInterface renderInterface);
-		IRendererInterface GetRenderInterface();
+	void SetInputManager(InputManager* inputManager);
+	InputManager* GetInputManager();
 
-		void SetDeviceManager(DeviceManager* deviceManager);
-		DeviceManager* GetDeviceManager();
+	void SetGraphics(Graphics* graphics);
+	Graphics* GetGraphics();
 
-		void SetInputManager(InputManager* inputManager);
-		InputManager* GetInputManager();
+	void SetUIRenderer(UIRenderer* uiRenderer);
+	UIRenderer* GetUIRenderer();
 
-		void SetGraphics(Graphics* graphics);
-		Graphics* GetGraphics();
-
-		void SetUIRenderer(UIRenderer* uiRenderer);
-		UIRenderer* GetUIRenderer();
-
-		void SetAssetManager(AssetManager* assetManager);
-		AssetManager* GetAssetManager();
-	};
-}
+	void SetAssetManager(AssetManager* assetManager);
+	AssetManager* GetAssetManager();
+};

@@ -7,88 +7,85 @@
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
 #include "Hydra/Render/VarType.h"
 
-namespace Hydra
+struct RawShaderVariable
 {
-	struct RawShaderVariable
-	{
-		unsigned int ByteOffset;
-		unsigned int Size;
-		unsigned int ConstantBufferIndex;
-	};
+	unsigned int ByteOffset;
+	unsigned int Size;
+	unsigned int ConstantBufferIndex;
+};
 
-	struct RawShaderConstantBuffer
-	{
-		String Name;
-		unsigned int Size;
-		unsigned int BindIndex;
-		NVRHI::ConstantBufferHandle ConstantBuffer;
-		unsigned char* LocalDataBuffer;
-		List<RawShaderVariable> Variables;
-		bool MarkUpdate;
-	};
+struct RawShaderConstantBuffer
+{
+	String Name;
+	unsigned int Size;
+	unsigned int BindIndex;
+	NVRHI::ConstantBufferHandle ConstantBuffer;
+	unsigned char* LocalDataBuffer;
+	List<RawShaderVariable> Variables;
+	bool MarkUpdate;
+};
 
-	struct RawShaderTextureDefine
-	{
-		unsigned int Index;
-		unsigned int BindIndex;
-		NVRHI::TextureHandle TextureHandle;
-		bool IsWritable;
-	};
+struct RawShaderTextureDefine
+{
+	unsigned int Index;
+	unsigned int BindIndex;
+	NVRHI::TextureHandle TextureHandle;
+	bool IsWritable;
+};
 
-	struct RawShaderBuffer
-	{
-		String Name;
-		unsigned int Size;
-		unsigned int Index;
-		unsigned int BindIndex;
-		bool IsWritable;
-		NVRHI::BufferHandle Buffer;
-	};
+struct RawShaderBuffer
+{
+	String Name;
+	unsigned int Size;
+	unsigned int Index;
+	unsigned int BindIndex;
+	bool IsWritable;
+	NVRHI::BufferHandle Buffer;
+};
 
-	struct RawShaderSamplerDefine
-	{
-		unsigned int Index;
-		unsigned int BindIndex;
-		NVRHI::SamplerHandle SamplerHandle;
-	};
+struct RawShaderSamplerDefine
+{
+	unsigned int Index;
+	unsigned int BindIndex;
+	NVRHI::SamplerHandle SamplerHandle;
+};
 
-	struct ShaderVars
-	{
-		NVRHI::ShaderType::Enum ShaderType;
+struct ShaderVars
+{
+	NVRHI::ShaderType::Enum ShaderType;
 
-		RawShaderConstantBuffer* ConstantBuffers;
-		int ConstantBufferCount;
+	RawShaderConstantBuffer* ConstantBuffers;
+	int ConstantBufferCount;
 
-		FastMap<String, RawShaderTextureDefine> TextureDefines;
-		FastMap<String, RawShaderSamplerDefine> SamplerDefines;
-		FastMap<String, RawShaderVariable> Variables;
-		FastMap<String, RawShaderBuffer> BufferDefines;
+	FastMap<String, RawShaderTextureDefine> TextureDefines;
+	FastMap<String, RawShaderSamplerDefine> SamplerDefines;
+	FastMap<String, RawShaderVariable> Variables;
+	FastMap<String, RawShaderBuffer> BufferDefines;
 
-		Map<String, VarType::Type> VariableTypes;
-	};
+	Map<String, VarType::Type> VariableTypes;
+};
 
-	class HYDRA_API Shader
-	{
-	private:
-		String _Name;
-		NVRHI::ShaderType::Enum _Type;
-		NVRHI::ShaderHandle _Handle;
-		ID3DBlob* _Blob;
+class HYDRA_API Shader
+{
+private:
+	String _Name;
+	NVRHI::ShaderType::Enum _Type;
+	NVRHI::ShaderHandle _Handle;
+	ID3DBlob* _Blob;
 
-		ShaderVars* _LocalShaderVarCache;
+	ShaderVars* _LocalShaderVarCache;
 
-	public:
-		Shader(const String& name, const NVRHI::ShaderType::Enum& type, NVRHI::ShaderHandle shaderHandle, ID3DBlob* shaderBlob);
-		~Shader();
+public:
+	Shader(const String& name, const NVRHI::ShaderType::Enum& type, NVRHI::ShaderHandle shaderHandle, ID3DBlob* shaderBlob);
+	~Shader();
 
-		NVRHI::ShaderHandle GetRaw();
-		ID3DBlob* GetBlob();
-		
-		NVRHI::ShaderType::Enum GetType();
+	NVRHI::ShaderHandle GetRaw();
+	ID3DBlob* GetBlob();
 
-		ShaderVars* CreateShaderVars();
+	NVRHI::ShaderType::Enum GetType();
 
-	private:
-		void Initialize();
-	};
-}
+	ShaderVars* CreateShaderVars();
+
+private:
+	void Initialize();
+};

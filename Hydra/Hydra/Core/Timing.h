@@ -2,26 +2,23 @@
 
 #include "Hydra/Core/Common.h"
 
-namespace Hydra
+struct WinTiming
 {
-	struct WinTiming
+	HYDRA_API static double getTime();
+	HYDRA_API static void sleep(uint32 milliseconds);
+};
+
+typedef WinTiming PlatformTiming;
+
+namespace Time
+{
+	inline double getTime()
 	{
-		HYDRA_API static double getTime();
-		HYDRA_API static void sleep(uint32 milliseconds);
-	};
+		return PlatformTiming::getTime();
+	}
 
-	typedef WinTiming PlatformTiming;
-
-	namespace Time
+	inline void sleep(uint32 milliseconds)
 	{
-		inline double getTime()
-		{
-			return PlatformTiming::getTime();
-		}
-
-		inline void sleep(uint32 milliseconds)
-		{
-			PlatformTiming::sleep(milliseconds);
-		}
-	};
-}
+		PlatformTiming::sleep(milliseconds);
+	}
+};

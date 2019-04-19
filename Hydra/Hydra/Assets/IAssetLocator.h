@@ -1,9 +1,6 @@
 #pragma once
 
-namespace Hydra
+class AssetLocator
 {
-	class AssetLocator
-	{
 
-	};
-}
+};

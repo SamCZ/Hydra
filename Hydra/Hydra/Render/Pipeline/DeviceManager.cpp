@@ -35,28 +35,25 @@ RendererErrorCallback g_ErrorCallback;
 
 #endif
 
-namespace Hydra
+void DeviceManager::InitContext()
 {
-	void DeviceManager::InitContext()
-	{
 
-	}
+}
 
-	DeviceManager * DeviceManager::CreateDeviceManagerForPlatform()
-	{
+DeviceManager * DeviceManager::CreateDeviceManagerForPlatform()
+{
 #ifdef OPERATING_SYSTEM_WINDOWS
-		return new DeviceManagerDX11();
+	return new DeviceManagerDX11();
 #endif
-		return nullptr;
-	}
+	return nullptr;
+}
 
-	NVRHI::IRendererInterface* DeviceManager::CreateRenderInterfaceForPlatform(DeviceManager* deviceManager)
-	{
+NVRHI::IRendererInterface* DeviceManager::CreateRenderInterfaceForPlatform(DeviceManager* deviceManager)
+{
 #ifdef OPERATING_SYSTEM_WINDOWS
-		DeviceManagerDX11* dvdx11 = static_cast<DeviceManagerDX11*>(deviceManager);
+	DeviceManagerDX11* dvdx11 = static_cast<DeviceManagerDX11*>(deviceManager);
 
-		return new NVRHI::RendererInterfaceD3D11(&g_ErrorCallback, dvdx11->GetImmediateContext());
+	return new NVRHI::RendererInterfaceD3D11(&g_ErrorCallback, dvdx11->GetImmediateContext());
 #endif
-		return nullptr;
-	}
+	return nullptr;
 }

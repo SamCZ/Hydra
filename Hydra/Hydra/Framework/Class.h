@@ -4,53 +4,50 @@
 #include "Hydra/Core/String.h"
 #include "Hydra/Core/Delegate.h"
 
-namespace Hydra
-{
-	class HObject;
+class HObject;
 
-	template<typename T, typename From>
-	FORCEINLINE static T* Cast(From* from)
+template<typename T, typename From>
+FORCEINLINE static T* Cast(From* from)
+{
+	return static_cast<T*>(from);
+}
+
+class HYDRA_API HClass
+{
+private:
+	String ClassName;
+	FUNC_POINTER(Factory, HObject);
+
+public:
+	HClass(const String& className, FUNC_POINTER(factory, HObject)) : ClassName(className), Factory(factory)
 	{
-		return static_cast<T*>(from);
+
 	}
 
-	class HYDRA_API HClass
+	bool operator==(const HClass& left)
 	{
-	private:
-		String ClassName;
-		FUNC_POINTER(Factory, HObject);
+		return ClassName == left.ClassName;
+	}
 
-	public:
-		HClass(const String& className, FUNC_POINTER(factory, HObject)) : ClassName(className), Factory(factory)
-		{
+	String GetName() const
+	{
+		return ClassName;
+	}
 
-		}
+	HObject* CreateInstance()
+	{
+		return Factory();
+	}
 
-		bool operator==(const HClass& left)
-		{
-			return ClassName == left.ClassName;
-		}
+	template<typename HObject>
+	HObject* CreateInstance()
+	{
+		return static_cast<HObject*>(Factory());
+	}
+};
 
-		String GetName() const
-		{
-			return ClassName;
-		}
-
-		HObject* CreateInstance()
-		{
-			return Factory();
-		}
-
-		template<typename HObject>
-		HObject* CreateInstance()
-		{
-			return static_cast<HObject*>(Factory());
-		}
-	};
-
-	#define HCLASS_BODY(Name) protected: \
+#define HCLASS_BODY(Name) protected: \
 							  static HObject* Factory_##Name() { return new Name(); } \
 							  public: \
 							  static HClass StaticClass() { return HClass(#Name, Name::Factory_##Name); } \
 							  virtual HClass GetClass() { return HClass(#Name, Name::Factory_##Name); }
-}

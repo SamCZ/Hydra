@@ -3,22 +3,19 @@
 #include "Hydra/Core/Library.h"
 #include <vector>
 
-namespace Hydra
+template <typename T>
+class Array
 {
-	template <typename T>
-	class Array
+private:
+	std::vector<T> _Data;
+public:
+	inline Array(int size)
 	{
-	private:
-		std::vector<T> _Data;
-	public:
-		inline Array(int size)
-		{
-			_Data.reserve(size);
-		}
+		_Data.reserve(size);
+	}
 
-		inline T operator[](const int index)
-		{
-			return _Data[index];
-		}
-	};
-}
+	inline T operator[](const int index)
+	{
+		return _Data[index];
+	}
+};

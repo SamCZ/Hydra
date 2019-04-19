@@ -1,9 +1,6 @@
 #include "GameModeBase.h"
 
-namespace Hydra
+HGameModeBase::HGameModeBase()
 {
-	HGameModeBase::HGameModeBase()
-	{
-		IsIndestructible = true;
-	}
+	IsIndestructible = true;
 }

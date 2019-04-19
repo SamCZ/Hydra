@@ -252,7 +252,6 @@
     <ClCompile Include="Hydra\Assets\AssetManager.cpp" />
     <ClCompile Include="Hydra\Core\FastNoise.cpp" />
     <ClCompile Include="Hydra\Core\Math\Box.cpp" />
-    <ClCompile Include="Hydra\Core\String.cpp" />
     <ClCompile Include="Hydra\EngineContext.cpp" />
     <ClCompile Include="Hydra\Framework\Actor.cpp" />
     <ClCompile Include="Hydra\Framework\Components\ActorComponent.cpp" />

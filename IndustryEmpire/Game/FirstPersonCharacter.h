@@ -2,22 +2,19 @@
 
 #include "Hydra/Framework/Character.h"
 
-namespace Hydra
+class FirstPersonCharacter : public ACharacter
 {
-	class FirstPersonCharacter : public ACharacter
-	{
 	class HCameraComponent* FirstPersonCameraComponent;
 
-	public:
-		
+public:
 
-		void InitializeComponents();
 
-		void SetupPlayerInput(InputManager* inputManager) override;
+	void InitializeComponents();
 
-		void BeginPlay();
+	void SetupPlayerInput(InputManager* inputManager) override;
 
-		void MoveForwardBackward(float val);
-		void MoveLeftRight(float val);
-	};
-}
+	void BeginPlay();
+
+	void MoveForwardBackward(float val);
+	void MoveLeftRight(float val);
+};

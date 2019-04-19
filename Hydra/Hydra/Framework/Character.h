@@ -2,12 +2,9 @@
 
 #include "Hydra/Framework/Pawn.h"
 
-namespace Hydra
+class HYDRA_API ACharacter : public APawn
 {
-	class HYDRA_API ACharacter : public APawn
-	{
-		HCLASS_BODY(ACharacter)
-	public:
+	HCLASS_BODY(ACharacter)
+public:
 
-	};
-}
+};

@@ -9,43 +9,40 @@
 
 #include "Hydra/Framework/Components/StaticMeshComponent.h"
 
-namespace Hydra
+void MainRenderView::OnCreated()
 {
-	void MainRenderView::OnCreated()
+	Engine->SceneInit();
+}
+
+void MainRenderView::OnDestroy()
+{
+
+}
+
+void MainRenderView::OnRender(NVRHI::TextureHandle mainRenderTarget)
+{
+	List<HPrimitiveComponent*>& components = Engine->GetWorld()->GetPrimitiveComponents();
+
+	for (HPrimitiveComponent* cmp : components)
 	{
-		Engine->SceneInit();
-	}
-
-	void MainRenderView::OnDestroy()
-	{
-
-	}
-
-	void MainRenderView::OnRender(NVRHI::TextureHandle mainRenderTarget)
-	{
-		List<HPrimitiveComponent*>& components = Engine->GetWorld()->GetPrimitiveComponents();
-
-		for (HPrimitiveComponent* cmp : components)
+		if (HStaticMeshComponent* staticMeshComponent = cmp->SafeCast<HStaticMeshComponent>())
 		{
-			if (HStaticMeshComponent* staticMeshComponent = cmp->SafeCast<HStaticMeshComponent>())
-			{
-				HStaticMesh* mesh = staticMeshComponent->StaticMesh;
+			HStaticMesh* mesh = staticMeshComponent->StaticMesh;
 
-				if (mesh)
-				{
-					
-				}
+			if (mesh)
+			{
+
 			}
 		}
 	}
+}
 
-	void MainRenderView::OnTick(float Delta)
-	{
+void MainRenderView::OnTick(float Delta)
+{
 
-	}
+}
 
-	void MainRenderView::OnResize(uint32 width, uint32 height, uint32 sampleCount)
-	{
+void MainRenderView::OnResize(uint32 width, uint32 height, uint32 sampleCount)
+{
 
-	}
 }

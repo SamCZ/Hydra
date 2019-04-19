@@ -1,11 +1,8 @@
 #include "StaticMeshComponent.h"
 
-namespace Hydra
+HStaticMeshComponent::HStaticMeshComponent() : StaticMesh(nullptr)
 {
-	HStaticMeshComponent::HStaticMeshComponent() : StaticMesh(nullptr)
-	{
-	}
-	HStaticMeshComponent::~HStaticMeshComponent()
-	{
-	}
+}
+HStaticMeshComponent::~HStaticMeshComponent()
+{
 }

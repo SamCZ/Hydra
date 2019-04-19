@@ -1,10 +1,7 @@
 #pragma once
 
-namespace Hydra
+class IAssetImporter
 {
-	class IAssetImporter
-	{
-	public:
-		bool Import();
-	};
-}
+public:
+	bool Import();
+};

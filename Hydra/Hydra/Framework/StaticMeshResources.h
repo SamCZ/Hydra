@@ -1,11 +1,6 @@
 #pragma once
 
-namespace Hydra
+class FStaticMeshRenderData
 {
 
-	class FStaticMeshRenderData
-	{
-
-	};
-
-}
+};

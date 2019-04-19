@@ -581,9 +581,6 @@
     <ClCompile Include="Hydra\Framework\Pawn.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hydra\Core\String.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Hydra\Render\Pipeline\Windows\DX11\DeviceManager11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
