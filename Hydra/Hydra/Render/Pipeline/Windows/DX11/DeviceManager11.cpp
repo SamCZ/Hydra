@@ -577,6 +577,8 @@ void DeviceManagerDX11::DeviceCreated()
 
 void DeviceManagerDX11::DeviceDestroyed()
 {
+	OnDeviceDestroy.Invoke();
+
 	// releasing resources back-to-front
 	for (auto it = m_vControllers.rbegin(); it != m_vControllers.rend(); it++)
 	{

@@ -127,9 +127,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Hydra\Assets\Asset.h" />
     <ClInclude Include="Hydra\Assets\IAssetImporter.h" />
     <ClInclude Include="Hydra\Assets\AssetManager.h" />
     <ClInclude Include="Hydra\Assets\IAssetLocator.h" />
+    <ClInclude Include="Hydra\Assets\Importers\ModelImporter.h" />
     <ClInclude Include="Hydra\Core\Array.h" />
     <ClInclude Include="Hydra\Core\Delegate.h" />
     <ClInclude Include="Hydra\Core\FastNoise.h" />
@@ -143,6 +145,9 @@
     <ClInclude Include="Hydra\Core\Random.h" />
     <ClInclude Include="Hydra\Core\Resource.h" />
     <ClInclude Include="Hydra\Core\Sort.h" />
+    <ClInclude Include="Hydra\Core\Stream\Blob.h" />
+    <ClInclude Include="Hydra\Core\Stream\FileStream.h" />
+    <ClInclude Include="Hydra\Core\Stream\IStream.h" />
     <ClInclude Include="Hydra\Core\Timing.h" />
     <ClInclude Include="Hydra\Core\YamlConvertors.h" />
     <ClInclude Include="Hydra\Engine.h" />
@@ -250,8 +255,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Hydra\Assets\AssetManager.cpp" />
+    <ClCompile Include="Hydra\Assets\Importers\ModelImporter.cpp" />
     <ClCompile Include="Hydra\Core\FastNoise.cpp" />
     <ClCompile Include="Hydra\Core\Math\Box.cpp" />
+    <ClCompile Include="Hydra\Core\Stream\FileStream.cpp" />
     <ClCompile Include="Hydra\EngineContext.cpp" />
     <ClCompile Include="Hydra\Framework\Actor.cpp" />
     <ClCompile Include="Hydra\Framework\Components\ActorComponent.cpp" />

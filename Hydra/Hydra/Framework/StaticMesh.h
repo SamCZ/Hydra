@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Object.h"
+#include "Hydra/Assets/Asset.h"
 
 struct FStaticMaterial
 {
@@ -13,8 +13,9 @@ struct FStaticMaterial
 	bool operator==(const FStaticMaterial& left) { return Material == left.Material && MaterialSlotName == left.MaterialSlotName; }
 };
 
-class HStaticMesh : public HObject
+class HStaticMesh : public HAsset
 {
+	HCLASS_BODY(HStaticMesh)
 public:
 
 	class FStaticMeshRenderData* RenderData;

@@ -4,6 +4,16 @@
 
 #include "Hydra/Framework/World.h"
 
+
+
+#include "Hydra/Assets/Importers/ModelImporter.h"
+#include "Hydra/Core/Stream/FileStream.h"
+
+HydraEngine::~HydraEngine()
+{
+	delete Context;
+}
+
 void HydraEngine::Start()
 {
 	Context = new EngineContext();
@@ -12,6 +22,7 @@ void HydraEngine::Start()
 	Context->SetDeviceManager(deviceManager);
 
 	deviceManager->OnPrepareDeviceContext += EVENT_ARGS(HydraEngine, PrepareForEngineStart, DeviceCreationParameters&);
+	deviceManager->OnDeviceDestroy += EVENT(HydraEngine, OnDestroy);
 
 	deviceManager->AddVisualController(new MainRenderView(Context, this));
 	deviceManager->AddVisualController(new UIRenderView(Context, this));
@@ -25,6 +36,12 @@ void HydraEngine::Start()
 	deviceManager->InitContext();
 }
 
+void HydraEngine::OnDestroy()
+{
+	delete Context->GetAssetManager();
+	Context->SetAssetManager(nullptr);
+}
+
 void HydraEngine::PrepareForEngineStart(DeviceCreationParameters& params)
 {
 	Context->ScreenSize = Vector2i(params.Width, params.Height);
@@ -32,7 +49,18 @@ void HydraEngine::PrepareForEngineStart(DeviceCreationParameters& params)
 
 void HydraEngine::InitializeAssetManager(AssetManager* assetManager)
 {
+	ModelImporter modelImporter;
 
+	File modelFile = File("Assets/IndustryEmpire/Models/BrickFactory.fbx");
+
+	FileStream stream = FileStream(modelFile);
+
+	Blob* data = stream.Read();
+
+	HAsset* asset = nullptr;
+	modelImporter.Import(*data, ModelImportOptions(), asset);
+	 
+	delete data;
 }
 
 FWorld* HydraEngine::GetWorld() const
@@ -40,7 +68,7 @@ FWorld* HydraEngine::GetWorld() const
 	return World;
 }
 
-EngineContext * HydraEngine::GetContext() const
+EngineContext* HydraEngine::GetContext() const
 {
 	return Context;
 }

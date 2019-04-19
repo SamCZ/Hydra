@@ -28,6 +28,7 @@ private:
 
 public:
 	DelegateEvent<void, DeviceCreationParameters&> OnPrepareDeviceContext;
+	DelegateEvent<void> OnDeviceDestroy;
 
 	virtual void InitContext() = 0;
 	virtual void AddVisualController(IVisualController* view) = 0;

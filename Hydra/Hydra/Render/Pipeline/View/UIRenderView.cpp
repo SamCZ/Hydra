@@ -14,7 +14,7 @@ static Random Rnd;
 
 void UIRenderView::OnCreated()
 {
-	Position = (Vector2)Engine->GetContext()->ScreenSize * 0.5f;
+	Position = (Vector2)Context->ScreenSize * 0.5f;
 
 	Velocity = Rnd.GetRandomUnitVector2() * 10.0f;
 	Acceleration = Vector2(1.005f, 1.005f);
@@ -42,12 +42,12 @@ void UIRenderView::OnTick(float Delta)
 	Position += Velocity;
 
 
-	if (Position.x > 1280 || Position.x <= 0)
+	if (Position.x > Context->ScreenSize.x || Position.x <= 0)
 	{
 		Velocity.x *= -1;
 	}
 
-	if (Position.y > 720 || Position.y <= 0)
+	if (Position.y > Context->ScreenSize.y || Position.y <= 0)
 	{
 		Velocity.y *= -1;
 	}

@@ -13,7 +13,10 @@ protected:
 	FWorld* World;
 
 public:
+	~HydraEngine();
+
 	void Start();
+	void OnDestroy();
 
 public:
 	virtual void PrepareForEngineStart(DeviceCreationParameters& params);
