@@ -20,12 +20,22 @@ namespace Hydra
 		deviceManager->AddVisualController(new UIRenderView(Context, this));
 
 		World = new FWorld(Context);
+
+		AssetManager* assetManager = new AssetManager();
+		Context->SetAssetManager(assetManager);
+		InitializeAssetManager(assetManager);
+
 		deviceManager->InitContext();
 	}
 
 	void HydraEngine::PrepareForEngineStart(DeviceCreationParameters& params)
 	{
 		Context->ScreenSize = Vector2i(params.Width, params.Height);
+	}
+
+	void HydraEngine::InitializeAssetManager(AssetManager* assetManager)
+	{
+
 	}
 
 	FWorld* HydraEngine::GetWorld() const

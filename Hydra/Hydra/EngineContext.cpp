@@ -2,7 +2,7 @@
 
 namespace Hydra
 {
-	EngineContext::EngineContext() : _RenderInterface(nullptr), _DeviceManager(nullptr), _InputManager(nullptr), _Graphics(nullptr), _UIRenderer(nullptr)
+	EngineContext::EngineContext() : _RenderInterface(nullptr), _DeviceManager(nullptr), _InputManager(nullptr), _Graphics(nullptr), _UIRenderer(nullptr) : _AssetManager(nullptr)
 	{
 
 	}
@@ -55,5 +55,15 @@ namespace Hydra
 	UIRenderer* EngineContext::GetUIRenderer()
 	{
 		return _UIRenderer;
+	}
+
+	void EngineContext::SetAssetManager(AssetManager* assetManager)
+	{
+		_AssetManager = assetManager;
+	}
+
+	AssetManager* EngineContext::GetAssetManager()
+	{
+		return _AssetManager;
 	}
 }

@@ -6,6 +6,7 @@
 #include "Hydra/Core/SmartPointer.h"
 #include "Hydra/Input/InputManager.h"
 #include "Hydra/Render/UI/UIRenderer.h"
+#include "Hydra/Assets/AssetManager.h"
 
 namespace Hydra
 {
@@ -21,6 +22,7 @@ namespace Hydra
 		InputManager* _InputManager;
 		Graphics* _Graphics;
 		UIRenderer* _UIRenderer;
+		AssetManager* _AssetManager;
 	public:
 		Vector2i ScreenSize;
 
@@ -41,5 +43,8 @@ namespace Hydra
 
 		void SetUIRenderer(UIRenderer* uiRenderer);
 		UIRenderer* GetUIRenderer();
+
+		void SetAssetManager(AssetManager* assetManager);
+		AssetManager* GetAssetManager();
 	};
 }

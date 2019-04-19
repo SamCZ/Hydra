@@ -19,6 +19,7 @@ namespace Hydra
 		
 	public:
 		virtual void PrepareForEngineStart(DeviceCreationParameters& params);
+		virtual void InitializeAssetManager(AssetManager* assetManager);
 		virtual void SceneInit() = 0;
 
 		FWorld* GetWorld() const;
