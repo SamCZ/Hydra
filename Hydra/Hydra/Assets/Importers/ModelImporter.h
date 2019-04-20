@@ -10,10 +10,16 @@
 class ModelImportOptions : public AssetImportOptions
 {
 	HCLASS_BODY(ModelImportOptions)
+public:
+	bool CombineMeshes;
 };
 
 class ModelImporter : public IAssetImporter
 {
 public:
 	bool Import(Blob& dataBlob, const AssetImportOptions& options, HAsset*& out_Asset);
+
+private:
+
+	void ProcessNode(const aiScene* scene, aiNode* node, const String& node_hiearchy_name);
 };

@@ -51,7 +51,7 @@ void HydraEngine::InitializeAssetManager(AssetManager* assetManager)
 {
 	ModelImporter modelImporter;
 
-	File modelFile = File("Assets/IndustryEmpire/Models/BrickFactory.fbx");
+	File modelFile = File("Assets/IndustryEmpire/Models/trees_v1.fbx");
 
 	FileStream stream = FileStream(modelFile);
 
