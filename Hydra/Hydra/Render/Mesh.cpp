@@ -32,8 +32,8 @@ void Mesh::UpdateBounds()
 
 	for (VertexBufferEntry& vb : VertexData)
 	{
-		minBounds = glm::min(minBounds, vb.position);
-		maxBounds = glm::max(maxBounds, vb.position);
+		minBounds = glm::min(minBounds, vb.Position);
+		maxBounds = glm::max(maxBounds, vb.Position);
 	}
 
 	Bounds = {};
@@ -53,9 +53,9 @@ void Mesh::GenerateUVs()
 		VertexBufferEntry& vb1 = VertexData[n1];
 		VertexBufferEntry& vb2 = VertexData[n2];
 
-		vb0.texCoord = Vector2(0, 0);
-		vb1.texCoord = Vector2(0, 1);
-		vb2.texCoord = Vector2(1, 1);
+		vb0.TexCoord = Vector2(0, 0);
+		vb1.TexCoord = Vector2(0, 1);
+		vb2.TexCoord = Vector2(1, 1);
 	}
 }
 
@@ -76,8 +76,8 @@ void Mesh::GenerateNormals()
 		VertexBufferEntry& vb2 = VertexData[n2];
 
 		// TANGENT SPACE
-		glm::vec3 deltaPos1 = vb1.position - vb0.position;
-		glm::vec3 deltaPos2 = vb2.position - vb0.position;
+		glm::vec3 deltaPos1 = vb1.Position - vb0.Position;
+		glm::vec3 deltaPos2 = vb2.Position - vb0.Position;
 
 		glm::vec2 deltaUV1 = uv2 - uv1;
 		glm::vec2 deltaUV2 = uv3 - uv1;
@@ -86,20 +86,20 @@ void Mesh::GenerateNormals()
 		glm::vec3 tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y) * r;
 		glm::vec3 bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x) * r;
 
-		vb0.tangent = tangent;
-		vb1.tangent = tangent;
-		vb2.tangent = tangent;
+		vb0.Tangent = tangent;
+		vb1.Tangent = tangent;
+		vb2.Tangent = tangent;
 
-		vb0.bitangent = bitangent;
-		vb1.bitangent = bitangent;
-		vb2.bitangent = bitangent;
+		vb0.Bitangent = bitangent;
+		vb1.Bitangent = bitangent;
+		vb2.Bitangent = bitangent;
 
 		// NORMAL
-		Vector3 normal = Triangle::ComputeTriangleNormal(vb0.position, vb1.position, vb2.position);
+		Vector3 normal = Triangle::ComputeTriangleNormal(vb0.Position, vb1.Position, vb2.Position);
 
-		vb0.normal = normal;
-		vb1.normal = normal;
-		vb2.normal = normal;
+		vb0.Normal = normal;
+		vb1.Normal = normal;
+		vb2.Normal = normal;
 	}
 }
 
@@ -116,23 +116,23 @@ void Mesh::GenerateTangentsAndBiTangents()
 		VertexBufferEntry& vb2 = VertexData[n2];
 
 		// TANGENT SPACE
-		glm::vec3 deltaPos1 = vb1.position - vb0.position;
-		glm::vec3 deltaPos2 = vb2.position - vb0.position;
+		glm::vec3 deltaPos1 = vb1.Position - vb0.Position;
+		glm::vec3 deltaPos2 = vb2.Position - vb0.Position;
 
-		glm::vec2 deltaUV1 = vb1.texCoord - vb0.texCoord;
-		glm::vec2 deltaUV2 = vb2.texCoord - vb0.texCoord;
+		glm::vec2 deltaUV1 = vb1.TexCoord - vb0.TexCoord;
+		glm::vec2 deltaUV2 = vb2.TexCoord - vb0.TexCoord;
 
 		float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
 		glm::vec3 tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y) * r;
 		glm::vec3 bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x) * r;
 
-		vb0.tangent = tangent;
-		vb1.tangent = tangent;
-		vb2.tangent = tangent;
+		vb0.Tangent = tangent;
+		vb1.Tangent = tangent;
+		vb2.Tangent = tangent;
 
-		vb0.bitangent = bitangent;
-		vb1.bitangent = bitangent;
-		vb2.bitangent = bitangent;
+		vb0.Bitangent = bitangent;
+		vb1.Bitangent = bitangent;
+		vb2.Bitangent = bitangent;
 	}
 }
 
@@ -154,9 +154,9 @@ void Mesh::SmoothMesh()
 
 	for (int i = 0; i < VertexData.size() / 3; i++)
 	{
-		Vector3 p0 = VertexData[i * 3 + 0].position;
-		Vector3 p1 = VertexData[i * 3 + 1].position;
-		Vector3 p2 = VertexData[i * 3 + 2].position;
+		Vector3 p0 = VertexData[i * 3 + 0].Position;
+		Vector3 p1 = VertexData[i * 3 + 1].Position;
+		Vector3 p2 = VertexData[i * 3 + 2].Position;
 
 		VertexMap[HashV3(p0)].push_back(p1);
 		VertexMap[HashV3(p0)].push_back(p2);
@@ -194,10 +194,10 @@ void Mesh::SmoothMesh()
 
 	for (int i = 0; i < VertexData.size(); i++)
 	{
-		Vector3 p = VertexData[i].position;
+		Vector3 p = VertexData[i].Position;
 		if (p.x > 0.0f && p.z > 0.0f && p.x < 15.0f && p.z < 15.0f)
 		{
-			VertexData[i].position = SummedVertices[HashV3(p)];
+			VertexData[i].Position = SummedVertices[HashV3(p)];
 		}
 
 		/*VertexData[i * 3 + 0].normal = VerticesNormals[HashV3(p0)];*/
@@ -359,9 +359,9 @@ Mesh* Mesh::CreatePrimitive(const PrimitiveType::Enum & type, const Vector3& sca
 		for (int i = 0; i < verts.size(); i++)
 		{
 			VertexBufferEntry entry = {};
-			entry.position = verts[i];
-			entry.texCoord = uvs[i];
-			entry.normal = normals[i];
+			entry.Position = verts[i];
+			entry.TexCoord = uvs[i];
+			entry.Normal = normals[i];
 			mesh->VertexData.emplace_back(entry);
 		}
 
@@ -422,9 +422,9 @@ Mesh* Mesh::CreatePrimitive(const PrimitiveType::Enum & type, const Vector3& sca
 		for (int i = 0; i < (36 * 8) / 8; i++)
 		{
 			VertexBufferEntry entry = {};
-			entry.position = { vertices[i * 8 + 0], vertices[i * 8 + 1], vertices[i * 8 + 2] };
-			entry.normal = { vertices[i * 8 + 3], vertices[i * 8 + 4], vertices[i * 8 + 5] };
-			entry.texCoord = { vertices[i * 8 + 6], vertices[i * 8 + 7] };
+			entry.Position = { vertices[i * 8 + 0], vertices[i * 8 + 1], vertices[i * 8 + 2] };
+			entry.Normal = { vertices[i * 8 + 3], vertices[i * 8 + 4], vertices[i * 8 + 5] };
+			entry.TexCoord = { vertices[i * 8 + 6], vertices[i * 8 + 7] };
 
 			mesh->Indices.push_back(i++);
 

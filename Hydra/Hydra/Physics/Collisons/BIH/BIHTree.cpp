@@ -295,9 +295,9 @@ void BIHTree::InitTriangles(Mesh* mesh)
 	int p = 0;
 	for (VertexBufferEntry& e : mesh->VertexData)
 	{
-		_PointData[p++] = e.position.x;
-		_PointData[p++] = e.position.y;
-		_PointData[p++] = e.position.z;
+		_PointData[p++] = e.Position.x;
+		_PointData[p++] = e.Position.y;
+		_PointData[p++] = e.Position.z;
 	}
 
 	// Fill index data

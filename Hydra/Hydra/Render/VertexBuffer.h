@@ -4,10 +4,11 @@
 
 struct VertexBufferEntry
 {
-	Vector3 position;
-	Vector2 texCoord;
-	Vector2 texCoord2;
-	Vector3 normal;
-	Vector3 tangent;
-	Vector3 bitangent;
+	Vector3 Position;
+	Vector2 TexCoord;
+	Vector2 TexCoord2;
+	Vector3 Color;
+	Vector3 Normal;
+	Vector3 Tangent;
+	Vector3 Bitangent;
 };
