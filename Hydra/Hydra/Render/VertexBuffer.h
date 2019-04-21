@@ -10,5 +10,5 @@ struct VertexBufferEntry
 	Vector3 Color;
 	Vector3 Normal;
 	Vector3 Tangent;
-	Vector3 Bitangent;
+	Vector3 BiTangent;
 };

@@ -90,9 +90,9 @@ void Mesh::GenerateNormals()
 		vb1.Tangent = tangent;
 		vb2.Tangent = tangent;
 
-		vb0.Bitangent = bitangent;
-		vb1.Bitangent = bitangent;
-		vb2.Bitangent = bitangent;
+		vb0.BiTangent = bitangent;
+		vb1.BiTangent = bitangent;
+		vb2.BiTangent = bitangent;
 
 		// NORMAL
 		Vector3 normal = Triangle::ComputeTriangleNormal(vb0.Position, vb1.Position, vb2.Position);
@@ -130,9 +130,9 @@ void Mesh::GenerateTangentsAndBiTangents()
 		vb1.Tangent = tangent;
 		vb2.Tangent = tangent;
 
-		vb0.Bitangent = bitangent;
-		vb1.Bitangent = bitangent;
-		vb2.Bitangent = bitangent;
+		vb0.BiTangent = bitangent;
+		vb1.BiTangent = bitangent;
+		vb2.BiTangent = bitangent;
 	}
 }
 

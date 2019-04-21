@@ -21,4 +21,8 @@ public:
 	class FStaticMeshRenderData* RenderData;
 
 	List<FStaticMaterial> StaticMaterials;
+
+public:
+	HStaticMesh();
+	~HStaticMesh();
 };

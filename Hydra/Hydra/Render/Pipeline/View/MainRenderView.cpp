@@ -11,6 +11,7 @@
 
 void MainRenderView::OnCreated()
 {
+	Engine->InitializeAssetManager(Context->GetAssetManager());
 	Engine->SceneInit();
 }
 

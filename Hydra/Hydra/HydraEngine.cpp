@@ -31,7 +31,6 @@ void HydraEngine::Start()
 
 	AssetManager* assetManager = new AssetManager();
 	Context->SetAssetManager(assetManager);
-	InitializeAssetManager(assetManager);
 
 	deviceManager->InitContext();
 }
@@ -57,9 +56,19 @@ void HydraEngine::InitializeAssetManager(AssetManager* assetManager)
 
 	Blob* data = stream.Read();
 
-	HAsset* asset = nullptr;
-	modelImporter.Import(*data, ModelImportOptions(), asset);
+	List<HAsset*> assets;
+
+	ModelImportOptions options;
+	options.CombineMeshes = true;
+	modelImporter.Import(*data, options, assets);
 	 
+	Log("Loaded meshes", ToString(assets.size()));
+
+	for (HAsset* asset : assets)
+	{
+		delete asset;
+	}
+
 	delete data;
 }
 

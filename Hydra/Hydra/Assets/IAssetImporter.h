@@ -13,5 +13,5 @@ class HYDRA_API AssetImportOptions : public HObject
 class IAssetImporter
 {
 public:
-	virtual bool Import(Blob& dataBlob, const AssetImportOptions& options, HAsset*& out_Asset) = 0;
+	virtual bool Import(Blob& dataBlob, const AssetImportOptions& options, List<HAsset*>& out_Assets) = 0;
 };

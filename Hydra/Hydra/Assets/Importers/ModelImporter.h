@@ -7,6 +7,10 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+class HStaticMesh;
+struct FStaticMeshLODResources;
+struct FStaticMeshSection;
+
 class ModelImportOptions : public AssetImportOptions
 {
 	HCLASS_BODY(ModelImportOptions)
@@ -17,9 +21,10 @@ public:
 class ModelImporter : public IAssetImporter
 {
 public:
-	bool Import(Blob& dataBlob, const AssetImportOptions& options, HAsset*& out_Asset);
+	bool Import(Blob& dataBlob, const AssetImportOptions& options, List<HAsset*>& out_Assets);
 
 private:
 
-	void ProcessNode(const aiScene* scene, aiNode* node, const String& node_hiearchy_name);
+	void ProcessNode(const aiScene* scene, aiNode* node, Map<String, aiTexture*> embeddedTextures, const String& node_hiearchy_name, const ModelImportOptions& options, List<HStaticMesh*>& staticMeshes, int& materialSlotIndex);
+	void ProcessMesh(aiMesh* mesh, aiNode* node, HStaticMesh* staticMesh, FStaticMeshLODResources& meshResources, FStaticMeshSection& meshSection, int index);
 };
