@@ -9,10 +9,21 @@
 
 #include "Hydra/Framework/Components/StaticMeshComponent.h"
 
+#include "Hydra/Render/Material.h"
+#include "Hydra/Render/Shader.h"
+
 void MainRenderView::OnCreated()
 {
 	Engine->InitializeAssetManager(Context->GetAssetManager());
 	Engine->SceneInit();
+
+	SharedPtr<Technique> tech = MakeShared<Technique>(Context, File("Assets/Shaders/DefaultDeffered.hlsl"), true);
+
+	MaterialInterface* mat = new MaterialInterface("yo", tech);
+
+	mat->GetShader(NVRHI::ShaderType::SHADER_VERTEX)->CreateInputLayout();
+
+	delete mat;
 }
 
 void MainRenderView::OnDestroy()

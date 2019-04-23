@@ -53,6 +53,89 @@ ShaderVars* Shader::CreateShaderVars()
 	return new ShaderVars(*_LocalShaderVarCache);
 }
 
+DXGI_FORMAT GetDXGIFormat(D3D11_SIGNATURE_PARAMETER_DESC& pd)
+{
+	BYTE mask = pd.Mask;
+	int varCount = 0;
+	while (mask)
+	{
+		if (mask & 0x01) varCount++;
+		mask = mask >> 1;
+	}
+
+	if (pd.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32)
+	{
+		if (varCount == 4) return DXGI_FORMAT_R32G32B32A32_FLOAT;
+		else if (varCount == 3) return DXGI_FORMAT_R32G32B32_FLOAT;
+		else if (varCount == 2) return DXGI_FORMAT_R32G32_FLOAT;
+		else if (varCount == 1) return DXGI_FORMAT_R32_FLOAT;
+	}
+	else if (pd.ComponentType == D3D_REGISTER_COMPONENT_SINT32)
+	{
+		if (varCount == 4) return DXGI_FORMAT_R32G32B32A32_SINT;
+		else if (varCount == 3) return DXGI_FORMAT_R32G32B32_SINT;
+		else if (varCount == 2) return DXGI_FORMAT_R32G32_SINT;
+		else if (varCount == 1) return DXGI_FORMAT_R32_SINT;
+	}
+	else if (pd.ComponentType == D3D_REGISTER_COMPONENT_UINT32)
+	{
+		if (varCount == 4) return DXGI_FORMAT_R32G32B32A32_UINT;
+		else if (varCount == 3) return DXGI_FORMAT_R32G32B32_UINT;
+		else if (varCount == 2) return DXGI_FORMAT_R32G32_UINT;
+		else if (varCount == 1) return DXGI_FORMAT_R32_UINT;
+	}
+	else if (pd.ComponentType == D3D_REGISTER_COMPONENT_UNKNOWN)
+	{
+	}
+	else
+	{
+	}
+
+	return DXGI_FORMAT_UNKNOWN;
+}
+
+NVRHI::InputLayoutHandle Shader::CreateInputLayout()
+{
+	if (_Blob == nullptr || _Handle == nullptr || _Type != NVRHI::ShaderType::SHADER_VERTEX)
+	{
+		return nullptr;
+	}
+
+	ID3D11ShaderReflection* reflection;
+	D3DReflect(_Blob->GetBufferPointer(), _Blob->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&reflection);
+
+	D3D11_SHADER_DESC shaderDesc;
+	reflection->GetDesc(&shaderDesc);
+
+	if (shaderDesc.InputParameters == 0)
+	{
+		reflection->Release();
+		return nullptr;
+	}
+
+	for (unsigned int i = 0; i < shaderDesc.InputParameters; i++)
+	{
+		D3D11_SIGNATURE_PARAMETER_DESC paramDesc;
+		reflection->GetInputParameterDesc(i, &paramDesc);
+
+		if (paramDesc.SystemValueType != D3D_NAME_UNDEFINED) continue;
+
+		String perInstanceStr = "_PER_INSTANCE";
+		String sem = paramDesc.SemanticName;
+		uint8 semanticIndex = paramDesc.SemanticIndex;
+		int lenDiff = (int)sem.size() - (int)perInstanceStr.size();
+		bool isPerInstance = lenDiff >= 0 && sem.compare(lenDiff, perInstanceStr.size(), perInstanceStr) == 0;
+
+		DXGI_FORMAT format = GetDXGIFormat(paramDesc);
+
+		//TODO: Vertex factory
+	}
+
+	reflection->Release();
+
+	return nullptr;
+}
+
 void Shader::Initialize()
 {
 	if (_Blob == nullptr)

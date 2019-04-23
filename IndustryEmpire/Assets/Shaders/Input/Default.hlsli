@@ -8,5 +8,5 @@ struct VS_Input
 	float3 normal : NORMAL;
 	float3 tangent : TANGENT;
 	float3 binormal : BINORMAL;
-	float4x4 instanceMatrix : WORLD;
+	float4x4 instanceMatrix : WORLD_PER_INSTANCE;
 };

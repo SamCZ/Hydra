@@ -2,8 +2,7 @@
 
 #include <d3d11.h>
 
-#include "Hydra/Core/Library.h"
-#include "Hydra/Core/String.h"
+#include "Hydra/Core/Common.h"
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
 #include "Hydra/Render/VarType.h"
 
@@ -85,6 +84,8 @@ public:
 	NVRHI::ShaderType::Enum GetType();
 
 	ShaderVars* CreateShaderVars();
+
+	NVRHI::InputLayoutHandle CreateInputLayout();
 
 private:
 	void Initialize();
