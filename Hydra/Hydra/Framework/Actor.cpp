@@ -59,6 +59,93 @@ void AActor::Destroy()
 	}
 }
 
+Vector3& AActor::GetLocation()
+{
+	return RootComponent->Location;
+}
+
+Vector3& AActor::GetRotation()
+{
+	return RootComponent->Rotation;
+}
+
+Vector3& AActor::GetScale()
+{
+	return RootComponent->Scale;
+}
+
+void AActor::SetLocation(const Vector3& location)
+{
+	RootComponent->Location = location;
+}
+
+void AActor::SetRotation(const Vector3& rotation)
+{
+	RootComponent->Rotation = rotation;
+}
+
+void AActor::SetScale(const Vector3& scale)
+{
+	RootComponent->Scale = scale;
+}
+
+void AActor::SetLocation(float x, float y, float z)
+{
+	RootComponent->Location.x = x;
+	RootComponent->Location.y = y;
+	RootComponent->Location.z = z;
+}
+
+void AActor::SetRotation(float x, float y, float z)
+{
+	RootComponent->Rotation.x = x;
+	RootComponent->Rotation.y = y;
+	RootComponent->Rotation.z = z;
+}
+
+void AActor::SetScale(float x, float y, float z)
+{
+	RootComponent->Scale.x = x;
+	RootComponent->Scale.y = y;
+	RootComponent->Scale.z = z;
+}
+
+void AActor::AddLocation(const Vector3& location)
+{
+	RootComponent->Location += location;
+}
+
+void AActor::AddRotation(const Vector3& rotation)
+{
+	RootComponent->Rotation += rotation;
+}
+
+void AActor::AddScale(const Vector3& scale)
+{
+	RootComponent->Scale += scale;
+}
+
+void AActor::AddLocation(float x, float y, float z)
+{
+	RootComponent->Location.x += x;
+	RootComponent->Location.y += y;
+	RootComponent->Location.z += z;
+}
+
+void AActor::AddRotation(float x, float y, float z)
+{
+	RootComponent->Rotation.x += x;
+	RootComponent->Rotation.y += y;
+	RootComponent->Rotation.z += z;
+}
+
+void AActor::AddScale(float x, float y, float z)
+{
+	RootComponent->Scale.x += x;
+	RootComponent->Scale.y += y;
+	RootComponent->Scale.z += z;
+}
+
 void AActor::InitilizeComponent(HSceneComponent* component)
 {
 	component->World = World;

@@ -19,13 +19,12 @@ private:
 	HGameModeBase* _GameMode;
 public:
 	FWorld(EngineContext* context);
+	~FWorld();
 
 	template<class AActor>
 	AActor* SpawnActor(const String& Name, const Vector3& Position, const Vector3& Rotation, const Vector3& Scale = Vector3(0.0f))
 	{
 		AActor* actor = BeginSpawnActor<AActor>(Name, Position, Rotation, Scale);
-
-		actor->Name = Name;
 
 		FinishSpawningActor(actor);
 
@@ -39,10 +38,14 @@ public:
 		AActor* actor = static_cast<AActor*>(actorTemplated);
 		actor->Engine = _Engine;
 		actor->World = this;
+		actor->Name = Name;
 
 		actor->RootComponent = actor->AddComponent<HSceneComponent>("SceneRoot");
+		actor->Components.push_back(actor->RootComponent);
 
 		actor->InitializeComponents();
+
+		_Actors.push_back(actor);
 
 		return actorTemplated;
 	}

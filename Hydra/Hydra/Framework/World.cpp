@@ -5,6 +5,16 @@ FWorld::FWorld(EngineContext* context)
 	_Engine = context;
 }
 
+FWorld::~FWorld()
+{
+	for (AActor* actor : _Actors)
+	{
+		DestroyActor(actor);
+	}
+
+	DestroyActor((AActor*)_GameMode);
+}
+
 void FWorld::FinishSpawningActor(AActor* actor)
 {
 	if (actor)
@@ -17,6 +27,10 @@ void FWorld::DestroyActor(AActor* actor)
 {
 	if (actor && !actor->IsIndestructible)
 	{
+		//Destroy components of actor
+
+
+		// Destroy actor
 		auto iter = Find(_Actors, actor);
 
 		if (iter != _Actors.end())

@@ -56,6 +56,25 @@ public:
 
 	virtual void Destroy();
 
+	Vector3& GetLocation();
+	Vector3& GetRotation();
+	Vector3& GetScale();
+
+	void SetLocation(const Vector3& location);
+	void SetRotation(const Vector3& rotation);
+	void SetScale(const Vector3& scale);
+
+	void SetLocation(float x, float y, float z);
+	void SetRotation(float x, float y, float z);
+	void SetScale(float x, float y, float z);
+
+	void AddLocation(const Vector3& location);
+	void AddRotation(const Vector3& rotation);
+	void AddScale(const Vector3& scale);
+
+	void AddLocation(float x, float y, float z);
+	void AddRotation(float x, float y, float z);
+	void AddScale(float x, float y, float z);
 
 	/*Vector3 GetForwardVector() const;
 	Vector3 GetUpVector() const;
