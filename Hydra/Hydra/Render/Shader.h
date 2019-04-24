@@ -64,6 +64,19 @@ struct ShaderVars
 	Map<String, VarType::Type> VariableTypes;
 };
 
+struct ShaderVertexInputDefinition
+{
+	String SemanticName;
+	int SemanticIndex;
+	DXGI_FORMAT Format;
+	bool Instanced;
+
+	inline bool operator==(const ShaderVertexInputDefinition& other)
+	{
+		return SemanticName == other.SemanticName && SemanticIndex == other.SemanticIndex && Format == other.Format && Instanced == other.Instanced;
+	}
+};
+
 class HYDRA_API Shader
 {
 private:
@@ -85,7 +98,7 @@ public:
 
 	ShaderVars* CreateShaderVars();
 
-	NVRHI::InputLayoutHandle CreateInputLayout();
+	List<ShaderVertexInputDefinition> GetInputLayoutDefinitions();
 
 private:
 	void Initialize();

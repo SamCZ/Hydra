@@ -94,11 +94,13 @@ DXGI_FORMAT GetDXGIFormat(D3D11_SIGNATURE_PARAMETER_DESC& pd)
 	return DXGI_FORMAT_UNKNOWN;
 }
 
-NVRHI::InputLayoutHandle Shader::CreateInputLayout()
+List<ShaderVertexInputDefinition> Shader::GetInputLayoutDefinitions()
 {
+	List<ShaderVertexInputDefinition> definitions;
+
 	if (_Blob == nullptr || _Handle == nullptr || _Type != NVRHI::ShaderType::SHADER_VERTEX)
 	{
-		return nullptr;
+		return definitions;
 	}
 
 	ID3D11ShaderReflection* reflection;
@@ -110,7 +112,7 @@ NVRHI::InputLayoutHandle Shader::CreateInputLayout()
 	if (shaderDesc.InputParameters == 0)
 	{
 		reflection->Release();
-		return nullptr;
+		return definitions;
 	}
 
 	for (unsigned int i = 0; i < shaderDesc.InputParameters; i++)
@@ -128,12 +130,18 @@ NVRHI::InputLayoutHandle Shader::CreateInputLayout()
 
 		DXGI_FORMAT format = GetDXGIFormat(paramDesc);
 
-		//TODO: Vertex factory
+		ShaderVertexInputDefinition def = {};
+		def.SemanticName = paramDesc.SemanticName;
+		def.SemanticIndex = semanticIndex;
+		def.Format = format;
+		def.Instanced = isPerInstance;
+
+		definitions.emplace_back(def);
 	}
 
 	reflection->Release();
 
-	return nullptr;
+	return definitions;
 }
 
 void Shader::Initialize()
