@@ -7,6 +7,7 @@
 #include "Hydra/Framework/StaticMesh.h"
 #include "Hydra/Framework/StaticMeshResources.h"
 
+#include "Hydra/Framework/Components/SceneComponent.h"
 #include "Hydra/Framework/Components/StaticMeshComponent.h"
 
 #include "Hydra/Render/Material.h"
@@ -21,7 +22,7 @@ void MainRenderView::OnCreated()
 
 	MaterialInterface* mat = new MaterialInterface("yo", tech);
 
-	mat->GetShader(NVRHI::ShaderType::SHADER_VERTEX)->CreateInputLayout();
+	mat->GetShader(NVRHI::ShaderType::SHADER_VERTEX)->GetInputLayoutDefinitions();
 
 	delete mat;
 }
@@ -51,11 +52,29 @@ void MainRenderView::OnRender(NVRHI::TextureHandle mainRenderTarget)
 
 void MainRenderView::OnTick(float Delta)
 {
+	FWorld* world = Engine->GetWorld();
 
+	for (AActor* actor : world->GetActors())
+	{
+		if (actor->IsActive)
+		{
+			for (HSceneComponent* component : actor->Components)
+			{
+				UpdateComponent(component, Delta);
+			}
+
+			actor->Tick(Delta);
+		}
+	}
 }
 
 void MainRenderView::OnResize(uint32 width, uint32 height, uint32 sampleCount)
 {
 	Context->ScreenSize.x = width;
 	Context->ScreenSize.y = height;
+}
+
+void MainRenderView::UpdateComponent(HSceneComponent* component, float Delta)
+{
+	// Component has no tick function for now
 }
