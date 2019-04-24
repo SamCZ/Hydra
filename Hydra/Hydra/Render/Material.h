@@ -9,6 +9,8 @@
 
 #include "Hydra/Render/VarType.h"
 
+#include "Hydra/Assets/Asset.h"
+
 class Technique;
 class Shader;
 struct ShaderVars;
@@ -45,10 +47,9 @@ struct BufferVar
 	bool HasChnaged;
 };
 
-class MaterialInterface;
-
-class HYDRA_API MaterialInterface
+class HYDRA_API MaterialInterface : public HAsset
 {
+	HCLASS_BODY_NO_FNC_POINTER(MaterialInterface)
 private:
 	static Map<String, SharedPtr<Technique>> _TechniqueCache;
 
