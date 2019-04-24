@@ -47,7 +47,7 @@ bool ModelImporter::Import(Blob& dataBlob, const AssetImportOptions& options, Li
 
 	Map<String, aiTexture*> embeddedTextures;
 
-	for (int i = 0; i < scene->mNumTextures; i++)
+	for (uint32 i = 0; i < scene->mNumTextures; i++)
 	{
 		aiTexture* tex = scene->mTextures[i];
 
