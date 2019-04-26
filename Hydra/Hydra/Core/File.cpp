@@ -291,7 +291,6 @@ List<String> File::ReadLines() const
 	return lines;
 }
 
-
 std::ostream& operator<<(std::ostream& os, const File& obj)
 {
 	os << obj.GetPath();

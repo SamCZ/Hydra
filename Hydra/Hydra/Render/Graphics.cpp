@@ -125,6 +125,8 @@ void Graphics::Composite(MaterialInterface* material, Function<void(NVRHI::DrawC
 	if (preRenderFunction)
 		preRenderFunction(state);
 
+	material->ApplyParams(state);
+
 	NVRHI::DrawArguments args;
 	args.vertexCount = 4;
 	_Context->GetRenderInterface()->draw(state, &args, 1);

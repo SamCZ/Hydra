@@ -5,8 +5,12 @@
 class HYDRA_API HydraEngine;
 class HYDRA_API HSceneComponent;
 
+class MaterialInterface;
+
 class MainRenderView : public IVisualController
 {
+private:
+	MaterialInterface* _DefaultMaterial;
 public:
 	HydraEngine* Engine;
 

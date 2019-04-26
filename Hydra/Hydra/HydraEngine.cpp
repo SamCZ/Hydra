@@ -29,7 +29,7 @@ void HydraEngine::Start()
 
 	World = new FWorld(Context);
 
-	AssetManager* assetManager = new AssetManager();
+	AssetManager* assetManager = new AssetManager(Context);
 	Context->SetAssetManager(assetManager);
 
 	deviceManager->InitContext();

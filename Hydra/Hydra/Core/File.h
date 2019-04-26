@@ -37,6 +37,12 @@ public:
 	List<String> ReadLines() const;
 
 	static String FixPath(String path, const char from = '\\', const char to = '/');
+
+	operator String() const
+	{
+		return GetPath();
+	}
+
 private:
 	String _rootPath;
 };

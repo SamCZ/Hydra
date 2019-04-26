@@ -5,7 +5,7 @@
 
 void FirstPersonCharacter::InitializeComponents()
 {
-	FirstPersonCameraComponent = AddComponent<HCameraComponent>("MainCamera");
+	//FirstPersonCameraComponent = AddComponent<HCameraComponent>("MainCamera");
 }
 
 void FirstPersonCharacter::SetupPlayerInput(InputManager* inputManager)

@@ -13,18 +13,17 @@
 #include "Hydra/Render/Material.h"
 #include "Hydra/Render/Shader.h"
 
+#include "Hydra/Render/Graphics.h"
+
 void MainRenderView::OnCreated()
 {
 	Engine->InitializeAssetManager(Context->GetAssetManager());
 	Engine->SceneInit();
 
-	SharedPtr<Technique> tech = MakeShared<Technique>(Context, File("Assets/Shaders/DefaultDeffered.hlsl"), true);
+	Context->GetAssetManager()->LoadProjectFiles();
 
-	MaterialInterface* mat = new MaterialInterface("yo", tech);
+	_DefaultMaterial = Context->GetAssetManager()->GetMaterial("Assets/Materials/Default.mat");
 
-	mat->GetShader(NVRHI::ShaderType::SHADER_VERTEX)->GetInputLayoutDefinitions();
-
-	delete mat;
 }
 
 void MainRenderView::OnDestroy()
@@ -48,6 +47,13 @@ void MainRenderView::OnRender(NVRHI::TextureHandle mainRenderTarget)
 			}
 		}
 	}
+
+
+	// Test Render
+
+	Context->GetGraphics()->Composite(_DefaultMaterial, [](NVRHI::DrawCallState& state) {
+		
+	}, mainRenderTarget);
 }
 
 void MainRenderView::OnTick(float Delta)

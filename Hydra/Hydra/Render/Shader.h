@@ -75,6 +75,11 @@ struct ShaderVertexInputDefinition
 	{
 		return SemanticName == other.SemanticName && SemanticIndex == other.SemanticIndex && Format == other.Format && Instanced == other.Instanced;
 	}
+
+	inline String Print()
+	{
+		return String("ShaderVertexInputDefinition(") + "Name=" + SemanticName + ", SemanticIndex=" + ToString(SemanticIndex) + ", Format=" + ToString((int)Format) + ", IsInstanced=" + ToString(Instanced);
+	}
 };
 
 class HYDRA_API Shader
