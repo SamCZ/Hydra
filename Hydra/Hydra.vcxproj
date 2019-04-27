@@ -182,6 +182,7 @@
     <ClInclude Include="Hydra\Assets\AssetManager.h" />
     <ClInclude Include="Hydra\Assets\IAssetLocator.h" />
     <ClInclude Include="Hydra\Assets\Importers\ModelImporter.h" />
+    <ClInclude Include="Hydra\Assets\Importers\TextureImporter.h" />
     <ClInclude Include="Hydra\Core\Array.h" />
     <ClInclude Include="Hydra\Core\Delegate.h" />
     <ClInclude Include="Hydra\Core\FastNoise.h" />
@@ -307,6 +308,7 @@
   <ItemGroup>
     <ClCompile Include="Hydra\Assets\AssetManager.cpp" />
     <ClCompile Include="Hydra\Assets\Importers\ModelImporter.cpp" />
+    <ClCompile Include="Hydra\Assets\Importers\TextureImporter.cpp" />
     <ClCompile Include="Hydra\Core\FastNoise.cpp" />
     <ClCompile Include="Hydra\Core\Math\Box.cpp" />
     <ClCompile Include="Hydra\Core\Stream\FileStream.cpp" />
