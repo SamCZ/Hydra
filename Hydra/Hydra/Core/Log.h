@@ -50,3 +50,9 @@ inline static void LogError(const String& funcName, const String& argument, cons
 #endif
 
 }
+
+#define LogMethod() { \
+	String func = __FUNCDNAME__; \
+	List<String> spl = SplitString(func, '@'); \
+	Log(spl[1] + "::" + spl[0].substr(1) + "()"); \
+	} \
