@@ -540,7 +540,8 @@ void DeviceManagerDX11::Render()
 	}
 
 	// rendering back-to-front
-	for (auto it = m_vControllers.rbegin(); it != m_vControllers.rend(); it++)
+	//TODO: Find why i must use begin instead of rbegin and rend
+	for (auto it = m_vControllers.begin(); it != m_vControllers.end(); it++)
 	{
 		if ((*it)->IsEnabled())
 		{
@@ -783,7 +784,7 @@ void DeviceManagerDX11::InitContext()
 
 void DeviceManagerDX11::AddVisualController(IVisualController* view)
 {
-	AddControllerToFront(new VisualController(view));
+	AddControllerToBack(new VisualController(view));
 }
 
 DeviceManagerDX11::WindowState DeviceManagerDX11::GetWindowState()
