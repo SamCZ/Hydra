@@ -10,7 +10,7 @@
 
 void UIRenderView::OnCreated()
 {
-
+	LogMethod()
 }
 
 void UIRenderView::OnDestroy()
@@ -20,6 +20,8 @@ void UIRenderView::OnDestroy()
 
 void UIRenderView::OnRender(NVRHI::TextureHandle mainRenderTarget)
 {
+	(void)mainRenderTarget;
+
 	UIRenderer* renderer = Context->GetUIRenderer();
 
 	for (AActor* actor : Engine->GetWorld()->GetActors())
