@@ -32,5 +32,8 @@ float4 MainPS(FullScreenQuadOutput IN) : SV_Target
 {
 	float4 color = float4(_Color, 1);
 
+	color.x = frac(IN.uv.x * 10);
+	color.y = frac(IN.uv.y * 10);
+
 	return color;
 }
