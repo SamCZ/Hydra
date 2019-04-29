@@ -7,6 +7,8 @@
 
 Graphics::~Graphics()
 {
+	delete _BlitMaterial;
+
 	ITER(_ConstantBuffers, it)
 	{
 		_Context->GetRenderInterface()->destroyConstantBuffer(it->second.Handle);
@@ -25,6 +27,7 @@ Graphics::~Graphics()
 
 Graphics::Graphics(EngineContext* context) : _Context(context)
 {
+	_BlitMaterial = new MaterialInterface("Blit", MakeShared<Technique>(context, "Assets/Shaders/Blit.hlsl", true));
 	//_BlitMaterial = Material::CreateOrGet("Assets/Shaders/Blit.hlsl", true, true);
 	//_BlurMaterial = Material::CreateOrGet("Assets/Shaders/PostProcess/GaussianBlur.hlsl", true, true);
 }

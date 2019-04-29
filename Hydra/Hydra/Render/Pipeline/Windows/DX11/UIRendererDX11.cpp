@@ -13,6 +13,26 @@ UIRendererDX11::UIRendererDX11(EngineContext* context) : _Context(context), _Dev
 
 }
 
+void UIRendererDX11::SetRenderTarget(NVRHI::TextureHandle tex)
+{
+	NVRHI::RendererInterfaceD3D11* renderInterface = (NVRHI::RendererInterfaceD3D11*)_Context->GetRenderInterface();
+	ID3D11DeviceContext* m_ImmediateContext = nullptr;
+	(static_cast<DeviceManagerDX11*>(_Context->GetDeviceManager()))->GetDevice()->GetImmediateContext(&m_ImmediateContext);
+
+	ID3D11RenderTargetView* m_BackBufferRTV = renderInterface->getRTVForTexture(tex);
+
+	const NVRHI::TextureDesc& desc = tex->GetDesc();
+
+	D3D11_VIEWPORT viewport = { 0.0f, 0.0f, (float)desc.width, (float)desc.height, 0.0f, 1.0f };
+
+	static float clearColor[4]{ 0, 0, 0, 0 };
+
+	m_ImmediateContext->ClearRenderTargetView(m_BackBufferRTV, clearColor);
+
+	m_ImmediateContext->OMSetRenderTargets(1, &m_BackBufferRTV, nullptr);
+	m_ImmediateContext->RSSetViewports(1, &viewport);
+}
+
 NVGcontext* UIRendererDX11::CreateContext(int flags)
 {
 	return nvgCreateD3D11(_Device, flags | NVG_ANTIALIAS | NVG_STENCIL_STROKES);

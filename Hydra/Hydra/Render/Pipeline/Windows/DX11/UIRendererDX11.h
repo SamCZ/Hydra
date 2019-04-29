@@ -15,6 +15,8 @@ private:
 	Map<NVRHI::TextureHandle, int> _TexMap;
 public:
 	UIRendererDX11(EngineContext* context);
+
+	void SetRenderTarget(NVRHI::TextureHandle tex);
 protected:
 	virtual NVGcontext* CreateContext(int flags);
 	virtual void DestroyContext(NVGcontext* context);

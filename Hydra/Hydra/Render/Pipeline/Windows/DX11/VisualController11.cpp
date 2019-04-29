@@ -19,17 +19,7 @@ void VisualController::Render(RenderTargetView RTV)
 	NVRHI::TextureHandle mainRenderTarget = RenderInterface->getHandleForTexture(pMainResource);
 	pMainResource->Release();
 
-	if (CreatedUIRenderer)
-	{
-		UIRenderer->Begin(Context->ScreenSize);
-	}
-
 	_EngineVisualController->OnRender(mainRenderTarget);
-
-	if (CreatedUIRenderer)
-	{
-		UIRenderer->End();
-	}
 
 	RenderInterface->forgetAboutTexture(pMainResource);
 }
@@ -81,10 +71,20 @@ HRESULT VisualController::DeviceCreated()
 
 void VisualController::DeviceDestroyed()
 {
-	if (CreatedUIRenderer)
+	_EngineVisualController->OnDestroy();
+
+
+	if (Context->GetGraphics() != nullptr)
+	{
+		delete Context->GetGraphics();
+		Context->SetGraphics(nullptr);
+	}
+
+	if (Context->GetUIRenderer() != nullptr)
 	{
 		UIRenderer->Destroy();
 		delete UIRenderer;
+		Context->SetUIRenderer(nullptr);
 	}
 
 	if (Context->GetRenderInterface() != nullptr)
@@ -93,19 +93,11 @@ void VisualController::DeviceDestroyed()
 		Context->SetRenderInterface(nullptr);
 	}
 
-	if (Context->GetGraphics() != nullptr)
-	{
-		delete Context->GetGraphics();
-		Context->SetGraphics(nullptr);
-	}
-
 	if (Context->GetInputManager() != nullptr)
 	{
 		delete Context->GetInputManager();
 		Context->SetInputManager(nullptr);
 	}
-
-	_EngineVisualController->OnDestroy();
 
 	delete _EngineVisualController;
 }

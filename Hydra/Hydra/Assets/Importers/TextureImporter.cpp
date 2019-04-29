@@ -17,12 +17,18 @@ UINT getMipLevelsNum(UINT width, UINT height)
 	return levelsNum;
 }
 
+TextureImporter::TextureImporter(EngineContext * context) : _Context(context)
+{
+}
+
 bool TextureImporter::Import(Blob & dataBlob, const AssetImportOptions& options, List<HAsset*>& out_Assets)
 {
 	//TODO: Get file type
 	//TODO: complete image loading
 
-	String fileType = "dds";
+	NVRHI::IRendererInterface* renderInterface = _Context->GetRenderInterface();
+
+	String fileType = "png";
 
 	if (fileType != "dds")
 	{
@@ -67,7 +73,7 @@ bool TextureImporter::Import(Blob & dataBlob, const AssetImportOptions& options,
 			textureDesc.mipLevels = getMipLevelsNum(width, height);
 			textureDesc.format = format;
 			textureDesc.debugName = "Loaded texture";
-			NVRHI::TextureHandle texture = nullptr;// renderInterface->createTexture(textureDesc, NULL);
+			NVRHI::TextureHandle texture = renderInterface->createTexture(textureDesc, NULL);
 
 			if (texture)
 			{
@@ -76,7 +82,7 @@ bool TextureImporter::Import(Blob & dataBlob, const AssetImportOptions& options,
 					UINT freeImagePitch = FreeImage_GetPitch(pBitmap);
 					BYTE* bitmapData = FreeImage_GetBits(pBitmap);
 
-					//renderInterface->writeTexture(texture, mipLevel, bitmapData, freeImagePitch, 0);
+					renderInterface->writeTexture(texture, mipLevel, bitmapData, freeImagePitch, 0);
 
 					if (mipLevel < textureDesc.mipLevels - 1u)
 					{
@@ -91,6 +97,8 @@ bool TextureImporter::Import(Blob & dataBlob, const AssetImportOptions& options,
 
 			FreeImage_Unload(pBitmap);
 			FreeImage_CloseMemory(hmem);
+
+			out_Assets = { texture };
 
 			return true;
 		}

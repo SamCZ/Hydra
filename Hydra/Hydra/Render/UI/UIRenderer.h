@@ -29,6 +29,7 @@ public:
 
 	void Begin(const Vector2& screenSize);
 	void End();
+	virtual void SetRenderTarget(NVRHI::TextureHandle tex) = 0;
 
 	void DrawImage(NVRHI::TextureHandle tex, float x, float y, float width, float height, float borderRadius, float alpha = 1.0f);
 
@@ -41,8 +42,9 @@ public:
 	void ClearClipping();
 
 	void DrawRect(float x, float y, float w, float h, ColorRGBA color, bool isStroke = false, float strokeSize = 0.0f, float topLeft = 0.0f, float topRight = 0.0f, float bottomRight = 0.0f, float bottomLeft = 0.0f);
-
 	void DrawOval(float x, float y, float w, float h, ColorRGBA color);
+	void DrawLine(float x0, float y0, float x1, float y1, float strength, const ColorRGBA& startColor, const ColorRGBA& endColor);
+	void DrawLine(float x0, float y0, float x1, float y1, float strength, const ColorRGBA& color);
 
 protected:
 	virtual NVGcontext* CreateContext(int flags) = 0;

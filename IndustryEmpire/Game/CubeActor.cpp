@@ -19,7 +19,7 @@ void ACubeActor::BeginPlay()
 
 void ACubeActor::Tick(float DeltaTime)
 {
-	//;Velocity *= Acceleration;
+	//Velocity *= Acceleration;
 	AddLocation(Velocity.x, Velocity.y, 0);
 
 
@@ -32,4 +32,11 @@ void ACubeActor::Tick(float DeltaTime)
 	{
 		Velocity.y *= -1;
 	}
+}
+
+void ACubeActor::OnHud(UIRenderer * renderer)
+{
+	Vector3 location = GetLocation();
+
+	renderer->DrawOval(location.x, location.y, 10, 10, ColorRGBA::Blue);
 }

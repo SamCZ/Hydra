@@ -5,6 +5,9 @@
 
 class FWorld;
 class EngineContext;
+class HGameModeBase;
+
+class UIRenderer;
 
 class HYDRA_API AActor : public HObject
 {
@@ -20,6 +23,8 @@ public:
 	List<HSceneComponent*> Components;
 
 	HSceneComponent* RootComponent;
+
+	int Layer; // Added only for purpose sort Hud layer for LudumDare
 public:
 	AActor();
 
@@ -79,6 +84,14 @@ public:
 	/*Vector3 GetForwardVector() const;
 	Vector3 GetUpVector() const;
 	Vector3 GetRightVector() const;*/
+
+	// Added only for purpose ludum dare, remove in future
+	virtual void OnHud(UIRenderer* renderer)
+	{
+
+	}
+
+	HGameModeBase* GetGameMode();
 
 private:
 	void InitilizeComponent(HSceneComponent* component);

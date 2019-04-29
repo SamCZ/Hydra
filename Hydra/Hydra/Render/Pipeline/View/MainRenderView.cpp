@@ -52,10 +52,10 @@ void MainRenderView::OnRender(NVRHI::TextureHandle mainRenderTarget)
 
 
 	// Test Render
-
+	/*
 	Context->GetGraphics()->Composite(_DefaultMaterial, [](NVRHI::DrawCallState& state) {
 		
-	}, mainRenderTarget);
+	}, mainRenderTarget);*/
 }
 
 void MainRenderView::OnTick(float Delta)

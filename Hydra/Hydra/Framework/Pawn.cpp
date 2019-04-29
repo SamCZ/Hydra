@@ -1,5 +1,10 @@
 #include "Hydra/Framework/Pawn.h"
 
+APawn::APawn()
+{
+
+}
+
 void APawn::SetupPlayerInput(InputManager * inputManager)
 {
 

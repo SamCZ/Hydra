@@ -146,6 +146,11 @@ void AActor::AddScale(float x, float y, float z)
 	RootComponent->Scale.z += z;
 }
 
+HGameModeBase* AActor::GetGameMode()
+{
+	return World->GetGameMode();
+}
+
 void AActor::InitilizeComponent(HSceneComponent* component)
 {
 	component->World = World;

@@ -10,6 +10,7 @@ class HYDRA_API APawn : public AActor
 private:
 
 public:
+	APawn();
 
 	virtual void SetupPlayerInput(InputManager* inputManager);
 

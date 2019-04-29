@@ -5,6 +5,13 @@
 
 #include "Hydra/Render/Technique.h"
 
+#include "Hydra/Assets/Importers/TextureImporter.h"
+#include "Hydra/Core/Stream/FileStream.h"
+
+static String ImageExtensions[]{
+	"png", "gif", "jpg", "jpeg", "tiff"
+};
+
 Json FromVec2(const glm::vec2& v2)
 {
 	Json obj = Json::object();
@@ -71,15 +78,40 @@ MaterialInterface* AssetManager::GetMaterial(const String & path)
 	return nullptr;
 }
 
+NVRHI::TextureHandle AssetManager::GetTexture(const String & path)
+{
+	auto iter = _Textures.find(path);
+
+	if (iter != _Textures.end())
+	{
+		return iter->second;
+	}
+
+	return nullptr;
+}
+
 void AssetManager::LoadProjectFiles()
 {
 	File projectFolder = File("ProjectFiles");
 
 	for (File file : projectFolder.ListFiles())
 	{
-		if (file.GetExtension() == "mat")
+		Log(file);
+
+		String ext = file.GetExtension();
+
+		if (ext == "mat")
 		{
 			LoadMaterial(file);
+		}
+
+		for (String imgExt : ImageExtensions)
+		{
+			if (ext == imgExt)
+			{
+				LoadTexture(file);
+				break;
+			}
 		}
 	}
 
@@ -87,9 +119,20 @@ void AssetManager::LoadProjectFiles()
 
 	for (File file : engineFolder.ListFiles())
 	{
-		if (file.GetExtension() == "mat")
+		String ext = file.GetExtension();
+
+		if (ext == "mat")
 		{
 			LoadMaterial(file);
+		}
+
+		for (String imgExt : ImageExtensions)
+		{
+			if (ext == imgExt)
+			{
+				LoadTexture(file);
+				break;
+			}
 		}
 	}
 }
@@ -258,4 +301,30 @@ void AssetManager::SaveMaterial(MaterialInterface* material)
 
 	json["State"] = jSTate;
 	Files::saveJson(json, file);*/
+}
+
+void AssetManager::LoadTexture(const File& file)
+{
+	Log("AssetManager::LoadTexture", file, "Trying to load...");
+
+	FileStream stream = FileStream(file);
+	Blob* data = stream.Read();
+
+	List<HAsset*> assets;
+
+	TextureImporter importer(_Context);
+	
+	if (importer.Import(*data, {}, assets))
+	{
+		NVRHI::TextureHandle tex = assets[0]->SafeCast<NVRHI::ITexture>();
+
+		if (tex)
+		{
+			_Textures[file] = tex;
+
+			Log("AssetManager::LoadTexture", file, "Loaded.");
+		}
+	}
+
+	delete data;
 }

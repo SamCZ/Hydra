@@ -12,6 +12,7 @@
 #define GFSDK_NVRHI_H_
 
 #include "Hydra/Core/Library.h"
+#include "Hydra/Assets/Asset.h"
 
 #include <stdint.h>
 #include <memory.h>
@@ -187,8 +188,9 @@ namespace NVRHI
         }
     };
 
-    class HYDRA_API ITexture : public IResource
+    class HYDRA_API ITexture : public IResource, public HAsset
     {
+		HCLASS_BODY_NO_FNC_POINTER(ITexture)
     public:
         virtual const TextureDesc& GetDesc() const = 0;
     };

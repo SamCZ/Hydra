@@ -48,7 +48,7 @@ void HydraEngine::PrepareForEngineStart(DeviceCreationParameters& params)
 
 void HydraEngine::InitializeAssetManager(AssetManager* assetManager)
 {
-	ModelImporter modelImporter;
+	/*ModelImporter modelImporter;
 
 	File modelFile = File("Assets/IndustryEmpire/Models/trees_v1.fbx");
 
@@ -69,7 +69,7 @@ void HydraEngine::InitializeAssetManager(AssetManager* assetManager)
 		delete asset;
 	}
 
-	delete data;
+	delete data;*/
 }
 
 FWorld* HydraEngine::GetWorld() const

@@ -5,6 +5,8 @@
 
 #include "Hydra/Core/Random.h"
 
+class UIRenderer;
+
 class ACubeActor : public AActor
 {
 public:
@@ -18,4 +20,6 @@ public:
 
 	void BeginPlay();
 	void Tick(float DeltaTime);
+
+	void OnHud(UIRenderer* renderer);
 };

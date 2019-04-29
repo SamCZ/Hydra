@@ -40,7 +40,7 @@ void UIRenderer::End()
 void UIRenderer::DrawImage(NVRHI::TextureHandle tex, float x, float y, float width, float height, float borderRadius, float alpha)
 {
 	int handle = GetHandleForTexture(_Context, tex);
-	NVGpaint paint = nvgImagePattern(_Context, x, y, width, height, 0.0f, handle, 1.0f);
+	NVGpaint paint = nvgImagePattern(_Context, x, y + height, width, -height, 0, handle, 1.0f);
 
 	nvgBeginPath(_Context);
 	if (borderRadius > 0)
@@ -172,4 +172,27 @@ void UIRenderer::DrawOval(float x, float y, float w, float h, ColorRGBA color)
 	nvgStrokeWidth(_Context, 1.0f);
 	nvgStrokeColor(_Context, c);
 	nvgStroke(_Context);
+}
+
+NVGcolor FromRGBA(const ColorRGBA& color)
+{
+	return nvgRGBAf(color.r, color.g, color.b, color.a);
+}
+
+void UIRenderer::DrawLine(float x0, float y0, float x1, float y1, float strength, const ColorRGBA & startColor, const ColorRGBA & endColor)
+{
+	NVGpaint paint = nvgLinearGradient(_Context, x0, y0, x1, y1, FromRGBA(startColor), FromRGBA(endColor));
+
+	nvgBeginPath(_Context);
+	nvgMoveTo(_Context, x0, y0);
+	nvgLineTo(_Context, x1, y1);
+
+	nvgStrokeWidth(_Context, strength);
+	nvgStrokePaint(_Context, paint);
+	nvgStroke(_Context);
+}
+
+void UIRenderer::DrawLine(float x0, float y0, float x1, float y1, float strength, const ColorRGBA & color)
+{
+	DrawLine(x0, y0, x1, y1, strength, color, color);
 }
