@@ -2,9 +2,10 @@
 
 #include "Hydra/Framework/Components/PrimitiveComponent.h"
 
+HCLASS()
 class HYDRA_API HMeshComponent : public HPrimitiveComponent
 {
-	HCLASS_BODY(HMeshComponent)
+	HCLASS_GENERATED_BODY()
 public:
 
 	/*virtual List<class Material*> GetMaterials() const;

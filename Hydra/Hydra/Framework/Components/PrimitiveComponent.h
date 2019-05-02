@@ -4,9 +4,10 @@
 
 class Material;
 
+HCLASS()
 class HYDRA_API HPrimitiveComponent : public HSceneComponent
 {
-	HCLASS_BODY(HPrimitiveComponent)
+	HCLASS_GENERATED_BODY()
 public:
 	float LDMaxDrawDistance;
 

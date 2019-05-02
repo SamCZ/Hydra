@@ -5,9 +5,10 @@
 #include "Hydra/Core/Log.h"
 #include "Hydra/Framework/Object.h"
 
+HCLASS()
 class HYDRA_API AssetImportOptions : public HObject
 {
-	HCLASS_BODY(AssetImportOptions)
+	HCLASS_GENERATED_BODY()
 };
 
 class IAssetImporter

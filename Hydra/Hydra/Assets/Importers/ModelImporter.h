@@ -11,9 +11,10 @@ class HStaticMesh;
 struct FStaticMeshLODResources;
 struct FStaticMeshSection;
 
+HCLASS()
 class ModelImportOptions : public AssetImportOptions
 {
-	HCLASS_BODY(ModelImportOptions)
+	HCLASS_GENERATED_BODY()
 public:
 	bool CombineMeshes;
 };

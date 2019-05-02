@@ -13,9 +13,10 @@ struct FStaticMaterial
 	bool operator==(const FStaticMaterial& left) { return Material == left.Material && MaterialSlotName == left.MaterialSlotName; }
 };
 
+HCLASS()
 class HStaticMesh : public HAsset
 {
-	HCLASS_BODY(HStaticMesh)
+	HCLASS_GENERATED_BODY()
 public:
 
 	class FStaticMeshRenderData* RenderData;

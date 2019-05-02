@@ -46,12 +46,19 @@ public:
 	}
 };
 
+#define HCLASS(...) 
+#define HCLASS_GENERATED_BODY(...)
+
+#define HENUM(...)
+#define INLINE_GENERATE_ENUM_TO_STRING(...)
+
+/*
 #define HCLASS_BODY(Name) protected: \
 							  static HObject* Factory_##Name() { return new Name(); } \
 							  public: \
 							  static HClass StaticClass() { return HClass(#Name, Name::Factory_##Name); } \
 							  virtual HClass GetClass() const { return HClass(#Name, Name::Factory_##Name); }
-
+*/
 #define HCLASS_BODY_NO_FNC_POINTER(Name) public: \
 							  static HClass StaticClass() { return HClass(#Name, nullptr); } \
 							  virtual HClass GetClass() const { return HClass(#Name, nullptr); }

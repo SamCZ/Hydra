@@ -8,9 +8,10 @@ class AActor;
 class FWorld;
 class EngineContext;
 
+HCLASS()
 class HYDRA_API HActorComponent : public HObject
 {
-	HCLASS_BODY(HActorComponent)
+	HCLASS_GENERATED_BODY()
 private:
 	uint8 RenderTransformDirty : 1;
 public:

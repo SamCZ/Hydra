@@ -3,10 +3,10 @@
 #include "Hydra/Framework/Components/ActorComponent.h"
 #include "Hydra/Core/Vector.h"
 
-
+HCLASS()
 class HYDRA_API HSceneComponent : public HActorComponent
 {
-	HCLASS_BODY(HSceneComponent)
+	HCLASS_GENERATED_BODY()
 private:
 	List<HSceneComponent*> Childrens;
 public:

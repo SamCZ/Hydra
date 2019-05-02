@@ -3,15 +3,17 @@
 #include "Hydra/Framework/Object.h"
 #include "Hydra/Framework/Components/SceneComponent.h"
 
+
 class FWorld;
 class EngineContext;
 class HGameModeBase;
 
 class UIRenderer;
 
+HCLASS()
 class HYDRA_API AActor : public HObject
 {
-	HCLASS_BODY(AActor)
+	HCLASS_GENERATED_BODY()
 public:
 	EngineContext* Engine;
 	FWorld* World;

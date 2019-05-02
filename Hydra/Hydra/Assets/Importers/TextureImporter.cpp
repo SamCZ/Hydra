@@ -67,6 +67,8 @@ bool TextureImporter::Import(Blob & dataBlob, const AssetImportOptions& options,
 				return NULL;
 			}
 
+			Log("Bpp", ToString(bpp));
+
 			NVRHI::TextureDesc textureDesc;
 			textureDesc.width = width;
 			textureDesc.height = height;
@@ -75,7 +77,7 @@ bool TextureImporter::Import(Blob & dataBlob, const AssetImportOptions& options,
 			textureDesc.debugName = "Loaded texture";
 			NVRHI::TextureHandle texture = renderInterface->createTexture(textureDesc, NULL);
 
-			if (texture)
+			/*if (texture)
 			{
 				for (UINT mipLevel = 0; mipLevel < textureDesc.mipLevels; mipLevel++)
 				{
@@ -93,7 +95,7 @@ bool TextureImporter::Import(Blob & dataBlob, const AssetImportOptions& options,
 						pBitmap = newBitmap;
 					}
 				}
-			}
+			}*/
 
 			FreeImage_Unload(pBitmap);
 			FreeImage_CloseMemory(hmem);

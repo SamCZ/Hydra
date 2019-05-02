@@ -2,9 +2,10 @@
 
 #include "SceneComponent.h"
 
+HCLASS()
 class HYDRA_API HCameraComponent : public HSceneComponent
 {
-	HCLASS_BODY(HCameraComponent)
+	HCLASS_GENERATED_BODY()
 public:
 	HCameraComponent()
 	{

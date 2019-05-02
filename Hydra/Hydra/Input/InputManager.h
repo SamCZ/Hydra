@@ -8,6 +8,9 @@
 
 #include "Hydra/Input/InputMapping.h"
 
+#include "Hydra/Framework/Class.h"
+
+HENUM()
 enum InputEvent
 {
 	IE_Pressed = 0,

@@ -3,9 +3,13 @@
 #include "Hydra/Core/Common.h"
 #include "Hydra/Framework/Class.h"
 
+#include "Object.generated.h"
+
+
+HCLASS()
 class HYDRA_API HObject
 {
-	HCLASS_BODY(HObject)
+	HCLASS_GENERATED_BODY()
 private:
 
 public:

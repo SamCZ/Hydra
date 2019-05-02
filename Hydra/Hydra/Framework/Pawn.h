@@ -4,9 +4,10 @@
 
 class InputManager;
 
+HCLASS()
 class HYDRA_API APawn : public AActor
 {
-	HCLASS_BODY(APawn)
+	HCLASS_GENERATED_BODY()
 private:
 
 public:

@@ -2,9 +2,10 @@
 
 #include "Hydra/Framework/Pawn.h"
 
+HCLASS()
 class HYDRA_API ACharacter : public APawn
 {
-	HCLASS_BODY(ACharacter)
+	HCLASS_GENERATED_BODY()
 public:
 	ACharacter();
 };

@@ -10,8 +10,10 @@ class EngineContext;
 class HGameModeBase;
 class HPrimitiveComponent;
 
-class HYDRA_API FWorld
+HCLASS()
+class HYDRA_API FWorld : public HObject
 {
+	HCLASS_GENERATED_BODY()
 private:
 	EngineContext* _Engine;
 	List<AActor*> _Actors;
