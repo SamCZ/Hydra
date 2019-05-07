@@ -2,6 +2,8 @@
 
 #include "Hydra/Framework/Components/ActorComponent.h"
 #include "Hydra/Core/Vector.h"
+#include "SceneComponent.generated.h"
+
 
 HCLASS()
 class HYDRA_API HSceneComponent : public HActorComponent

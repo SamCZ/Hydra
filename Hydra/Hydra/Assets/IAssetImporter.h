@@ -4,6 +4,8 @@
 #include "Asset.h"
 #include "Hydra/Core/Log.h"
 #include "Hydra/Framework/Object.h"
+#include "IAssetImporter.generated.h"
+
 
 HCLASS()
 class HYDRA_API AssetImportOptions : public HObject

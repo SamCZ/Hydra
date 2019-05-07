@@ -3,6 +3,8 @@
 #include "Hydra/Framework/Object.h"
 #include "Hydra/Core/Container.h"
 #include "Hydra/Core/String.h"
+#include "ActorComponent.generated.h"
+
 
 class AActor;
 class FWorld;

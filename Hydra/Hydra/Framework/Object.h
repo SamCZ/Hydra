@@ -5,7 +5,6 @@
 
 #include "Object.generated.h"
 
-
 HCLASS()
 class HYDRA_API HObject
 {

@@ -6,6 +6,8 @@
 #include <assimp/cimport.h>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include "ModelImporter.generated.h"
+
 
 class HStaticMesh;
 struct FStaticMeshLODResources;

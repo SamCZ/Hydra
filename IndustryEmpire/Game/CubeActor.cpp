@@ -39,4 +39,8 @@ void ACubeActor::OnHud(UIRenderer * renderer)
 	Vector3 location = GetLocation();
 
 	renderer->DrawOval(location.x, location.y, 10, 10, ColorRGBA::Blue);
+
+	NVRHI::TextureHandle tex = Engine->GetAssetManager()->GetTexture("Assets/Textures/Metal/copper-rock1-alb.png");
+
+	renderer->DrawImage(tex, location.x, location.y, 50, 50, 0);
 }

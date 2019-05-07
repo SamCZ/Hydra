@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Hydra/Framework/Components/PrimitiveComponent.h"
+#include "MeshComponent.generated.h"
+
 
 HCLASS()
 class HYDRA_API HMeshComponent : public HPrimitiveComponent

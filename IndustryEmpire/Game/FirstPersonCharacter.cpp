@@ -2,10 +2,13 @@
 #include "Hydra/Input/InputManager.h"
 
 #include "Hydra/Framework/Components/CameraComponent.h"
+#include "Hydra/Framework/Components/StaticMeshComponent.h"
 
 void FirstPersonCharacter::InitializeComponents()
 {
-	//FirstPersonCameraComponent = AddComponent<HCameraComponent>("MainCamera");
+	FirstPersonCameraComponent = AddComponent<HCameraComponent>("MainCamera");
+
+	AddComponent<HStaticMeshComponent>("asd");
 }
 
 void FirstPersonCharacter::SetupPlayerInput(InputManager* inputManager)

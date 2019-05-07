@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Hydra/Framework/Actor.h"
+#include "Pawn.generated.h"
+
 
 class InputManager;
 

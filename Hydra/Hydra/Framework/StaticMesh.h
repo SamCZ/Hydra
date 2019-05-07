@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Hydra/Assets/Asset.h"
+#include "StaticMesh.generated.h"
+
 
 struct FStaticMaterial
 {

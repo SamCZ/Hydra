@@ -2,6 +2,8 @@
 
 #include "Hydra/Framework/Object.h"
 #include "Hydra/Framework/Components/SceneComponent.h"
+#include "Actor.generated.h"
+
 
 
 class FWorld;

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Hydra/Framework/Components/SceneComponent.h"
+#include "PrimitiveComponent.generated.h"
+
 
 class Material;
 

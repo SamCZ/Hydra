@@ -5,15 +5,16 @@
 #include "Hydra/Core/Vector.h"
 
 #include "Hydra/Framework/Actor.h"
+#include "World.generated.h"
+
 
 class EngineContext;
 class HGameModeBase;
 class HPrimitiveComponent;
 
-HCLASS()
 class HYDRA_API FWorld : public HObject
 {
-	HCLASS_GENERATED_BODY()
+	HCLASS_BODY_NO_FNC_POINTER(FWorld)
 private:
 	EngineContext* _Engine;
 	List<AActor*> _Actors;
