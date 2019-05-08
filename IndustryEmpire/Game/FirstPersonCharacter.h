@@ -1,9 +1,13 @@
 #pragma once
 
 #include "Hydra/Framework/Character.h"
+#include "FirstPersonCharacter.generated.h"
 
+
+HCLASS()
 class FirstPersonCharacter : public ACharacter
 {
+	HCLASS_GENERATED_BODY()
 	class HCameraComponent* FirstPersonCameraComponent;
 
 public:

@@ -4,11 +4,15 @@
 #include "Hydra/Framework/Components/StaticMeshComponent.h"
 
 #include "Hydra/Core/Random.h"
+#include "CubeActor.generated.h"
+
 
 class UIRenderer;
 
+HCLASS()
 class ACubeActor : public AActor
 {
+	HCLASS_GENERATED_BODY()
 public:
 	HStaticMeshComponent* CubeComponent;
 

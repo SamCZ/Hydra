@@ -11,18 +11,16 @@ namespace HydraHeaderTool
     class Program
     {
         private static string GeneratedHeadFilesFolder = "GeneratedHeaders";
-        private static string HydraFolder = "Hydra";
+        private static string SourceFolder = ".\\";
 
         static void Main(string[] args)
         {
-            
-
             if(!Directory.Exists(GeneratedHeadFilesFolder))
             {
                 Directory.CreateDirectory(GeneratedHeadFilesFolder);
             }
 
-            foreach (string file in Directory.GetFiles(HydraFolder, "*", SearchOption.AllDirectories))
+            foreach (string file in Directory.GetFiles(SourceFolder, "*", SearchOption.AllDirectories))
             {
                 string extension = Path.GetExtension(file);
                 
