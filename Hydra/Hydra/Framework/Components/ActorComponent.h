@@ -27,6 +27,7 @@ public:
 	AActor* Owner;
 public:
 	HActorComponent();
+	virtual ~HActorComponent();
 
 	virtual void SetActive(bool newActive);
 	virtual void ToggleActive();

@@ -13,6 +13,8 @@ private:
 
 public:
 	String Name;
+public:
+	FORCEINLINE virtual ~HObject() {}
 
 	template<class T>
 	bool IsA() const

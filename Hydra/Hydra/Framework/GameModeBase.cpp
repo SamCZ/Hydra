@@ -4,3 +4,7 @@ HGameModeBase::HGameModeBase()
 {
 	IsIndestructible = true;
 }
+
+HGameModeBase::~HGameModeBase()
+{
+}

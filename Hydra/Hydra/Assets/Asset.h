@@ -9,5 +9,5 @@ class HYDRA_API HAsset : public HObject
 {
 	HCLASS_GENERATED_BODY()
 public:
-
+	FORCEINLINE virtual ~HAsset() {}
 };

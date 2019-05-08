@@ -3,3 +3,7 @@
 HPrimitiveComponent::HPrimitiveComponent() : HSceneComponent()
 {
 }
+
+HPrimitiveComponent::~HPrimitiveComponent()
+{
+}

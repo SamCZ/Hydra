@@ -267,6 +267,7 @@
     <ClInclude Include="Hydra\Core\SmartPointer.h" />
     <ClInclude Include="Hydra\Core\String.h" />
     <ClInclude Include="Hydra\Core\Vector.h" />
+    <ClInclude Include="Hydra\Render\View\HSceneView.h" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
     <ClInclude Include="ImGui\ImGuizmo.h" />

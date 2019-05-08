@@ -10,4 +10,5 @@ class HYDRA_API HGameModeBase : public AActor
 	HCLASS_GENERATED_BODY()
 public:
 	HGameModeBase();
+	virtual ~HGameModeBase();
 };

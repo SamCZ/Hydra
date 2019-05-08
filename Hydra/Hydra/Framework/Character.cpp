@@ -4,3 +4,7 @@ ACharacter::ACharacter()
 {
 
 }
+
+ACharacter::~ACharacter()
+{
+}

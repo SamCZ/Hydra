@@ -5,6 +5,10 @@ HSceneComponent::HSceneComponent() : HActorComponent(), Location(0, 0, 0), Rotat
 
 }
 
+HSceneComponent::~HSceneComponent()
+{
+}
+
 void HSceneComponent::BeginDestroy()
 {
 	DetachFromComponent();

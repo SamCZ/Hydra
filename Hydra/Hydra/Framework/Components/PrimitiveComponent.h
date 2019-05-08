@@ -26,6 +26,7 @@ public:
 	uint8 CastShadowAsTwoSided : 1;
 public:
 	HPrimitiveComponent();
+	virtual ~HPrimitiveComponent();
 
 	/*virtual Matrix4 GetRenderMatrix() const;
 

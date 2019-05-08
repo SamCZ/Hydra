@@ -13,11 +13,9 @@
 
 void UIRenderView::OnCreated()
 {
-	LogMethod()
-
-
-
 	//Context->GetGraphics()->CreateRenderTarget("UI", NVRHI::Format::RGBA8_UNORM, 1280, 720, NVRHI::Color(1.0), 1);
+
+
 }
 
 void UIRenderView::OnDestroy()

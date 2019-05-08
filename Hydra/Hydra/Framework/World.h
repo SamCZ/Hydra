@@ -3,14 +3,15 @@
 #include "Hydra/Core/Library.h"
 #include "Hydra/Core/String.h"
 #include "Hydra/Core/Vector.h"
+#include "Hydra/Core/Delegate.h"
 
 #include "Hydra/Framework/Actor.h"
-#include "World.generated.h"
 
 
 class EngineContext;
 class HGameModeBase;
 class HPrimitiveComponent;
+class HCameraComponent;
 
 class HYDRA_API FWorld : public HObject
 {
@@ -19,7 +20,11 @@ private:
 	EngineContext* _Engine;
 	List<AActor*> _Actors;
 	List<HPrimitiveComponent*> _PrimitiveComponents;
+	List<HCameraComponent*> _CameraComponents;
 	HGameModeBase* _GameMode;
+public:
+	DelegateEvent<void, HCameraComponent*> OnCameraComponentAdded;
+	DelegateEvent<void, HCameraComponent*> OnCameraComponentRemoved;
 public:
 	FWorld(EngineContext* context);
 	~FWorld();
@@ -60,8 +65,8 @@ public:
 	void FinishSpawningActor(AActor* actor);
 	void DestroyActor(AActor* actor);
 
-	FORCEINLINE void RegisterPrimitiveComponent(HPrimitiveComponent* component) { _PrimitiveComponents.push_back(component); }
-	FORCEINLINE void UnregisterPrimitiveComponent(HPrimitiveComponent* component) { List_Remove(_PrimitiveComponents, component); }
+	void RegisterComponent(HSceneComponent* component);
+	void UnregisterComponent(HSceneComponent* component);
 
 	template<class T>
 	void OverrideGameMode()
@@ -82,7 +87,8 @@ public:
 	}
 
 	List<AActor*>& GetActors();
-	List<HPrimitiveComponent*>& GetPrimitiveComponents();
+	const List<HPrimitiveComponent*>& GetPrimitiveComponents();
+	const List<HCameraComponent*>& GetCameraComponents();
 
 	HGameModeBase* GetGameMode();
 };

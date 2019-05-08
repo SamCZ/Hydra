@@ -14,6 +14,7 @@ private:
 
 public:
 	APawn();
+	virtual ~APawn();
 
 	virtual void SetupPlayerInput(InputManager* inputManager);
 

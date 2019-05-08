@@ -37,6 +37,9 @@ void HydraEngine::Start()
 
 void HydraEngine::OnDestroy()
 {
+	delete World;
+	World = nullptr;
+
 	delete Context->GetAssetManager();
 	Context->SetAssetManager(nullptr);
 }

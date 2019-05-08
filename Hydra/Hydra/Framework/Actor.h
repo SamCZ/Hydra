@@ -31,6 +31,7 @@ public:
 	int Layer; // Added only for purpose sort Hud layer for LudumDare
 public:
 	AActor();
+	virtual ~AActor();
 
 	virtual void InitializeComponents();
 

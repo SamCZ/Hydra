@@ -6,6 +6,9 @@ AActor::AActor() : HObject(), Engine(nullptr), World(nullptr), RootComponent(nul
 {
 
 }
+AActor::~AActor()
+{
+}
 void AActor::InitializeComponents()
 {
 
@@ -15,10 +18,7 @@ void AActor::DestroyComponent(HSceneComponent*& component)
 {
 	if (component)
 	{
-		if (HPrimitiveComponent* pComponent = dynamic_cast<HPrimitiveComponent*>(component))
-		{
-			World->UnregisterPrimitiveComponent(pComponent);
-		}
+		World->UnregisterComponent(component);
 
 		List_Remove(Components, component);
 
@@ -157,8 +157,5 @@ void AActor::InitilizeComponent(HSceneComponent* component)
 	component->Engine = Engine;
 	component->Owner = this;
 
-	if (HPrimitiveComponent* pComponent = dynamic_cast<HPrimitiveComponent*>(component))
-	{
-		World->RegisterPrimitiveComponent(pComponent);
-	}
+	World->RegisterComponent(component);
 }

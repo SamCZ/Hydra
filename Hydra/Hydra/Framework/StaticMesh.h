@@ -27,5 +27,5 @@ public:
 
 public:
 	HStaticMesh();
-	~HStaticMesh();
+	virtual ~HStaticMesh();
 };

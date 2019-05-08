@@ -5,6 +5,10 @@ APawn::APawn()
 
 }
 
+APawn::~APawn()
+{
+}
+
 void APawn::SetupPlayerInput(InputManager * inputManager)
 {
 

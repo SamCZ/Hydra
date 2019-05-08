@@ -9,6 +9,7 @@ class HYDRA_API HMeshComponent : public HPrimitiveComponent
 {
 	HCLASS_GENERATED_BODY()
 public:
+	FORCEINLINE virtual ~HMeshComponent() {}
 
 	/*virtual List<class Material*> GetMaterials() const;
 	virtual int32 GetMaterialIndex(String MaterialSlotName) const;

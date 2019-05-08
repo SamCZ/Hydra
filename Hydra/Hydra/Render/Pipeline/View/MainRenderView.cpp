@@ -9,33 +9,40 @@
 
 #include "Hydra/Framework/Components/SceneComponent.h"
 #include "Hydra/Framework/Components/StaticMeshComponent.h"
+#include "Hydra/Framework/Components/CameraComponent.h"
 
 #include "Hydra/Render/Material.h"
 #include "Hydra/Render/Shader.h"
 
 #include "Hydra/Render/Graphics.h"
 
+#include "Hydra/Render/View/HSceneView.h"
+
 void MainRenderView::OnCreated()
 {
-	LogMethod()
-
 	Engine->InitializeAssetManager(Context->GetAssetManager());
-	Engine->SceneInit();
 
 	Context->GetAssetManager()->LoadProjectFiles();
 
 	_DefaultMaterial = Context->GetAssetManager()->GetMaterial("Assets/Materials/Default.mat");
 
+	Engine->GetWorld()->OnCameraComponentAdded += EVENT_ARGS(MainRenderView, OnCameraAdded, HCameraComponent*);
+	Engine->GetWorld()->OnCameraComponentRemoved += EVENT_ARGS(MainRenderView, OnCameraRemoved, HCameraComponent*);
+
+
+
+	Engine->SceneInit();
 }
 
 void MainRenderView::OnDestroy()
 {
-
+	Engine->GetWorld()->OnCameraComponentAdded -= EVENT_NAME(MainRenderView, OnCameraAdded);
+	Engine->GetWorld()->OnCameraComponentRemoved -= EVENT_NAME(MainRenderView, OnCameraRemoved);
 }
 
 void MainRenderView::OnRender(NVRHI::TextureHandle mainRenderTarget)
 {
-	List<HPrimitiveComponent*>& components = Engine->GetWorld()->GetPrimitiveComponents();
+	const List<HPrimitiveComponent*>& components = Engine->GetWorld()->GetPrimitiveComponents();
 
 	for (HPrimitiveComponent* cmp : components)
 	{
@@ -80,6 +87,41 @@ void MainRenderView::OnResize(uint32 width, uint32 height, uint32 sampleCount)
 {
 	Context->ScreenSize.x = width;
 	Context->ScreenSize.y = height;
+}
+
+void MainRenderView::OnCameraAdded(HCameraComponent* cmp)
+{
+	HSceneView* sceneView = new HSceneView();
+
+
+	if (_SceneViewForCameras.find(cmp) != _SceneViewForCameras.end())
+	{
+		LogError("MainRenderView::OnCameraAdded", "Camera already exist !");
+		return;
+	}
+
+	_SceneViewForCameras[cmp] = sceneView;
+
+	Log("MainRenderView::OnCameraAdded", "SceneView created for " + cmp->Owner->GetClass().GetName());
+}
+
+void MainRenderView::OnCameraRemoved(HCameraComponent* cmp)
+{
+	auto iter = _SceneViewForCameras.find(cmp);
+
+	if (iter != _SceneViewForCameras.end())
+	{
+		HSceneView* sceneView = iter->second;
+		_SceneViewForCameras.erase(cmp);
+
+		delete sceneView;
+
+		Log("MainRenderView::OnCameraRemoved", "SceneView deleted for " + cmp->Owner->GetClass().GetName());
+	}
+	else
+	{
+		LogError("MainRenderView::OnCameraRemoved", "Cannot delete camera that is not present !");
+	}
 }
 
 void MainRenderView::UpdateComponent(HSceneComponent* component, float Delta)

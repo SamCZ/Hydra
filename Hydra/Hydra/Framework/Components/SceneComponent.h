@@ -25,6 +25,7 @@ public:
 	HSceneComponent* Parent;
 public:
 	HSceneComponent();
+	virtual ~HSceneComponent();
 
 	virtual void BeginDestroy();
 

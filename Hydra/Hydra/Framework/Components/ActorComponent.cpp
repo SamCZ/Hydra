@@ -5,6 +5,10 @@ HActorComponent::HActorComponent() : HObject(), RenderTransformDirty(true), IsAc
 
 }
 
+HActorComponent::~HActorComponent()
+{
+}
+
 void HActorComponent::SetActive(bool newActive)
 {
 	IsActive = newActive;
