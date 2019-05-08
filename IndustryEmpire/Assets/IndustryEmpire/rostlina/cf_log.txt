@@ -1,1 +1,0 @@
-Error: FBX error 0: File is corrupted  (file: 'D:\Sam\Desktop\rostlina\rostlina.fbx') [ (line 0)]
