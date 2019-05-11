@@ -6,6 +6,13 @@
 #include "Game/FirstPersonCharacter.h"
 #include "Game/CubeActor.h"
 
+#include "GeneratedHeaders/GameClassDatabase.generated.h"
+
+IndustryEmpire::IndustryEmpire()
+{
+	Game_InitializeClassDatabase();
+}
+
 void IndustryEmpire::SceneInit()
 {
 	World->SpawnActor<FirstPersonCharacter>("Player", Vector3(), Vector3());

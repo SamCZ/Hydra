@@ -123,7 +123,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)Yaml\include;$(ProjectDir);$(ProjectDir)nvapi-public;$(ProjectDir)assimp\include;$(ProjectDir)GeneratedHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>USE_D3D11=1;NVRHI_WITH_WRL;NOMINMAX;WIN32;_DEBUG;DEBUG;PROFILE;_WINDOWS;_CRT_SECURE_NO_WARNINGS;HYDRA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_D3D11=1;NVRHI_WITH_WRL;NOMINMAX;WIN32;_DEBUG;DEBUG;PROFILE;_WINDOWS;_CRT_SECURE_NO_WARNINGS;HYDRA_EXPORTS;WITH_EDITOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;assimp-vc140-mt.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -319,6 +319,7 @@
     <ClCompile Include="Hydra\EngineContext.cpp" />
     <ClCompile Include="Hydra\Framework\Actor.cpp" />
     <ClCompile Include="Hydra\Framework\Character.cpp" />
+    <ClCompile Include="Hydra\Framework\Class.cpp" />
     <ClCompile Include="Hydra\Framework\Components\ActorComponent.cpp" />
     <ClCompile Include="Hydra\Framework\Components\CameraComponent.cpp" />
     <ClCompile Include="Hydra\Framework\Components\PrimitiveComponent.cpp" />

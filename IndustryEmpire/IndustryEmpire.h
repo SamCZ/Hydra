@@ -5,5 +5,7 @@
 class IndustryEmpire : public HydraEngine
 {
 public:
+	IndustryEmpire();
+
 	void SceneInit();
 };

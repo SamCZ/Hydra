@@ -9,9 +9,16 @@
 #include "Hydra/Assets/Importers/ModelImporter.h"
 #include "Hydra/Core/Stream/FileStream.h"
 
+#include "GeneratedHeaders/HydraClassDatabase.generated.h"
+
 HydraEngine::~HydraEngine()
 {
 	delete Context;
+}
+
+HydraEngine::HydraEngine()
+{
+	Hydra_InitializeClassDatabase();
 }
 
 void HydraEngine::Start()

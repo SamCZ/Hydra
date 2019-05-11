@@ -5,6 +5,7 @@
 
 #include "Object.generated.h"
 
+
 HCLASS()
 class HYDRA_API HObject
 {
@@ -19,7 +20,9 @@ public:
 	template<class T>
 	bool IsA() const
 	{
-		return GetClass() == T::StaticClass();
+		HClass& clazz = GetClass();
+
+		return clazz == T::StaticClass();
 	}
 
 	template<typename T>

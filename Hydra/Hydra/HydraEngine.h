@@ -14,6 +14,7 @@ protected:
 
 public:
 	~HydraEngine();
+	HydraEngine();
 
 	void Start();
 	void OnDestroy();
