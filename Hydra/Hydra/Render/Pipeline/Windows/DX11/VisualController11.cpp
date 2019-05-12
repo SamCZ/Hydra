@@ -73,6 +73,10 @@ void VisualController::DeviceDestroyed()
 {
 	_EngineVisualController->OnDestroy();
 
+	if (CreatedInputManager)
+	{
+		Context->GetDeviceManager()->OnDeviceDestroy.Invoke();
+	}
 
 	if (Context->GetGraphics() != nullptr)
 	{

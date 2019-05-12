@@ -18,7 +18,12 @@ void AActor::DestroyComponent(HSceneComponent*& component)
 {
 	if (component)
 	{
-		World->UnregisterComponent(component);
+		component->BeginDestroy();
+
+		if (RootComponent != component)
+		{
+			World->UnregisterComponent(component);
+		}
 
 		List_Remove(Components, component);
 
