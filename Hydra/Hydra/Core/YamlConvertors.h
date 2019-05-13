@@ -6,9 +6,9 @@
 namespace YAML
 {
 	template<>
-	struct convert<Hydra::Vector2>
+	struct convert<Vector2>
 	{
-		static Node encode(const Hydra::Vector2& rhs)
+		static Node encode(const Vector2& rhs)
 		{
 			Node node;
 			node.SetStyle(EmitterStyle::Flow);
@@ -17,7 +17,7 @@ namespace YAML
 			return node;
 		}
 
-		static bool decode(const Node& node, Hydra::Vector2& rhs)
+		static bool decode(const Node& node, Vector2& rhs)
 		{
 			if (!node.IsMap() || node.size() != 2)
 			{
@@ -31,9 +31,9 @@ namespace YAML
 	};
 
 	template<>
-	struct convert<Hydra::Vector3>
+	struct convert<Vector3>
 	{
-		static Node encode(const Hydra::Vector3& rhs)
+		static Node encode(const Vector3& rhs)
 		{
 			Node node;
 			node.SetStyle(EmitterStyle::Flow);
@@ -43,7 +43,7 @@ namespace YAML
 			return node;
 		}
 
-		static bool decode(const Node& node, Hydra::Vector3& rhs)
+		static bool decode(const Node& node, Vector3& rhs)
 		{
 			if (!node.IsMap() || node.size() != 3)
 			{
@@ -58,9 +58,9 @@ namespace YAML
 	};
 
 	template<>
-	struct convert<Hydra::Vector4>
+	struct convert<Vector4>
 	{
-		static Node encode(const Hydra::Vector4& rhs)
+		static Node encode(const Vector4& rhs)
 		{
 			Node node;
 			node.SetStyle(EmitterStyle::Flow);
@@ -71,7 +71,7 @@ namespace YAML
 			return node;
 		}
 
-		static bool decode(const Node& node, Hydra::Vector4& rhs)
+		static bool decode(const Node& node, Vector4& rhs)
 		{
 			if (!node.IsMap() || node.size() != 4)
 			{

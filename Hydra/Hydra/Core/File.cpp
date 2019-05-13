@@ -15,298 +15,294 @@
 
 #include <algorithm>
 
-namespace Hydra
+File::~File()
 {
-	File::~File()
-	{
 
+}
+
+File::File() : File("Temp")
+{
+
+}
+
+File::File(const char* file) : File(String(file))
+{
+
+}
+
+File::File(String file)
+{
+	_rootPath = FixPath(file);
+}
+
+File::File(File parent, String file) : File(parent)
+{
+	String fixedFile = FixPath(file);
+	if (_rootPath[_rootPath.length() - 1] != '/')
+	{
+		_rootPath += '/';
 	}
+	_rootPath += fixedFile;
+}
 
-	File::File() : File("Temp")
+String File::FixPath(String path, const char from, const char to)
+{
+	for (int i = 0; i < path.length(); i++)
 	{
-
-	}
-
-	File::File(const char* file) : File(String(file))
-	{
-
-	}
-
-	File::File(String file)
-	{
-		_rootPath = FixPath(file);
-	}
-
-	File::File(File parent, String file) : File(parent)
-	{
-		String fixedFile = FixPath(file);
-		if (_rootPath[_rootPath.length() - 1] != '/')
+		if (path[i] == from)
 		{
-			_rootPath += '/';
+			path[i] = to;
 		}
-		_rootPath += fixedFile;
 	}
+	return path;
+}
 
-	String File::FixPath(String path, const char from, const char to)
+String File::GetPath() const
+{
+	return _rootPath;
+}
+
+String File::GetParent() const
+{
+	return _rootPath.substr(0, _rootPath.find_last_of('/'));
+}
+
+File File::GetParentFile() const
+{
+	return File(GetParent());
+}
+
+File File::GetPathAt(const String& folder) const
+{
+	String path = GetPath();
+	List<String> splitted = SplitString(path, '/');
+
+	String newPath = "";
+	bool spotted = false;
+
+	for (int i = 0; i < splitted.size(); i++)
 	{
-		for (int i = 0; i < path.length(); i++)
+		String p = splitted[i];
+
+		if (p == folder && !spotted)
 		{
-			if (path[i] == from)
-			{
-				path[i] = to;
-			}
-		}
-		return path;
-	}
-
-	String File::GetPath() const
-	{
-		return _rootPath;
-	}
-
-	String File::GetParent() const
-	{
-		return _rootPath.substr(0, _rootPath.find_last_of('/'));
-	}
-
-	File File::GetParentFile() const
-	{
-		return File(GetParent());
-	}
-
-	File File::GetPathAt(const String& folder) const
-	{
-		String path = GetPath();
-		List<String> splitted = SplitString(path, '/');
-
-		String newPath = "";
-		bool spotted = false;
-
-		for (int i = 0; i < splitted.size(); i++)
-		{
-			String p = splitted[i];
-
-			if (p == folder && !spotted)
-			{
-				spotted = true;
-			}
-
-			if (spotted)
-			{
-				newPath += p;
-
-				if (i != splitted.size() - 1)
-				{
-					newPath += "/";
-				}
-			}
+			spotted = true;
 		}
 
-		return File(newPath);
+		if (spotted)
+		{
+			newPath += p;
+
+			if (i != splitted.size() - 1)
+			{
+				newPath += "/";
+			}
+		}
 	}
 
-	bool File::IsExist() const
-	{
-		struct stat buffer;
-		return (stat(_rootPath.c_str(), &buffer) == 0);
-	}
+	return File(newPath);
+}
 
-	bool File::Mkdirs() const
-	{
+bool File::IsExist() const
+{
+	struct stat buffer;
+	return (stat(_rootPath.c_str(), &buffer) == 0);
+}
+
+bool File::Mkdirs() const
+{
 #ifdef USE_BOOST
-		return boost::filesystem::create_directories(getPath());
+	return boost::filesystem::create_directories(getPath());
 #endif
-		return false;
-	}
+	return false;
+}
 
 #undef DeleteFile
 
-	bool File::DeleteFile() const
+bool File::DeleteFile() const
+{
+	if (GetExtension() != "meta")
 	{
-		if (GetExtension() != "meta")
+		File metaFile(GetPath() + ".meta");
+		if (metaFile.IsExist())
 		{
-			File metaFile(GetPath() + ".meta");
-			if (metaFile.IsExist())
-			{
-				metaFile.DeleteFile();
-			}
+			metaFile.DeleteFile();
 		}
-#ifdef USE_BOOST
-		if (boost::filesystem::exists(getPath()))
-			return boost::filesystem::remove(getPath());
-#endif
-		return false;
 	}
+#ifdef USE_BOOST
+	if (boost::filesystem::exists(getPath()))
+		return boost::filesystem::remove(getPath());
+#endif
+	return false;
+}
 
 #define DeleteFileW DeleteFile
 
-	bool File::IsDirectory() const
-	{
-		struct stat info;
-		if (stat(_rootPath.c_str(), &info) != 0)
-			return 0;
-		else if (info.st_mode & S_IFDIR)
-			return 1;
-		else
-			return 0;
-	}
+bool File::IsDirectory() const
+{
+	struct stat info;
+	if (stat(_rootPath.c_str(), &info) != 0)
+		return 0;
+	else if (info.st_mode & S_IFDIR)
+		return 1;
+	else
+		return 0;
+}
 
-	String File::GetName() const
+String File::GetName() const
+{
+	String path = _rootPath;
+	if (_rootPath.find_last_of('/') == _rootPath.length() - 1)
 	{
-		String path = _rootPath;
-		if (_rootPath.find_last_of('/') == _rootPath.length() - 1)
-		{
-			path = _rootPath.substr(0, _rootPath.find_last_of('/'));
-		}
-		return _rootPath.substr(_rootPath.find_last_of('/') + 1);
+		path = _rootPath.substr(0, _rootPath.find_last_of('/'));
 	}
+	return _rootPath.substr(_rootPath.find_last_of('/') + 1);
+}
 
-	String File::GetCleanName() const
+String File::GetCleanName() const
+{
+	String name = GetName();
+	size_t dotIndex = name.find_last_of('.');
+	if (dotIndex > 0)
 	{
-		String name = GetName();
-		size_t dotIndex = name.find_last_of('.');
-		if (dotIndex > 0)
-		{
-			return name.substr(0, dotIndex);
-		}
-		else
-		{
-			return name;
-		}
+		return name.substr(0, dotIndex);
 	}
-
-	String File::GetExtension(bool lower) const
+	else
 	{
-		String name = GetName();
-		String ext = name.substr(name.find_last_of('.') + 1);
-		if (lower)
-		{
-			std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-		}
-		return ext;
+		return name;
 	}
+}
 
-	bool File::HaveExtension(String ext)
+String File::GetExtension(bool lower) const
+{
+	String name = GetName();
+	String ext = name.substr(name.find_last_of('.') + 1);
+	if (lower)
 	{
-		return GetExtension() == ext;
+		std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 	}
+	return ext;
+}
 
-	List<File> File::ListFiles(bool recursive)
-	{
-		List<File> files;
-		if (!IsDirectory()) return files;
+bool File::HaveExtension(String ext)
+{
+	return GetExtension() == ext;
+}
+
+List<File> File::ListFiles(bool recursive)
+{
+	List<File> files;
+	if (!IsDirectory()) return files;
 #ifdef USE_BOOST
-		namespace fs = boost::filesystem;
+	namespace fs = boost::filesystem;
 
-		fs::path apk_path(getPath());
-		if (recursive)
+	fs::path apk_path(getPath());
+	if (recursive)
+	{
+		fs::recursive_directory_iterator end;
+
+		for (fs::recursive_directory_iterator i(apk_path); i != end; ++i)
 		{
-			fs::recursive_directory_iterator end;
-
-			for (fs::recursive_directory_iterator i(apk_path); i != end; ++i)
-			{
-				const fs::path cp = (*i);
-				files.push_back(File(cp.string()));
-			}
+			const fs::path cp = (*i);
+			files.push_back(File(cp.string()));
 		}
-		else
+	}
+	else
+	{
+		fs::directory_iterator end;
+
+		for (fs::directory_iterator i(apk_path); i != end; ++i)
 		{
-			fs::directory_iterator end;
-
-			for (fs::directory_iterator i(apk_path); i != end; ++i)
-			{
-				const fs::path cp = (*i);
-				files.push_back(File(cp.string()));
-			}
+			const fs::path cp = (*i);
+			files.push_back(File(cp.string()));
 		}
+	}
 #endif
 #if true
-		HANDLE hFind = INVALID_HANDLE_VALUE;
-		WIN32_FIND_DATAA ffd;
-		String path;
-		String spec;
-		std::stack<String> directories;
+	HANDLE hFind = INVALID_HANDLE_VALUE;
+	WIN32_FIND_DATAA ffd;
+	String path;
+	String spec;
+	std::stack<String> directories;
 
-		directories.push(FixPath(GetPath(), '/', '\\'));
+	directories.push(FixPath(GetPath(), '/', '\\'));
 
-		while (!directories.empty())
+	while (!directories.empty())
+	{
+		path = directories.top();
+		spec = path + "\\*";
+		directories.pop();
+
+
+
+		hFind = FindFirstFileA(spec.c_str(), &ffd);
+		if (hFind == INVALID_HANDLE_VALUE)
 		{
-			path = directories.top();
-			spec = path + "\\*";
-			directories.pop();
-
-			
-
-			hFind = FindFirstFileA(spec.c_str(), &ffd);
-			if (hFind == INVALID_HANDLE_VALUE)
-			{
-				continue;
-			}
-
-			do
-			{
-				if (strcmp(ffd.cFileName, ".") != 0 &&
-					strcmp(ffd.cFileName, "..") != 0)
-				{
-					if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-					{
-						directories.push(path + "\\" + ffd.cFileName);
-						files.push_back(path + "/" + ffd.cFileName);
-					}
-					else
-					{
-						files.push_back(path + "/" + ffd.cFileName);
-					}
-				}
-			} while (FindNextFileA(hFind, &ffd) != 0);
-
-			if (GetLastError() != ERROR_NO_MORE_FILES)
-			{
-				FindClose(hFind);
-				continue;
-			}
-
-			FindClose(hFind);
-			hFind = INVALID_HANDLE_VALUE;
+			continue;
 		}
+
+		do
+		{
+			if (strcmp(ffd.cFileName, ".") != 0 &&
+				strcmp(ffd.cFileName, "..") != 0)
+			{
+				if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+				{
+					directories.push(path + "\\" + ffd.cFileName);
+					files.push_back(path + "/" + ffd.cFileName);
+				}
+				else
+				{
+					files.push_back(path + "/" + ffd.cFileName);
+				}
+			}
+		} while (FindNextFileA(hFind, &ffd) != 0);
+
+		if (GetLastError() != ERROR_NO_MORE_FILES)
+		{
+			FindClose(hFind);
+			continue;
+		}
+
+		FindClose(hFind);
+		hFind = INVALID_HANDLE_VALUE;
+	}
 #endif
 
-		return files;
-	}
+	return files;
+}
 
-	List<String> File::ReadLines() const
+List<String> File::ReadLines() const
+{
+	List<String> lines;
+
+	std::ifstream stream(GetPath());
+	String line;
+
+	if (stream.is_open())
 	{
-		List<String> lines;
-
-		std::ifstream stream(GetPath());
-		String line;
-
-		if (stream.is_open())
+		while (std::getline(stream, line))
 		{
-			while (std::getline(stream, line))
-			{
-				lines.push_back(line);
-			}
-			stream.close();
+			lines.push_back(line);
 		}
-
-		return lines;
+		stream.close();
 	}
 
+	return lines;
+}
 
-	std::ostream& operator<<(std::ostream& os, const File& obj)
-	{
-		os << obj.GetPath();
-		return os;
-	}
+std::ostream& operator<<(std::ostream& os, const File& obj)
+{
+	os << obj.GetPath();
+	return os;
+}
 
-	bool operator==(const File& left, const File& right)
-	{
-		return left.GetPath() == right.GetPath();
-	}
+bool operator==(const File& left, const File& right)
+{
+	return left.GetPath() == right.GetPath();
+}
 
-	bool operator!=(const File& left, const File& right)
-	{
-		return !(left == right);
-	}
+bool operator!=(const File& left, const File& right)
+{
+	return !(left == right);
 }

@@ -11,6 +11,9 @@
 #ifndef GFSDK_NVRHI_H_
 #define GFSDK_NVRHI_H_
 
+#include "Hydra/Core/Library.h"
+#include "Hydra/Assets/Asset.h"
+
 #include <stdint.h>
 #include <memory.h>
 #include <math.h>
@@ -59,7 +62,7 @@ namespace NVRHI
         Rect(const Viewport& viewport) : minX(int(floor(viewport.minX))), maxX(int(ceil(viewport.maxX))), minY(int(floor(viewport.minY))), maxY(int(ceil(viewport.maxY))) { }
     };
 
-    class IResource
+    class HYDRA_API IResource
     {
     public:
         virtual unsigned long AddRef() = 0;
@@ -69,7 +72,7 @@ namespace NVRHI
 
 #ifdef NVRHI_WITH_WRL
     template<typename T>
-    class RefCountPtr : public Microsoft::WRL::ComPtr<T>
+    class HYDRA_API RefCountPtr : public Microsoft::WRL::ComPtr<T>
     {
     public:
 
@@ -185,8 +188,9 @@ namespace NVRHI
         }
     };
 
-    class ITexture : public IResource
+    class HYDRA_API ITexture : public IResource, public HAsset
     {
+		HCLASS_BODY_NO_FNC_POINTER(ITexture)
     public:
         virtual const TextureDesc& GetDesc() const = 0;
     };
@@ -205,7 +209,7 @@ namespace NVRHI
        /* enum { MAX_NAME_LENGTH = 256 };
 
         char name[MAX_NAME_LENGTH];*/
-		LPCSTR name;
+		const char* name;
         uint32_t semanticIndex;
         Format::Enum format;
         uint32_t bufferIndex;
@@ -213,7 +217,7 @@ namespace NVRHI
         bool isInstanced;
     };
 
-    class IInputLayout : public IResource
+    class HYDRA_API IInputLayout : public IResource
     {
     };
 
@@ -243,7 +247,7 @@ namespace NVRHI
         BufferDesc()  { memset(this, 0, sizeof(*this)); }
     };
 
-    class IBuffer : public IResource
+    class HYDRA_API IBuffer : public IResource
     {
     public:
         virtual const BufferDesc& GetDesc() const = 0;
@@ -267,7 +271,7 @@ namespace NVRHI
         ConstantBufferDesc()  { memset(this, 0, sizeof(*this)); }
     };
 
-    class IConstantBuffer : public IResource
+    class HYDRA_API IConstantBuffer : public IResource
     {
     };
 
@@ -345,7 +349,7 @@ namespace NVRHI
         { }
     };
 
-    class IShader : public IResource
+    class HYDRA_API IShader : public IResource
     {
     };
 
@@ -586,7 +590,7 @@ namespace NVRHI
         }
     };
 
-    class ISampler : public IResource
+    class HYDRA_API ISampler : public IResource
     {
     };
 
@@ -819,7 +823,7 @@ namespace NVRHI
         };
     };
 
-    class IPerformanceQuery : public IResource
+    class HYDRA_API IPerformanceQuery : public IResource
     {
     };
 
@@ -848,7 +852,7 @@ namespace NVRHI
     // Should be implemented by the application.
     // Clients will call signalError(...) on every error it encounters, in addition to returning one of the 
     // failure status codes. The application can display a message box in case of errors.
-    class IErrorCallback
+    class HYDRA_API IErrorCallback
     {
         IErrorCallback& operator=(const IErrorCallback& other); //undefined
     protected:
@@ -862,12 +866,11 @@ namespace NVRHI
     // IRendererInterface
     //////////////////////////////////////////////////////////////////////////
 
-    class IRendererInterface
+    class HYDRA_API IRendererInterface
     {
         IRendererInterface& operator=(const IRendererInterface& other); //undefined
-    protected:
-        virtual ~IRendererInterface() {};
     public:
+		virtual ~IRendererInterface() {};
 
         virtual TextureHandle createTexture(const TextureDesc& d, const void* data) = 0;
         virtual const TextureDesc& describeTexture(TextureHandle t) = 0;

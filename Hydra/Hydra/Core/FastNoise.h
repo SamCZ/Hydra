@@ -31,6 +31,8 @@
 #ifndef FASTNOISE_H
 #define FASTNOISE_H
 
+#include "Hydra/Core/Library.h"
+
 // Uncomment the line below to use doubles throughout FastNoise instead of floats
 //#define FN_USE_DOUBLES
 
@@ -42,7 +44,7 @@ typedef double FN_DECIMAL;
 typedef float FN_DECIMAL;
 #endif
 
-class FastNoise
+class HYDRA_API FastNoise
 {
 public:
 	explicit FastNoise(int seed = 1337) { SetSeed(seed); CalculateFractalBounding(); }

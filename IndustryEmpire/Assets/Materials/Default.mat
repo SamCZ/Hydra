@@ -1,0 +1,7 @@
+{
+	"Shader": "Assets/Shaders/Test.hlsl",
+	"Defines": {},
+	"Params": {
+		"Vector3:_Color": { "x": 0.5, "y": 1.0, "z": 1.0 }
+	}
+}

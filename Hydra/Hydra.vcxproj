@@ -1,6 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug_Editor|Win32">
+      <Configuration>Debug_Editor</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_Editor|x64">
+      <Configuration>Debug_Editor</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
@@ -31,6 +39,12 @@
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Editor|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -39,7 +53,13 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Editor|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -59,10 +79,16 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Editor|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Editor|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -80,18 +106,45 @@
       <AdditionalOptions>/Zc:strictStrings %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Editor|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\Sam\Projekty\C++\Hydra\Hydra;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/Zc:strictStrings %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)Yaml\include;$(ProjectDir);$(ProjectDir)nvapi-public;$(ProjectDir)assimp-c4d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>USE_D3D11=1;NVRHI_WITH_WRL;NOMINMAX;WIN32;_DEBUG;DEBUG;PROFILE;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)Yaml\include;$(ProjectDir);$(ProjectDir)nvapi-public;$(ProjectDir)assimp\include;$(ProjectDir)GeneratedHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USE_D3D11=1;NVRHI_WITH_WRL;NOMINMAX;WIN32;_DEBUG;DEBUG;PROFILE;_WINDOWS;_CRT_SECURE_NO_WARNINGS;HYDRA_EXPORTS;WITH_EDITOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;assimp-vc140-mt.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)nvapi-public\amd64;$(ProjectDir)assimp-c4d\lib;$(ProjectDir)FreeImage\Win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)nvapi-public\amd64;$(ProjectDir)assimp\lib;$(ProjectDir)FreeImage\Win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <PreBuildEvent>
+      <Command>call $(SolutionDir)HydraHeaderTool\bin\Debug\HydraHeaderTool.exe</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Editor|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>false</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)Yaml\include;$(ProjectDir);$(ProjectDir)nvapi-public;$(ProjectDir)assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USE_D3D11=1;NVRHI_WITH_WRL;NOMINMAX;WIN32;_DEBUG;DEBUG;PROFILE;_WINDOWS;_CRT_SECURE_NO_WARNINGS;HYDRA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;assimp-vc140-mt.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)nvapi-public\amd64;$(ProjectDir)assimp\lib;$(ProjectDir)FreeImage\Win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -116,22 +169,29 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)Yaml\include;$(ProjectDir);$(ProjectDir)nvapi-public;$(ProjectDir)assimp-c4d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>USE_D3D11=1;NVRHI_WITH_WRL;NOMINMAX;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)Yaml\include;$(ProjectDir);$(ProjectDir)nvapi-public;$(ProjectDir)assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USE_D3D11=1;NVRHI_WITH_WRL;NOMINMAX;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;HYDRA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(ProjectDir)nvapi-public\amd64;$(ProjectDir)assimp-c4d\lib;$(ProjectDir)FreeImage\Win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)nvapi-public\amd64;$(ProjectDir)assimp\lib;$(ProjectDir)FreeImage\Win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;assimp-vc140-mt.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Hydra\Assets\Asset.h" />
+    <ClInclude Include="Hydra\Assets\IAssetImporter.h" />
+    <ClInclude Include="Hydra\Assets\AssetManager.h" />
+    <ClInclude Include="Hydra\Assets\IAssetLocator.h" />
+    <ClInclude Include="Hydra\Assets\Importers\ModelImporter.h" />
+    <ClInclude Include="Hydra\Assets\Importers\TextureImporter.h" />
     <ClInclude Include="Hydra\Core\Array.h" />
     <ClInclude Include="Hydra\Core\Delegate.h" />
-    <ClInclude Include="Hydra\Core\EObject.h" />
     <ClInclude Include="Hydra\Core\FastNoise.h" />
     <ClInclude Include="Hydra\Core\Function.h" />
+    <ClInclude Include="Hydra\Core\json.h" />
+    <ClInclude Include="Hydra\Core\Library.h" />
     <ClInclude Include="Hydra\Core\Log.h" />
     <ClInclude Include="Hydra\Core\Math\Box.h" />
     <ClInclude Include="Hydra\Core\Math\Triangle.h" />
@@ -140,13 +200,29 @@
     <ClInclude Include="Hydra\Core\Random.h" />
     <ClInclude Include="Hydra\Core\Resource.h" />
     <ClInclude Include="Hydra\Core\Sort.h" />
+    <ClInclude Include="Hydra\Core\Stream\Blob.h" />
+    <ClInclude Include="Hydra\Core\Stream\FileStream.h" />
+    <ClInclude Include="Hydra\Core\Stream\IStream.h" />
     <ClInclude Include="Hydra\Core\Timing.h" />
     <ClInclude Include="Hydra\Core\YamlConvertors.h" />
     <ClInclude Include="Hydra\Engine.h" />
+    <ClInclude Include="Hydra\EngineContext.h" />
+    <ClInclude Include="Hydra\Framework\Character.h" />
+    <ClInclude Include="Hydra\Framework\Actor.h" />
+    <ClInclude Include="Hydra\Framework\Class.h" />
+    <ClInclude Include="Hydra\Framework\Components\ActorComponent.h" />
+    <ClInclude Include="Hydra\Framework\Components\CameraComponent.h" />
+    <ClInclude Include="Hydra\Framework\Components\MeshComponent.h" />
+    <ClInclude Include="Hydra\Framework\Components\PrimitiveComponent.h" />
+    <ClInclude Include="Hydra\Framework\Components\SceneComponent.h" />
+    <ClInclude Include="Hydra\Framework\Components\StaticMeshComponent.h" />
+    <ClInclude Include="Hydra\Framework\GameModeBase.h" />
+    <ClInclude Include="Hydra\Framework\Object.h" />
+    <ClInclude Include="Hydra\Framework\Pawn.h" />
+    <ClInclude Include="Hydra\Framework\StaticMesh.h" />
+    <ClInclude Include="Hydra\Framework\StaticMeshResources.h" />
+    <ClInclude Include="Hydra\Framework\World.h" />
     <ClInclude Include="Hydra\HydraEngine.h" />
-    <ClInclude Include="Hydra\Import\MeshImporter.h" />
-    <ClInclude Include="Hydra\Import\TextureImporter.h" />
-    <ClInclude Include="Hydra\Import\UnityAssetManager.h" />
     <ClInclude Include="Hydra\Input\GenericPlatformInput.h" />
     <ClInclude Include="Hydra\Input\InputCoreTypes.h" />
     <ClInclude Include="Hydra\Input\InputManager.h" />
@@ -163,37 +239,27 @@
     <ClInclude Include="Hydra\Render\Material.h" />
     <ClInclude Include="Hydra\Render\Mesh.h" />
     <ClInclude Include="Hydra\Render\Pipeline\BindingHelpers.h" />
-    <ClInclude Include="Hydra\Render\Pipeline\DDS\DDS.h" />
-    <ClInclude Include="Hydra\Render\Pipeline\DDS\DDSTextureLoader.h" />
-    <ClInclude Include="Hydra\Render\Pipeline\DDS\DirectXHelpers.h" />
-    <ClInclude Include="Hydra\Render\Pipeline\DDS\LoaderHelpers.h" />
-    <ClInclude Include="Hydra\Render\Pipeline\DDS\PlatformHelpers.h" />
-    <ClInclude Include="Hydra\Render\Pipeline\DeviceManager11.h" />
-    <ClInclude Include="Hydra\Render\Pipeline\DX11\UIRendererDX11.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\DeviceCreationParameters.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\DeviceManager.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\View\MainRenderView.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\View\UIRenderView.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\Windows\DDS\DDS.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\Windows\DDS\DDSTextureLoader.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\Windows\DDS\DirectXHelpers.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\Windows\DDS\LoaderHelpers.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\Windows\DDS\PlatformHelpers.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\Windows\DX11\DeviceManager11.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\Windows\DX11\UIRendererDX11.h" />
     <ClInclude Include="Hydra\Render\Pipeline\GFSDK_NVRHI.h" />
-    <ClInclude Include="Hydra\Render\Pipeline\GFSDK_NVRHI_D3D11.h" />
-    <ClInclude Include="Hydra\Render\PostProcess\EmissionPostEffect.h" />
-    <ClInclude Include="Hydra\Render\PostProcess\PostEffect.h" />
-    <ClInclude Include="Hydra\Render\PostProcess\SSAOPostEffect.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\Windows\DX11\GFSDK_NVRHI_D3D11.h" />
+    <ClInclude Include="Hydra\Render\Pipeline\Windows\DX11\VisualController11.h" />
     <ClInclude Include="Hydra\Render\RenderManager.h" />
-    <ClInclude Include="Hydra\Render\RenderStage.h" />
-    <ClInclude Include="Hydra\Render\RenderStage\RenderStageDeffered.h" />
-    <ClInclude Include="Hydra\Render\RenderStage\RenderStagePostProcess.h" />
     <ClInclude Include="Hydra\Render\Shader.h" />
     <ClInclude Include="Hydra\Render\Technique.h" />
-    <ClInclude Include="Hydra\Render\TestVars.h" />
     <ClInclude Include="Hydra\Render\TextureLayoutDef.h" />
     <ClInclude Include="Hydra\Render\UI\UIRenderer.h" />
     <ClInclude Include="Hydra\Render\VarType.h" />
     <ClInclude Include="Hydra\Render\VertexBuffer.h" />
-    <ClInclude Include="Hydra\Scene\Component.h" />
-    <ClInclude Include="Hydra\Scene\Components\Camera.h" />
-    <ClInclude Include="Hydra\Scene\Components\Light.h" />
-    <ClInclude Include="Hydra\Scene\Components\LodGroup.h" />
-    <ClInclude Include="Hydra\Scene\Components\Movement\FirstPersonController.h" />
-    <ClInclude Include="Hydra\Scene\Components\Renderer.h" />
-    <ClInclude Include="Hydra\Scene\Spatial.h" />
-    <ClInclude Include="Hydra\Scene\Transformable.h" />
     <ClInclude Include="Hydra\Core\ColorRGBA.h" />
     <ClInclude Include="Hydra\Core\Common.h" />
     <ClInclude Include="Hydra\Core\Container.h" />
@@ -201,23 +267,7 @@
     <ClInclude Include="Hydra\Core\SmartPointer.h" />
     <ClInclude Include="Hydra\Core\String.h" />
     <ClInclude Include="Hydra\Core\Vector.h" />
-    <ClInclude Include="Hydra\Terrain\Erosion.h" />
-    <ClInclude Include="Hydra\Terrain\Generator\HeightMap.h" />
-    <ClInclude Include="Hydra\Terrain\Generator\MeshBuilder.h" />
-    <ClInclude Include="Hydra\Terrain\Generator\MeshData.h" />
-    <ClInclude Include="Hydra\Terrain\Generator\MeshGenerator.h" />
-    <ClInclude Include="Hydra\Terrain\Generator\MeshSettings.h" />
-    <ClInclude Include="Hydra\Terrain\Generator\Noise\NoiseMap.h" />
-    <ClInclude Include="Hydra\Terrain\Marching\Marching.h" />
-    <ClInclude Include="Hydra\Terrain\Marching\MarchingCubes.h" />
-    <ClInclude Include="Hydra\Terrain\Marching\MarchingCubesTable.h" />
-    <ClInclude Include="Hydra\Terrain\Marching\MarchingTable.h" />
-    <ClInclude Include="Hydra\Terrain\Marching\MarchingTertrahedron.h" />
-    <ClInclude Include="Hydra\Terrain\Marching\MarchingTertrahedronTable.h" />
-    <ClInclude Include="Hydra\Terrain\Render\VoxelChunkRenderer.h" />
-    <ClInclude Include="Hydra\Terrain\Voxel\VoxelTerrain.h" />
-    <ClInclude Include="Hydra\Terrain\Voxel\World\VoxelChunk.h" />
-    <ClInclude Include="Hydra\Terrain\Voxel\World\VoxelWorld.h" />
+    <ClInclude Include="Hydra\Render\View\HSceneView.h" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
     <ClInclude Include="ImGui\ImGuizmo.h" />
@@ -236,7 +286,6 @@
     <ClInclude Include="NanoVG\nanovg.h" />
     <ClInclude Include="NanoVG\nanovg_d3d11.h" />
     <ClInclude Include="NanoVG\stb_image.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="Yaml\src\collectionstack.h" />
     <ClInclude Include="Yaml\src\contrib\graphbuilderadapter.h" />
     <ClInclude Include="Yaml\src\directives.h" />
@@ -261,52 +310,46 @@
     <ClInclude Include="Yaml\src\token.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Hydra.rc" />
-  </ItemGroup>
-  <ItemGroup>
+    <ClCompile Include="Hydra\Assets\AssetManager.cpp" />
+    <ClCompile Include="Hydra\Assets\Importers\ModelImporter.cpp" />
+    <ClCompile Include="Hydra\Assets\Importers\TextureImporter.cpp" />
     <ClCompile Include="Hydra\Core\FastNoise.cpp" />
     <ClCompile Include="Hydra\Core\Math\Box.cpp" />
+    <ClCompile Include="Hydra\Core\Stream\FileStream.cpp" />
+    <ClCompile Include="Hydra\EngineContext.cpp" />
+    <ClCompile Include="Hydra\Framework\Actor.cpp" />
+    <ClCompile Include="Hydra\Framework\Character.cpp" />
+    <ClCompile Include="Hydra\Framework\Class.cpp" />
+    <ClCompile Include="Hydra\Framework\Components\ActorComponent.cpp" />
+    <ClCompile Include="Hydra\Framework\Components\CameraComponent.cpp" />
+    <ClCompile Include="Hydra\Framework\Components\PrimitiveComponent.cpp" />
+    <ClCompile Include="Hydra\Framework\Components\SceneComponent.cpp" />
+    <ClCompile Include="Hydra\Framework\Components\StaticMeshComponent.cpp" />
+    <ClCompile Include="Hydra\Framework\GameModeBase.cpp" />
+    <ClCompile Include="Hydra\Framework\Pawn.cpp" />
+    <ClCompile Include="Hydra\Framework\StaticMesh.cpp" />
+    <ClCompile Include="Hydra\Framework\World.cpp" />
     <ClCompile Include="Hydra\HydraEngine.cpp" />
-    <ClCompile Include="Hydra\Import\UnityAssetManager.cpp" />
     <ClCompile Include="Hydra\Physics\Collisons\BIH\BIHNode.cpp" />
     <ClCompile Include="Hydra\Physics\Collisons\BIH\BIHTree.cpp" />
     <ClCompile Include="Hydra\Physics\Collisons\CollisionResults.cpp" />
     <ClCompile Include="Hydra\Physics\Collisons\Ray.cpp" />
-    <ClCompile Include="Hydra\Render\Pipeline\DX11\UIRendererDX11.cpp" />
-    <ClCompile Include="Hydra\Render\PostProcess\PostEffect.cpp" />
-    <ClCompile Include="Hydra\Render\RenderStage.cpp" />
-    <ClCompile Include="Hydra\Render\RenderStage\RenderStagePostProcess.cpp" />
+    <ClCompile Include="Hydra\Render\Pipeline\DeviceManager.cpp" />
+    <ClCompile Include="Hydra\Render\Pipeline\View\MainRenderView.cpp" />
+    <ClCompile Include="Hydra\Render\Pipeline\View\UIRenderView.cpp" />
+    <ClCompile Include="Hydra\Render\Pipeline\Windows\DX11\UIRendererDX11.cpp" />
+    <ClCompile Include="Hydra\Render\Pipeline\Windows\DX11\VisualController11.cpp" />
     <ClCompile Include="Hydra\Render\Shader.cpp" />
     <ClCompile Include="Hydra\Render\Technique.cpp" />
-    <ClCompile Include="Hydra\Render\Test.cpp" />
     <ClCompile Include="Hydra\Render\TextureLayoutDef.cpp" />
     <ClCompile Include="Hydra\Render\UI\UIRenderer.cpp" />
-    <ClCompile Include="Hydra\Scene\Components\Light.cpp" />
-    <ClCompile Include="Hydra\Terrain\Generator\HeightMap.cpp" />
-    <ClCompile Include="Hydra\Terrain\Generator\MeshBuilder.cpp" />
-    <ClCompile Include="Hydra\Terrain\Generator\MeshData.cpp" />
-    <ClCompile Include="Hydra\Terrain\Generator\MeshGenerator.cpp" />
-    <ClCompile Include="Hydra\Terrain\Generator\Noise\NoiseMap.cpp" />
-    <ClCompile Include="Hydra\Terrain\Marching\Marching.cpp" />
-    <ClCompile Include="Hydra\Terrain\Marching\MarchingCubes.cpp" />
-    <ClCompile Include="Hydra\Terrain\Marching\MarchingTertrahedron.cpp" />
-    <ClCompile Include="Hydra\Terrain\Voxel\VoxelTerrain.cpp" />
-    <ClCompile Include="Hydra\Terrain\Voxel\World\VoxelChunk.cpp" />
-    <ClCompile Include="Hydra\Terrain\Voxel\World\VoxelWorld.cpp" />
-    <ClCompile Include="MainYamlTest.cpp" />
     <ClCompile Include="Hydra\Render\Material.cpp" />
     <ClCompile Include="Hydra\Render\RenderManager.cpp" />
-    <ClCompile Include="Hydra\Render\RenderStage\RenderStageDeffered.cpp" />
-    <ClCompile Include="Hydra\Scene\Components\LodGroup.cpp" />
     <ClCompile Include="IndustryEmpire\IndustryEmpire.cpp" />
-    <ClCompile Include="Main.cpp" />
     <ClCompile Include="Hydra\Core\Polygonise.cpp" />
     <ClCompile Include="Hydra\Core\Random.cpp" />
     <ClCompile Include="Hydra\Core\Resource.cpp" />
     <ClCompile Include="Hydra\Core\Timing.cpp" />
-    <ClCompile Include="Hydra\Engine.cpp" />
-    <ClCompile Include="Hydra\Import\MeshImporter.cpp" />
-    <ClCompile Include="Hydra\Import\TextureImporter.cpp" />
     <ClCompile Include="Hydra\Input\GenericPlatformInput.cpp" />
     <ClCompile Include="Hydra\Input\InputCoreTypes.cpp" />
     <ClCompile Include="Hydra\Input\InputManager.cpp" />
@@ -314,18 +357,11 @@
     <ClCompile Include="Hydra\Input\Windows\WindowsPlatformInput.cpp" />
     <ClCompile Include="Hydra\Render\Graphics.cpp" />
     <ClCompile Include="Hydra\Render\Mesh.cpp" />
-    <ClCompile Include="Hydra\Render\Pipeline\DDS\DDSTextureLoader.cpp" />
-    <ClCompile Include="Hydra\Render\Pipeline\DeviceManager11.cpp" />
-    <ClCompile Include="Hydra\Render\Pipeline\GFSDK_NVRHI_D3D11.cpp" />
-    <ClCompile Include="Hydra\Scene\Components\Camera.cpp" />
-    <ClCompile Include="Hydra\Scene\Component.cpp" />
-    <ClCompile Include="Hydra\Scene\Components\Movement\FirstPersonController.cpp" />
-    <ClCompile Include="Hydra\Scene\Components\Renderer.cpp" />
-    <ClCompile Include="Hydra\Scene\Spatial.cpp" />
-    <ClCompile Include="Hydra\Scene\Transformable.cpp" />
+    <ClCompile Include="Hydra\Render\Pipeline\Windows\DDS\DDSTextureLoader.cpp" />
+    <ClCompile Include="Hydra\Render\Pipeline\Windows\DX11\DeviceManager11.cpp" />
+    <ClCompile Include="Hydra\Render\Pipeline\Windows\DX11\GFSDK_NVRHI_D3D11.cpp" />
     <ClCompile Include="Hydra\Core\ColorRGBA.cpp" />
     <ClCompile Include="Hydra\Core\File.cpp" />
-    <ClCompile Include="Hydra\Terrain\Erosion.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\ImGuizmo.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />
@@ -362,9 +398,6 @@
     <ClCompile Include="Yaml\src\singledocparser.cpp" />
     <ClCompile Include="Yaml\src\stream.cpp" />
     <ClCompile Include="Yaml\src\tag.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

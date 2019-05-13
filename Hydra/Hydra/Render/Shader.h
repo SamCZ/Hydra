@@ -2,92 +2,109 @@
 
 #include <d3d11.h>
 
-#include "Hydra/Core/String.h"
+#include "Hydra/Core/Common.h"
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
 #include "Hydra/Render/VarType.h"
 
-namespace Hydra
+struct RawShaderVariable
 {
-	struct RawShaderVariable
+	unsigned int ByteOffset;
+	unsigned int Size;
+	unsigned int ConstantBufferIndex;
+};
+
+struct RawShaderConstantBuffer
+{
+	String Name;
+	unsigned int Size;
+	unsigned int BindIndex;
+	NVRHI::ConstantBufferHandle ConstantBuffer;
+	unsigned char* LocalDataBuffer;
+	List<RawShaderVariable> Variables;
+	bool MarkUpdate;
+};
+
+struct RawShaderTextureDefine
+{
+	unsigned int Index;
+	unsigned int BindIndex;
+	NVRHI::TextureHandle TextureHandle;
+	bool IsWritable;
+};
+
+struct RawShaderBuffer
+{
+	String Name;
+	unsigned int Size;
+	unsigned int Index;
+	unsigned int BindIndex;
+	bool IsWritable;
+	NVRHI::BufferHandle Buffer;
+};
+
+struct RawShaderSamplerDefine
+{
+	unsigned int Index;
+	unsigned int BindIndex;
+	NVRHI::SamplerHandle SamplerHandle;
+};
+
+struct ShaderVars
+{
+	NVRHI::ShaderType::Enum ShaderType;
+
+	RawShaderConstantBuffer* ConstantBuffers;
+	int ConstantBufferCount;
+
+	FastMap<String, RawShaderTextureDefine> TextureDefines;
+	FastMap<String, RawShaderSamplerDefine> SamplerDefines;
+	FastMap<String, RawShaderVariable> Variables;
+	FastMap<String, RawShaderBuffer> BufferDefines;
+
+	Map<String, VarType::Type> VariableTypes;
+};
+
+struct ShaderVertexInputDefinition
+{
+	String SemanticName;
+	int SemanticIndex;
+	DXGI_FORMAT Format;
+	bool Instanced;
+
+	inline bool operator==(const ShaderVertexInputDefinition& other)
 	{
-		unsigned int ByteOffset;
-		unsigned int Size;
-		unsigned int ConstantBufferIndex;
-	};
+		return SemanticName == other.SemanticName && SemanticIndex == other.SemanticIndex && Format == other.Format && Instanced == other.Instanced;
+	}
 
-	struct RawShaderConstantBuffer
+	inline String Print()
 	{
-		String Name;
-		unsigned int Size;
-		unsigned int BindIndex;
-		NVRHI::ConstantBufferHandle ConstantBuffer;
-		unsigned char* LocalDataBuffer;
-		List<RawShaderVariable> Variables;
-		bool MarkUpdate;
-	};
+		return String("ShaderVertexInputDefinition(") + "Name=" + SemanticName + ", SemanticIndex=" + ToString(SemanticIndex) + ", Format=" + ToString((int)Format) + ", IsInstanced=" + ToString(Instanced);
+	}
+};
 
-	struct RawShaderTextureDefine
-	{
-		unsigned int Index;
-		unsigned int BindIndex;
-		NVRHI::TextureHandle TextureHandle;
-		bool IsWritable;
-	};
+class HYDRA_API Shader
+{
+private:
+	String _Name;
+	NVRHI::ShaderType::Enum _Type;
+	NVRHI::ShaderHandle _Handle;
+	ID3DBlob* _Blob;
 
-	struct RawShaderBuffer
-	{
-		String Name;
-		unsigned int Size;
-		unsigned int Index;
-		unsigned int BindIndex;
-		bool IsWritable;
-		NVRHI::BufferHandle Buffer;
-	};
+	ShaderVars* _LocalShaderVarCache;
 
-	struct RawShaderSamplerDefine
-	{
-		unsigned int Index;
-		unsigned int BindIndex;
-		NVRHI::SamplerHandle SamplerHandle;
-	};
+public:
+	Shader(const String& name, const NVRHI::ShaderType::Enum& type, NVRHI::ShaderHandle shaderHandle, ID3DBlob* shaderBlob);
+	~Shader();
 
-	struct ShaderVars
-	{
-		NVRHI::ShaderType::Enum ShaderType;
+	NVRHI::ShaderHandle GetRaw();
+	ID3DBlob* GetBlob();
 
-		RawShaderConstantBuffer* ConstantBuffers;
-		int ConstantBufferCount;
+	NVRHI::ShaderType::Enum GetType();
 
-		FastMap<String, RawShaderTextureDefine> TextureDefines;
-		FastMap<String, RawShaderSamplerDefine> SamplerDefines;
-		FastMap<String, RawShaderVariable> Variables;
-		FastMap<String, RawShaderBuffer> BufferDefines;
+	ShaderVars* CreateShaderVars();
 
-		Map<String, VarType::Type> VariableTypes;
-	};
+	List<ShaderVertexInputDefinition> GetInputLayoutDefinitions();
 
-	class Shader
-	{
-	private:
-		String _Name;
-		NVRHI::ShaderType::Enum _Type;
-		NVRHI::ShaderHandle _Handle;
-		ID3DBlob* _Blob;
-
-		ShaderVars* _LocalShaderVarCache;
-
-	public:
-		Shader(const String& name, const NVRHI::ShaderType::Enum& type, NVRHI::ShaderHandle shaderHandle, ID3DBlob* shaderBlob);
-		~Shader();
-
-		NVRHI::ShaderHandle GetRaw();
-		ID3DBlob* GetBlob();
-		
-		NVRHI::ShaderType::Enum GetType();
-
-		ShaderVars* CreateShaderVars();
-
-	private:
-		void Initialize();
-	};
-}
+private:
+	void Initialize();
+};

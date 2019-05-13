@@ -1,13 +1,12 @@
 #pragma once
 
-namespace Hydra
-{
-	class Collidable
-	{
-	public:
-		virtual inline ~Collidable()
-		{
+#include "Hydra/Core/Library.h"
 
-		}
-	};
-}
+class HYDRA_API Collidable
+{
+public:
+	virtual inline ~Collidable()
+	{
+
+	}
+};

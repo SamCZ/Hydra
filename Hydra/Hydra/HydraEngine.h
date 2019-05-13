@@ -1,12 +1,29 @@
 #pragma once
 
-namespace Hydra
+#include "Hydra/Core/Library.h"
+#include "Hydra/Render/Pipeline/DeviceCreationParameters.h"
+#include "Hydra/EngineContext.h"
+
+class FWorld;
+
+class HYDRA_API HydraEngine
 {
-	class HydraEngine
-	{
-	protected:
+protected:
+	EngineContext* Context;
+	FWorld* World;
 
-	public:
+public:
+	~HydraEngine();
+	HydraEngine();
 
-	};
-}
+	void Start();
+	void OnDestroy();
+
+public:
+	virtual void PrepareForEngineStart(DeviceCreationParameters& params);
+	virtual void InitializeAssetManager(AssetManager* assetManager);
+	virtual void SceneInit() = 0;
+
+	FWorld* GetWorld() const;
+	EngineContext* GetContext() const;
+};

@@ -9,67 +9,70 @@
 #include "Hydra/Render/VertexBuffer.h"
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
 
-namespace Hydra
+struct PrimitiveType
 {
-	struct PrimitiveType
+	enum Enum
 	{
-		enum Enum
-		{
-			Box, BoxNDC, Plane, Quad
-		};
+		Box, BoxNDC, Plane, Quad
 	};
+};
 
-	class BIHTree;
+class BIHTree;
 
-	class Mesh : public Resource
-	{
-	private:
-		NVRHI::BufferHandle _IndexHandle;
-		NVRHI::BufferHandle _VertexBuffer;
-		bool _IsIndexed;
-		int _IndexCount;
+class EngineContext;
 
-		BIHTree* _ComplexCollider;
-	public:
-		Mesh();
-		~Mesh();
+class HYDRA_API Mesh : public Resource
+{
+private:
+	NVRHI::BufferHandle _IndexHandle;
+	NVRHI::BufferHandle _VertexBuffer;
+	bool _AutoCreateBuffers;
+	bool _IsIndexed;
+	int _IndexCount;
 
-		List<VertexBufferEntry> VertexData;
-		List<unsigned int> Indices;
-		Box Bounds;
+	BIHTree* _ComplexCollider;
+public:
+	Mesh();
+	~Mesh();
 
-		NVRHI::PrimitiveType::Enum PrimitiveType;
+	List<VertexBufferEntry> VertexData;
+	List<unsigned int> Indices;
+	Box Bounds;
 
-		void UpdateBounds();
+	NVRHI::PrimitiveType::Enum PrimitiveType;
 
-		void GenerateUVs();
-		void GenerateNormals();
-		void GenerateTangentsAndBiTangents();
+	void UpdateBounds();
 
-		void SmoothMesh();
+	void GenerateUVs();
+	void GenerateNormals();
+	void GenerateTangentsAndBiTangents();
 
-		void CreateComplexCollider();
-		BIHTree* GetComplexCollider();
+	void SmoothMesh();
 
-		void UpdateBuffers();
+	void CreateComplexCollider();
+	BIHTree* GetComplexCollider();
 
-		static Mesh* CreatePrimitive(const PrimitiveType::Enum& type, const Vector3& scale = Vector3(1.0f, 1.0f, 1.0f));
+	void UpdateBuffers(EngineContext* context);
 
-		NVRHI::BufferHandle GetVertexBuffer();
-		NVRHI::BufferHandle GetIndexBuffer();
+	static Mesh* CreatePrimitive(const PrimitiveType::Enum& type, const Vector3& scale = Vector3(1.0f, 1.0f, 1.0f));
 
-		void SetIndexBuffer(NVRHI::BufferHandle buffer);
-		void SetVertexBuffer(NVRHI::BufferHandle buffer);
+	NVRHI::BufferHandle GetVertexBuffer();
+	NVRHI::BufferHandle GetIndexBuffer();
 
-		void SetIndexed(bool indexed);
-		bool IsIndexed();
+	void SetIndexBuffer(NVRHI::BufferHandle buffer);
+	void SetVertexBuffer(NVRHI::BufferHandle buffer);
 
-		void SetIndexCount(int count);
-		int GetIndexCount() const;
+	bool CanAutoCreateBuffers() const;
+	void SetAutoCreateBuffers(bool state);
 
-	private:
-		Vector3 ComputeNormalFromMultiplePoints(List<Vector3>& points);
-	};
+	void SetIndexed(bool indexed);
+	bool IsIndexed();
 
-	DEFINE_PTR(Mesh)
-}
+	void SetIndexCount(int count);
+	int GetIndexCount() const;
+
+private:
+	Vector3 ComputeNormalFromMultiplePoints(List<Vector3>& points);
+};
+
+DEFINE_PTR(Mesh)
