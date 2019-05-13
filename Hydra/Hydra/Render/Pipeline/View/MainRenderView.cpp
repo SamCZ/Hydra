@@ -16,7 +16,7 @@
 
 #include "Hydra/Render/Graphics.h"
 
-#include "Hydra/Render/View/HSceneView.h"
+#include "Hydra/Render/View/SceneView.h"
 
 void MainRenderView::OnCreated()
 {
@@ -42,27 +42,17 @@ void MainRenderView::OnDestroy()
 
 void MainRenderView::OnRender(NVRHI::TextureHandle mainRenderTarget)
 {
-	const List<HPrimitiveComponent*>& components = Engine->GetWorld()->GetPrimitiveComponents();
-
-	for (HPrimitiveComponent* cmp : components)
+	ITER(_SceneViewForCameras, it)
 	{
-		if (HStaticMeshComponent* staticMeshComponent = cmp->SafeCast<HStaticMeshComponent>())
-		{
-			HStaticMesh* mesh = staticMeshComponent->StaticMesh;
-
-			if (mesh)
-			{
-
-			}
-		}
+		RenderSceneViewFromCamera(it->second, it->first);
 	}
 
 
 	// Test Render
-	/*
+	
 	Context->GetGraphics()->Composite(_DefaultMaterial, [](NVRHI::DrawCallState& state) {
 		
-	}, mainRenderTarget);*/
+	}, mainRenderTarget);
 }
 
 void MainRenderView::OnTick(float Delta)
@@ -91,7 +81,7 @@ void MainRenderView::OnResize(uint32 width, uint32 height, uint32 sampleCount)
 
 void MainRenderView::OnCameraAdded(HCameraComponent* cmp)
 {
-	HSceneView* sceneView = new HSceneView();
+	FSceneView* sceneView = new FSceneView();
 
 
 	if (_SceneViewForCameras.find(cmp) != _SceneViewForCameras.end())
@@ -111,7 +101,7 @@ void MainRenderView::OnCameraRemoved(HCameraComponent* cmp)
 
 	if (iter != _SceneViewForCameras.end())
 	{
-		HSceneView* sceneView = iter->second;
+		FSceneView* sceneView = iter->second;
 		_SceneViewForCameras.erase(cmp);
 
 		delete sceneView;
@@ -127,4 +117,37 @@ void MainRenderView::OnCameraRemoved(HCameraComponent* cmp)
 void MainRenderView::UpdateComponent(HSceneComponent* component, float Delta)
 {
 	// Component has no tick function for now
+}
+
+void MainRenderView::RenderSceneViewFromCamera(FSceneView* view, HCameraComponent* camera)
+{
+	const List<HPrimitiveComponent*>& components = Engine->GetWorld()->GetPrimitiveComponents();
+
+	for (HPrimitiveComponent* cmp : components)
+	{
+		if (HStaticMeshComponent* staticMeshComponent = cmp->SafeCast<HStaticMeshComponent>())
+		{
+			HStaticMesh* mesh = staticMeshComponent->StaticMesh;
+
+			if (mesh)
+			{
+				FStaticMeshRenderData* renderData = mesh->RenderData;
+
+				if (renderData)
+				{
+					List<FStaticMeshLODResources>& lodResource = renderData->LODResources;
+					size_t lodCount = lodResource.size();
+
+					int lod = 0;
+
+					if (lodCount > 0 && lod >= lodCount - 1)
+					{
+						FStaticMeshLODResources& lodData = lodResource[lod];
+
+
+					}
+				}
+			}
+		}
+	}
 }

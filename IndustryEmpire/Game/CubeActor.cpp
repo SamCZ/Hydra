@@ -5,7 +5,7 @@
 void ACubeActor::InitializeComponents()
 {
 	CubeComponent = AddComponent<HStaticMeshComponent>("Cube");
-	CubeComponent->StaticMesh = nullptr;
+	CubeComponent->StaticMesh = Engine->GetAssetManager()->GetMesh("Assets/BasicShapes/Cube.FBX");
 }
 
 void ACubeActor::BeginPlay()
@@ -40,7 +40,6 @@ void ACubeActor::OnHud(UIRenderer * renderer)
 
 	renderer->DrawOval(location.x, location.y, 10, 10, ColorRGBA::Blue);
 
-	NVRHI::TextureHandle tex = Engine->GetAssetManager()->GetTexture("Assets/Textures/Metal/copper-rock1-alb.png");
-
-	renderer->DrawImage(tex, location.x, location.y, 50, 50, 0);
+	//NVRHI::TextureHandle tex = Engine->GetAssetManager()->GetTexture("Assets/Textures/Metal/copper-rock1-alb.png");
+	//renderer->DrawImage(tex, location.x, location.y, 50, 50, 0);
 }

@@ -6,7 +6,6 @@
 #include "Hydra/Core/Random.h"
 #include "CubeActor.generated.h"
 
-
 class UIRenderer;
 
 HCLASS()

@@ -5,7 +5,7 @@
 class HydraEngine;
 class HSceneComponent;
 class HCameraComponent;
-class HSceneView;
+class FSceneView;
 
 class MaterialInterface;
 
@@ -14,7 +14,7 @@ class MainRenderView : public IVisualController
 private:
 	MaterialInterface* _DefaultMaterial;
 
-	Map<HCameraComponent*, HSceneView*> _SceneViewForCameras;
+	Map<HCameraComponent*, FSceneView*> _SceneViewForCameras;
 public:
 	HydraEngine* Engine;
 
@@ -33,4 +33,6 @@ private:
 
 private:
 	void UpdateComponent(HSceneComponent* component, float Delta);
+
+	void RenderSceneViewFromCamera(FSceneView* view, HCameraComponent* camera);
 };

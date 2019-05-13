@@ -8,6 +8,9 @@
 #include "Hydra/Assets/Importers/TextureImporter.h"
 #include "Hydra/Core/Stream/FileStream.h"
 
+#include "Hydra/Framework/StaticMesh.h"
+#include "Hydra/Assets/Importers/ModelImporter.h"
+
 static String ImageExtensions[]{
 	"png", "gif", "jpg", "jpeg", "tiff"
 };
@@ -88,6 +91,33 @@ NVRHI::TextureHandle AssetManager::GetTexture(const String & path)
 	}
 
 	return nullptr;
+}
+
+HStaticMesh* AssetManager::GetMesh(const String & path)
+{
+	FileStream stream = FileStream(path);
+	Blob* data = stream.Read();
+
+	List<HAsset*> assets;
+
+	ModelImporter importer;
+
+	ModelImportOptions options;
+	options.CombineMeshes = true;
+	options.Name = path;
+
+	if (importer.Import(*data, options, assets))
+	{
+		return assets[0]->SafeCast<HStaticMesh>();
+	}
+
+	return nullptr;
+}
+
+List<HStaticMesh*> AssetManager::GetMeshParts(const String path)
+{
+	//TODO: This
+	return List<HStaticMesh*>();
 }
 
 void AssetManager::LoadProjectFiles()
@@ -305,6 +335,8 @@ void AssetManager::SaveMaterial(MaterialInterface* material)
 
 void AssetManager::LoadTexture(const File& file)
 {
+	if (true) return;
+
 	Log("AssetManager::LoadTexture", file, "Trying to load...");
 
 	FileStream stream = FileStream(file);

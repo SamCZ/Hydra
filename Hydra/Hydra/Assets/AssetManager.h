@@ -13,6 +13,7 @@
 
 class EngineContext;
 class Technique;
+class HStaticMesh;
 
 class HYDRA_API AssetManager
 {
@@ -32,8 +33,10 @@ public:
 	void AddAssetImporter(IAssetImporter* importer);
 
 	MaterialInterface* GetMaterial(const String& path);
-
 	NVRHI::TextureHandle GetTexture(const String& path);
+
+	HStaticMesh* GetMesh(const String& path);
+	List<HStaticMesh*> GetMeshParts(const String path);
 private:
 
 	SharedPtr<Technique> LoadTechnique(const File& file); // TODO: These methods are only temporal, we need to create methods or importers that are compatible with compressed or hashed files.
