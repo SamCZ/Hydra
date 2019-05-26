@@ -267,7 +267,8 @@
     <ClInclude Include="Hydra\Core\SmartPointer.h" />
     <ClInclude Include="Hydra\Core\String.h" />
     <ClInclude Include="Hydra\Core\Vector.h" />
-    <ClInclude Include="Hydra\Render\View\HSceneView.h" />
+    <ClInclude Include="Hydra\Render\View\SceneView.h" />
+    <ClInclude Include="Hydra\Render\View\ViewPort.h" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
     <ClInclude Include="ImGui\ImGuizmo.h" />
@@ -345,6 +346,7 @@
     <ClCompile Include="Hydra\Render\UI\UIRenderer.cpp" />
     <ClCompile Include="Hydra\Render\Material.cpp" />
     <ClCompile Include="Hydra\Render\RenderManager.cpp" />
+    <ClCompile Include="Hydra\Render\View\ViewPort.cpp" />
     <ClCompile Include="IndustryEmpire\IndustryEmpire.cpp" />
     <ClCompile Include="Hydra\Core\Polygonise.cpp" />
     <ClCompile Include="Hydra\Core\Random.cpp" />

@@ -396,7 +396,10 @@
     <ClInclude Include="Hydra\Assets\Importers\TextureImporter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hydra\Render\View\HSceneView.h">
+    <ClInclude Include="Hydra\Render\View\SceneView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Render\View\ViewPort.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -663,6 +666,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Framework\Class.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Render\View\ViewPort.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -6,6 +6,7 @@
 
 #include "Hydra/Framework/StaticMesh.h"
 #include "Hydra/Framework/StaticMeshResources.h"
+#include "Hydra/Framework/Character.h"
 
 #include "Hydra/Framework/Components/SceneComponent.h"
 #include "Hydra/Framework/Components/StaticMeshComponent.h"
@@ -17,6 +18,7 @@
 #include "Hydra/Render/Graphics.h"
 
 #include "Hydra/Render/View/SceneView.h"
+#include "Hydra/Render/View/ViewPort.h"
 
 void MainRenderView::OnCreated()
 {
@@ -83,6 +85,14 @@ void MainRenderView::OnCameraAdded(HCameraComponent* cmp)
 {
 	FSceneView* sceneView = new FSceneView();
 
+	// If camera component in on character actor, create viewport for the player.
+	// Viewport is physical rendering part on the viewport.
+	if (cmp->Owner != nullptr)
+	{
+		ACharacter* character = cmp->Owner->SafeCast<ACharacter>();
+
+
+	}
 
 	if (_SceneViewForCameras.find(cmp) != _SceneViewForCameras.end())
 	{
@@ -144,7 +154,7 @@ void MainRenderView::RenderSceneViewFromCamera(FSceneView* view, HCameraComponen
 					{
 						FStaticMeshLODResources& lodData = lodResource[lod];
 
-
+						
 					}
 				}
 			}

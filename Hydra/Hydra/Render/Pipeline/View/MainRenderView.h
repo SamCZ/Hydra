@@ -6,6 +6,7 @@ class HydraEngine;
 class HSceneComponent;
 class HCameraComponent;
 class FSceneView;
+class FViewPort;
 
 class MaterialInterface;
 
@@ -15,10 +16,12 @@ private:
 	MaterialInterface* _DefaultMaterial;
 
 	Map<HCameraComponent*, FSceneView*> _SceneViewForCameras;
+	FViewPort* _ScreenRenderViewport;
+	
 public:
 	HydraEngine* Engine;
 
-	MainRenderView(EngineContext* context, HydraEngine* engine) : IVisualController(context), Engine(engine) {}
+	MainRenderView(EngineContext* context, HydraEngine* engine) : IVisualController(context), Engine(engine), _ScreenRenderViewport(nullptr) {}
 
 	void OnCreated();
 	void OnDestroy();
