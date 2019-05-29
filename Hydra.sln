@@ -15,8 +15,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IndustryEmpire", "IndustryE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HydraHeaderTool", "HydraHeaderTool\HydraHeaderTool.csproj", "{AA9FAFC2-83D8-46EB-8161-4C04FB39F616}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{D749830B-8B0B-4A14-B9AE-F4257A4191AA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Game", "Game", "{038E484F-7DAA-4B69-918F-547D09D58C87}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug_Editor|Any CPU = Debug_Editor|Any CPU
+		Debug_Editor|x64 = Debug_Editor|x64
+		Debug_Editor|x86 = Debug_Editor|x86
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
@@ -25,6 +32,11 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0600F8C5-A252-4546-8982-0EF976413165}.Debug_Editor|Any CPU.ActiveCfg = Debug_Editor|Win32
+		{0600F8C5-A252-4546-8982-0EF976413165}.Debug_Editor|x64.ActiveCfg = Debug_Editor|x64
+		{0600F8C5-A252-4546-8982-0EF976413165}.Debug_Editor|x64.Build.0 = Debug_Editor|x64
+		{0600F8C5-A252-4546-8982-0EF976413165}.Debug_Editor|x86.ActiveCfg = Debug_Editor|Win32
+		{0600F8C5-A252-4546-8982-0EF976413165}.Debug_Editor|x86.Build.0 = Debug_Editor|Win32
 		{0600F8C5-A252-4546-8982-0EF976413165}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{0600F8C5-A252-4546-8982-0EF976413165}.Debug|x64.ActiveCfg = Debug|x64
 		{0600F8C5-A252-4546-8982-0EF976413165}.Debug|x64.Build.0 = Debug|x64
@@ -35,6 +47,12 @@ Global
 		{0600F8C5-A252-4546-8982-0EF976413165}.Release|x64.Build.0 = Release|x64
 		{0600F8C5-A252-4546-8982-0EF976413165}.Release|x86.ActiveCfg = Release|Win32
 		{0600F8C5-A252-4546-8982-0EF976413165}.Release|x86.Build.0 = Release|Win32
+		{39BCC7EC-EA05-48CF-B9F8-B222371E4D60}.Debug_Editor|Any CPU.ActiveCfg = Release|x64
+		{39BCC7EC-EA05-48CF-B9F8-B222371E4D60}.Debug_Editor|Any CPU.Build.0 = Release|x64
+		{39BCC7EC-EA05-48CF-B9F8-B222371E4D60}.Debug_Editor|x64.ActiveCfg = Debug|x64
+		{39BCC7EC-EA05-48CF-B9F8-B222371E4D60}.Debug_Editor|x64.Build.0 = Debug|x64
+		{39BCC7EC-EA05-48CF-B9F8-B222371E4D60}.Debug_Editor|x86.ActiveCfg = Debug|Win32
+		{39BCC7EC-EA05-48CF-B9F8-B222371E4D60}.Debug_Editor|x86.Build.0 = Debug|Win32
 		{39BCC7EC-EA05-48CF-B9F8-B222371E4D60}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{39BCC7EC-EA05-48CF-B9F8-B222371E4D60}.Debug|x64.ActiveCfg = Debug|x64
 		{39BCC7EC-EA05-48CF-B9F8-B222371E4D60}.Debug|x64.Build.0 = Debug|x64
@@ -45,6 +63,12 @@ Global
 		{39BCC7EC-EA05-48CF-B9F8-B222371E4D60}.Release|x64.Build.0 = Release|x64
 		{39BCC7EC-EA05-48CF-B9F8-B222371E4D60}.Release|x86.ActiveCfg = Release|Win32
 		{39BCC7EC-EA05-48CF-B9F8-B222371E4D60}.Release|x86.Build.0 = Release|Win32
+		{AA9FAFC2-83D8-46EB-8161-4C04FB39F616}.Debug_Editor|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA9FAFC2-83D8-46EB-8161-4C04FB39F616}.Debug_Editor|Any CPU.Build.0 = Debug|Any CPU
+		{AA9FAFC2-83D8-46EB-8161-4C04FB39F616}.Debug_Editor|x64.ActiveCfg = Debug|Any CPU
+		{AA9FAFC2-83D8-46EB-8161-4C04FB39F616}.Debug_Editor|x64.Build.0 = Debug|Any CPU
+		{AA9FAFC2-83D8-46EB-8161-4C04FB39F616}.Debug_Editor|x86.ActiveCfg = Debug|Any CPU
+		{AA9FAFC2-83D8-46EB-8161-4C04FB39F616}.Debug_Editor|x86.Build.0 = Debug|Any CPU
 		{AA9FAFC2-83D8-46EB-8161-4C04FB39F616}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AA9FAFC2-83D8-46EB-8161-4C04FB39F616}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA9FAFC2-83D8-46EB-8161-4C04FB39F616}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -60,6 +84,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0600F8C5-A252-4546-8982-0EF976413165} = {D749830B-8B0B-4A14-B9AE-F4257A4191AA}
+		{39BCC7EC-EA05-48CF-B9F8-B222371E4D60} = {038E484F-7DAA-4B69-918F-547D09D58C87}
+		{AA9FAFC2-83D8-46EB-8161-4C04FB39F616} = {D749830B-8B0B-4A14-B9AE-F4257A4191AA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {59EC6BFB-8205-4BE2-866D-BEF5DAC767A0}

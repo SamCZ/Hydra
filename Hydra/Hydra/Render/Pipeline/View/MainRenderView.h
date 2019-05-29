@@ -21,7 +21,8 @@ private:
 public:
 	HydraEngine* Engine;
 
-	MainRenderView(EngineContext* context, HydraEngine* engine) : IVisualController(context), Engine(engine), _ScreenRenderViewport(nullptr) {}
+	MainRenderView(EngineContext* context, HydraEngine* engine);
+	~MainRenderView();
 
 	void OnCreated();
 	void OnDestroy();

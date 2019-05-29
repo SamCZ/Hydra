@@ -20,6 +20,16 @@
 #include "Hydra/Render/View/SceneView.h"
 #include "Hydra/Render/View/ViewPort.h"
 
+MainRenderView::MainRenderView(EngineContext* context, HydraEngine* engine) : IVisualController(context), Engine(engine), _ScreenRenderViewport(nullptr)
+{
+}
+
+MainRenderView::~MainRenderView()
+{
+	delete _ScreenRenderViewport;
+	_ScreenRenderViewport = nullptr;
+}
+
 void MainRenderView::OnCreated()
 {
 	Engine->InitializeAssetManager(Context->GetAssetManager());
@@ -91,7 +101,14 @@ void MainRenderView::OnCameraAdded(HCameraComponent* cmp)
 	{
 		ACharacter* character = cmp->Owner->SafeCast<ACharacter>();
 
+		// This only support one charater !
+		// TODO: Multiple character support (split screen)
+		if (_ScreenRenderViewport == nullptr)
+		{
+			_ScreenRenderViewport = new FViewPort(Context->ScreenSize.x, Context->ScreenSize.y);
 
+
+		}
 	}
 
 	if (_SceneViewForCameras.find(cmp) != _SceneViewForCameras.end())
