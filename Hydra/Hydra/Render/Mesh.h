@@ -21,6 +21,7 @@ class BIHTree;
 
 class EngineContext;
 
+// This is old mesh class
 class HYDRA_API Mesh : public Resource
 {
 private:

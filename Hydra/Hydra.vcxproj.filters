@@ -120,9 +120,6 @@
     <ClInclude Include="Hydra\Core\Timing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IndustryEmpire\IndustryEmpire.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Hydra\HydraEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -459,9 +456,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Core\Timing.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IndustryEmpire\IndustryEmpire.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\HydraEngine.cpp">

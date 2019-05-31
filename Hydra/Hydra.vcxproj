@@ -279,7 +279,6 @@
     <ClInclude Include="ImGui\stb_rect_pack.h" />
     <ClInclude Include="ImGui\stb_textedit.h" />
     <ClInclude Include="ImGui\stb_truetype.h" />
-    <ClInclude Include="IndustryEmpire\IndustryEmpire.h" />
     <ClInclude Include="NanoVG\D3D11PixelShader.h" />
     <ClInclude Include="NanoVG\D3D11PixelShaderAA.h" />
     <ClInclude Include="NanoVG\D3D11VertexShader.h" />
@@ -347,7 +346,6 @@
     <ClCompile Include="Hydra\Render\Material.cpp" />
     <ClCompile Include="Hydra\Render\RenderManager.cpp" />
     <ClCompile Include="Hydra\Render\View\ViewPort.cpp" />
-    <ClCompile Include="IndustryEmpire\IndustryEmpire.cpp" />
     <ClCompile Include="Hydra\Core\Polygonise.cpp" />
     <ClCompile Include="Hydra\Core\Random.cpp" />
     <ClCompile Include="Hydra\Core\Resource.cpp" />
