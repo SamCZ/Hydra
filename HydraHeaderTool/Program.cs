@@ -48,7 +48,7 @@ namespace HydraHeaderTool
         private static string GeneratedHeadFilesFolder = ".\\GeneratedHeaders";
         private static string SourceFolder = ".\\";
 
-        private static string EOL = "\r\n";
+        private static string EOL = System.Environment.NewLine;
 
         private static bool IsEngineFolder = false;
 
