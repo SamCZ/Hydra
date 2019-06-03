@@ -64,6 +64,11 @@ HRESULT VisualController::DeviceCreated()
 		CreatedUIRenderer = true;
 	}
 
+	if (Context->GetRenderManager() == nullptr)
+	{
+		Context->SetRenderManager(new RenderManager(Context));
+	}
+
 	_EngineVisualController->OnCreated();
 
 	return S_OK;
@@ -89,6 +94,12 @@ void VisualController::DeviceDestroyed()
 		UIRenderer->Destroy();
 		delete UIRenderer;
 		Context->SetUIRenderer(nullptr);
+	}
+
+	if (Context->GetRenderManager() != nullptr)
+	{
+		delete Context->GetRenderManager();
+		Context->SetRenderManager(nullptr);
 	}
 
 	if (Context->GetRenderInterface() != nullptr)

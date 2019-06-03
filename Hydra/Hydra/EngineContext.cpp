@@ -1,6 +1,6 @@
 #include "Hydra/EngineContext.h"
 
-EngineContext::EngineContext() : _RenderInterface(nullptr), _DeviceManager(nullptr), _InputManager(nullptr), _Graphics(nullptr), _UIRenderer(nullptr), _AssetManager(nullptr)
+EngineContext::EngineContext() : _RenderInterface(nullptr), _RenderManager(nullptr), _DeviceManager(nullptr), _InputManager(nullptr), _Graphics(nullptr), _UIRenderer(nullptr), _AssetManager(nullptr)
 {
 
 }
@@ -13,6 +13,16 @@ void EngineContext::SetRenderInterface(IRendererInterface renderInterface)
 IRendererInterface EngineContext::GetRenderInterface()
 {
 	return _RenderInterface;
+}
+
+void EngineContext::SetRenderManager(RenderManager* renderManager)
+{
+	_RenderManager = renderManager;
+}
+
+RenderManager* EngineContext::GetRenderManager()
+{
+	return _RenderManager;
 }
 
 void EngineContext::SetDeviceManager(DeviceManager* deviceManager)

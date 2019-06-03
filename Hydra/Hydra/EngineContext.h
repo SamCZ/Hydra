@@ -1,11 +1,13 @@
 #pragma once
 
 #include "Hydra/Core/Log.h"
+#include "Hydra/Core/SmartPointer.h"
+#include "Hydra/Render/RenderManager.h"
+#include "Hydra/Render/UI/UIRenderer.h"
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
 #include "Hydra/Render/Pipeline/Windows/DX11/DeviceManager11.h"
-#include "Hydra/Core/SmartPointer.h"
+
 #include "Hydra/Input/InputManager.h"
-#include "Hydra/Render/UI/UIRenderer.h"
 #include "Hydra/Assets/AssetManager.h"
 
 typedef NVRHI::IRendererInterface* IRendererInterface;
@@ -16,6 +18,7 @@ class HYDRA_API EngineContext
 {
 private:
 	IRendererInterface _RenderInterface;
+	RenderManager* _RenderManager;
 	DeviceManager* _DeviceManager;
 	InputManager* _InputManager;
 	Graphics* _Graphics;
@@ -29,6 +32,9 @@ public:
 
 	void SetRenderInterface(IRendererInterface renderInterface);
 	IRendererInterface GetRenderInterface();
+
+	void SetRenderManager(RenderManager* renderManager);
+	RenderManager* GetRenderManager();
 
 	void SetDeviceManager(DeviceManager* deviceManager);
 	DeviceManager* GetDeviceManager();

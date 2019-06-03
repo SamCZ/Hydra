@@ -41,8 +41,6 @@ void MainRenderView::OnCreated()
 	Engine->GetWorld()->OnCameraComponentAdded += EVENT_ARGS(MainRenderView, OnCameraAdded, HCameraComponent*);
 	Engine->GetWorld()->OnCameraComponentRemoved += EVENT_ARGS(MainRenderView, OnCameraRemoved, HCameraComponent*);
 
-
-
 	Engine->SceneInit();
 }
 

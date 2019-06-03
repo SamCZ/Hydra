@@ -5,9 +5,15 @@
 
 #include "Hydra/Render/View/ViewPort.h"
 
+class EngineContext;
+
 class HYDRA_API RenderManager
 {
+private:
+	EngineContext* _Context;
 public:
+	RenderManager(EngineContext* context);
+	~RenderManager();
 
 	FViewPort* AddOrGetViewPort(const String& Name);
 	void DeleteViewPort(FViewPort* ViewPort);
