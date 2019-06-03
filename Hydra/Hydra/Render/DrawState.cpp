@@ -69,6 +69,12 @@ void FDrawState::SetMaterial(MaterialInterface* materialInterface)
 	_State.PS.shader = materialInterface->GetRawShader(NVRHI::ShaderType::SHADER_PIXEL);
 }
 
+void FDrawState::SetIndexBuffer(NVRHI::BufferHandle buffer)
+{
+	_State.indexBufferFormat = NVRHI::Format::R32_UINT;
+	_State.indexBuffer = buffer;
+}
+
 void FDrawState::SetVertexBuffer(NVRHI::BufferHandle buffer)
 {
 	_State.vertexBufferCount = 1;

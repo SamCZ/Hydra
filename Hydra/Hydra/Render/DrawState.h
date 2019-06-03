@@ -28,6 +28,7 @@ public:
 
 	void SetMaterial(MaterialInterface* materialInterface);
 
+	void SetIndexBuffer(NVRHI::BufferHandle buffer);
 	void SetVertexBuffer(NVRHI::BufferHandle buffer);
 	void SetInstanceBuffer(NVRHI::BufferHandle buffer);
 
