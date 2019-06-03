@@ -1,6 +1,6 @@
 #include "ViewPort.h"
 
-FViewPort::FViewPort() : _Width(0), _Height(0), _IsSizeValid(false)
+FViewPort::FViewPort() : _Width(0), _Height(0), _SceneView(nullptr), _IsSizeValid(false)
 {
 }
 
@@ -10,6 +10,16 @@ FViewPort::FViewPort(int width, int height) : _Width(width), _Height(height), _I
 	{
 		_IsSizeValid = true;
 	}
+}
+
+void FViewPort::SetSceneView(FSceneView* view)
+{
+	_SceneView = view;
+}
+
+FSceneView* FViewPort::GetSceneView()
+{
+	return _SceneView;
 }
 
 void FViewPort::Resize(int width, int height)

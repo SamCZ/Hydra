@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Hydra/Core/Delegate.h"
+#include "Hydra/Render/View/SceneView.h"
 
 class FViewPort
 {
@@ -9,10 +10,15 @@ private:
 	int _Height;
 	bool _IsSizeValid;
 
+	FSceneView* _SceneView;
+
 	DelegateEvent<void, int, int> _OnResizeEvent;
 public:
 	FViewPort();
 	FViewPort(int width, int height);
+
+	void SetSceneView(FSceneView* view);
+	FSceneView* GetSceneView();
 
 	void Resize(int width, int height);
 

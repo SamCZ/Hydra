@@ -39,4 +39,6 @@ private:
 	void UpdateComponent(HSceneComponent* component, float Delta);
 
 	void RenderSceneViewFromCamera(FSceneView* view, HCameraComponent* camera);
+
+	void BlitFromViewportToTarget(FViewPort* viewPort, NVRHI::TextureHandle target);
 };

@@ -16,6 +16,7 @@
 #include "Hydra/Render/Shader.h"
 
 #include "Hydra/Render/Graphics.h"
+#include "Hydra/Render/DrawState.h"
 
 #include "Hydra/Render/View/SceneView.h"
 #include "Hydra/Render/View/ViewPort.h"
@@ -26,8 +27,11 @@ MainRenderView::MainRenderView(EngineContext* context, HydraEngine* engine) : IV
 
 MainRenderView::~MainRenderView()
 {
-	delete _ScreenRenderViewport;
-	_ScreenRenderViewport = nullptr;
+	if (_ScreenRenderViewport != nullptr)
+	{
+		delete _ScreenRenderViewport;
+		_ScreenRenderViewport = nullptr;
+	}
 }
 
 void MainRenderView::OnCreated()
@@ -57,12 +61,16 @@ void MainRenderView::OnRender(NVRHI::TextureHandle mainRenderTarget)
 		RenderSceneViewFromCamera(it->second, it->first);
 	}
 
+	if (_ScreenRenderViewport != nullptr)
+	{
+		BlitFromViewportToTarget(_ScreenRenderViewport, mainRenderTarget);
+	}
 
 	// Test Render
 	
-	Context->GetGraphics()->Composite(_DefaultMaterial, [](NVRHI::DrawCallState& state) {
+	/*Context->GetGraphics()->Composite(_DefaultMaterial, [](NVRHI::DrawCallState& state) {
 		
-	}, mainRenderTarget);
+	}, mainRenderTarget);*/
 }
 
 void MainRenderView::OnTick(float Delta)
@@ -87,15 +95,20 @@ void MainRenderView::OnResize(uint32 width, uint32 height, uint32 sampleCount)
 {
 	Context->ScreenSize.x = width;
 	Context->ScreenSize.y = height;
+
+	_ScreenRenderViewport->Resize(width, height);
 }
 
 void MainRenderView::OnCameraAdded(HCameraComponent* cmp)
 {
 	FSceneView* sceneView = new FSceneView();
 
+	//TODO: Setup automatically FSceneView render targets from HCameraComponent
+	sceneView->RenderTexture = Context->GetGraphics()->CreateRenderTarget("CharacterRenderTarget", NVRHI::Format::RGBA8_UNORM, Context->ScreenSize.x, Context->ScreenSize.y, NVRHI::Color(0.0f), 1);
+
 	// If camera component in on character actor, create viewport for the player.
 	// Viewport is physical rendering part on the viewport.
-	if (cmp->Owner != nullptr)
+	if (cmp->Owner != nullptr && cmp->Owner->IsA<ACharacter>())
 	{
 		ACharacter* character = cmp->Owner->SafeCast<ACharacter>();
 
@@ -103,9 +116,9 @@ void MainRenderView::OnCameraAdded(HCameraComponent* cmp)
 		// TODO: Multiple character support (split screen)
 		if (_ScreenRenderViewport == nullptr)
 		{
+			//_ScreenRenderViewport = Context->GetRenderManager()->AddOrGetViewPort("CharacterViewPort");
 			_ScreenRenderViewport = new FViewPort(Context->ScreenSize.x, Context->ScreenSize.y);
-
-
+			_ScreenRenderViewport->SetSceneView(sceneView);
 		}
 	}
 
@@ -146,7 +159,21 @@ void MainRenderView::UpdateComponent(HSceneComponent* component, float Delta)
 
 void MainRenderView::RenderSceneViewFromCamera(FSceneView* view, HCameraComponent* camera)
 {
+	RenderManager* renderManager = Context->GetRenderManager();
+
 	const List<HPrimitiveComponent*>& components = Engine->GetWorld()->GetPrimitiveComponents();
+
+	//TODO: Batching
+
+
+	FDrawState drawState;
+
+	drawState.SetClearFlags(true, true, false);
+	drawState.SetClearColor(ColorRGBA::White);
+
+	drawState.SetViewPort(Context->ScreenSize);//TODO: Get size of viewport from FSceneView or HCameraComponent
+	drawState.SetTargetCount(1);
+	drawState.SetTarget(0, view->RenderTexture);
 
 	for (HPrimitiveComponent* cmp : components)
 	{
@@ -163,16 +190,50 @@ void MainRenderView::RenderSceneViewFromCamera(FSceneView* view, HCameraComponen
 					List<FStaticMeshLODResources>& lodResource = renderData->LODResources;
 					size_t lodCount = lodResource.size();
 
-					int lod = 0;
+					int lod = 0; //TODO: Managing lod
 
 					if (lodCount > 0 && lod >= lodCount - 1)
 					{
 						FStaticMeshLODResources& lodData = lodResource[lod];
 
-						
+						if (lodData.VertexData.size() == 0)
+						{
+							continue;
+						}
+
+						//TODO: Set vertex buffer to FDrawState
+
+						for (FStaticMeshSection& section : lodData.Sections)
+						{
+							FStaticMaterial& staticMaterial = mesh->StaticMaterials[section.MaterialIndex];
+
+							MaterialInterface* materialInterface = staticMaterial.Material;
+
+							if (materialInterface == nullptr)
+							{
+								materialInterface = _DefaultMaterial;
+							}
+
+							if (materialInterface != nullptr)
+							{
+								drawState.SetMaterial(materialInterface);
+
+								drawState.Draw(Context->GetRenderInterface(), section.FirstIndex, section.NumTriangles, 0, 1);
+							}
+						}
 					}
 				}
 			}
 		}
+	}
+}
+
+void MainRenderView::BlitFromViewportToTarget(FViewPort* viewPort, NVRHI::TextureHandle target)
+{
+	FSceneView* sceneView = viewPort->GetSceneView();
+
+	if (sceneView != nullptr)
+	{
+		Context->GetGraphics()->Blit(sceneView->RenderTexture, target);
 	}
 }

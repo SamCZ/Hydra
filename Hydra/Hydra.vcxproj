@@ -235,6 +235,7 @@
     <ClInclude Include="Hydra\Physics\Collisons\CollisionResults.h" />
     <ClInclude Include="Hydra\Physics\Collisons\Ray.h" />
     <ClInclude Include="Hydra\Physics\Collisons\Testing.h" />
+    <ClInclude Include="Hydra\Render\DrawState.h" />
     <ClInclude Include="Hydra\Render\Graphics.h" />
     <ClInclude Include="Hydra\Render\Material.h" />
     <ClInclude Include="Hydra\Render\Mesh.h" />
@@ -334,6 +335,7 @@
     <ClCompile Include="Hydra\Physics\Collisons\BIH\BIHTree.cpp" />
     <ClCompile Include="Hydra\Physics\Collisons\CollisionResults.cpp" />
     <ClCompile Include="Hydra\Physics\Collisons\Ray.cpp" />
+    <ClCompile Include="Hydra\Render\DrawState.cpp" />
     <ClCompile Include="Hydra\Render\Pipeline\DeviceManager.cpp" />
     <ClCompile Include="Hydra\Render\Pipeline\View\MainRenderView.cpp" />
     <ClCompile Include="Hydra\Render\Pipeline\View\UIRenderView.cpp" />
