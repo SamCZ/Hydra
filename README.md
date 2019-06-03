@@ -12,4 +12,5 @@ If you wanna take a look at my voxel 3D test, download the **old-render** branch
 
  1. Download repository
  2. Start Visual studio 2017 or newer
- 3. Click `Build -> Build Solution`
+ 3. Open Hydra.sln
+ 4. Click `Build -> Build Solution`
