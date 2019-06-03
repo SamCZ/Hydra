@@ -6,7 +6,7 @@ C++ game engine based on DirectX11.
 # WIP
 
 This engine is **UNDER DEVELOPMENT**
-If you wanna take a look at my voxel 3D test, download the **old-render** brach.
+If you wanna take a look at my voxel 3D test, download the **old-render** branch.
 
 ## How to build
 
