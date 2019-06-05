@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Hydra/Framework/Object.h"
 #include "Hydra/Core/Container.h"
 #include "Hydra/Core/String.h"
+#include "Hydra/Core/Vector.h"
+#include "Hydra/Framework/Object.h"
 #include "ActorComponent.generated.h"
 
 class AActor;
@@ -31,6 +32,8 @@ public:
 	virtual void SetActive(bool newActive);
 	virtual void ToggleActive();
 
+	virtual void Tick(float Delta);
+
 	virtual void MarkAsEditorOnlySubobject()
 	{
 		IsEditorOnly = true;
@@ -38,4 +41,6 @@ public:
 
 	virtual void BeginPlay();
 	virtual void BeginDestroy();
+
+	virtual Matrix4 GetTransformMatrix();
 };

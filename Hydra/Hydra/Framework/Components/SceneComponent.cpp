@@ -82,3 +82,27 @@ void HSceneComponent::SetVisibility(bool bNewVisibility, bool bPropagateToChildr
 		}
 	}
 }
+
+Matrix4 HSceneComponent::GetTransformMatrix()
+{
+	static Vector3 axisX = Vector3(1, 0, 0);
+	static Vector3 axisY = Vector3(0, 1, 0);
+	static Vector3 axisZ = Vector3(0, 0, 1);
+
+	Matrix4 rotation = Matrix4();
+
+	rotation *= glm::rotate(glm::radians(Rotation.z), axisZ);
+	rotation *= glm::rotate(glm::radians(Rotation.y), axisY);
+	rotation *= glm::rotate(glm::radians(Rotation.x), axisX);
+
+	Matrix4 transform = (glm::translate(Location) * rotation) * glm::scale(Scale);
+
+	if (Parent != nullptr)
+	{
+		Matrix4& parentTransform = Parent->GetTransformMatrix();
+
+		return parentTransform * transform;
+	}
+
+	return transform;
+}

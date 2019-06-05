@@ -86,6 +86,8 @@ public:
 	void AddRotation(float x, float y, float z);
 	void AddScale(float x, float y, float z);
 
+	Matrix4 GetTransformMatrix();
+
 	/*Vector3 GetForwardVector() const;
 	Vector3 GetUpVector() const;
 	Vector3 GetRightVector() const;*/

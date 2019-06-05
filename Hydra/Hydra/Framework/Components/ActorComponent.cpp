@@ -19,10 +19,19 @@ void HActorComponent::ToggleActive()
 	IsActive = !IsActive;
 }
 
+void HActorComponent::Tick(float Delta)
+{
+}
+
 void HActorComponent::BeginPlay()
 {
 }
 
 void HActorComponent::BeginDestroy()
 {
+}
+
+Matrix4 HActorComponent::GetTransformMatrix()
+{
+	return Matrix4();
 }

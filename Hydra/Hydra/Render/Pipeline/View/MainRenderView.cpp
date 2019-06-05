@@ -108,6 +108,8 @@ void MainRenderView::OnResize(uint32 width, uint32 height, uint32 sampleCount)
 void MainRenderView::OnCameraAdded(HCameraComponent* cmp)
 {
 	FSceneView* sceneView = new FSceneView();
+	sceneView->Width = Context->ScreenSize.x;
+	sceneView->Height = Context->ScreenSize.y;
 
 	//TODO: Setup automatically FSceneView render targets from HCameraComponent
 	sceneView->RenderTexture = Context->GetGraphics()->CreateRenderTarget("CharacterRenderTarget", NVRHI::Format::RGBA8_UNORM, Context->ScreenSize.x, Context->ScreenSize.y, NVRHI::Color(0.0f), 1);
@@ -133,6 +135,8 @@ void MainRenderView::OnCameraAdded(HCameraComponent* cmp)
 		LogError("MainRenderView::OnCameraAdded", "Camera already exist !");
 		return;
 	}
+
+	cmp->SceneView = sceneView;
 
 	_SceneViewForCameras[cmp] = sceneView;
 
@@ -228,9 +232,24 @@ void MainRenderView::OnMeshDeleted(HStaticMesh* mesh)
 	}
 }
 
+NVRHI::InputLayoutHandle MainRenderView::GetInputLayoutForMaterial(MaterialInterface * materialInterface)
+{
+
+
+	return nullptr;
+}
+
+void MainRenderView::UpdateMaterialGlobalVariables(MaterialInterface* materialInterface, HPrimitiveComponent* component, HCameraComponent* camera)
+{
+	materialInterface->SetMatrix4("_ProjectionMatrix", camera->GetProjectionMatrix());
+	materialInterface->SetMatrix4("_ViewMatrix", camera->GetViewMatrix());
+
+	materialInterface->SetMatrix4("_ModelMatrix", component->GetTransformMatrix());
+}
+
 void MainRenderView::UpdateComponent(HSceneComponent* component, float Delta)
 {
-	// Component has no tick function for now
+	component->Tick(Delta);
 }
 
 void MainRenderView::RenderSceneViewFromCamera(FSceneView* view, HCameraComponent* camera)
@@ -240,7 +259,6 @@ void MainRenderView::RenderSceneViewFromCamera(FSceneView* view, HCameraComponen
 	const List<HPrimitiveComponent*>& components = Engine->GetWorld()->GetPrimitiveComponents();
 
 	//TODO: Batching
-
 
 	FDrawState drawState;
 
@@ -309,9 +327,14 @@ void MainRenderView::RenderSceneViewFromCamera(FSceneView* view, HCameraComponen
 
 				if (materialInterface != nullptr)
 				{
+					UpdateMaterialGlobalVariables(materialInterface, cmp, camera);
+
 					drawState.SetMaterial(materialInterface);
+					drawState.SetInputLayout(GetInputLayoutForMaterial(materialInterface));
 
 					drawState.Draw(Context->GetRenderInterface(), section.FirstIndex, section.NumTriangles, 0, 1);
+
+					drawState.SetClearFlags(false, false, false);
 				}
 			}
 		}

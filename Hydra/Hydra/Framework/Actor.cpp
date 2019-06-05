@@ -151,6 +151,11 @@ void AActor::AddScale(float x, float y, float z)
 	RootComponent->Scale.z += z;
 }
 
+Matrix4 AActor::GetTransformMatrix()
+{
+	return RootComponent->GetTransformMatrix();
+}
+
 HGameModeBase* AActor::GetGameMode()
 {
 	return World->GetGameMode();

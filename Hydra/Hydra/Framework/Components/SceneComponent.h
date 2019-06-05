@@ -47,5 +47,5 @@ public:
 		SetVisibility(!IsVisible, bPropagateToChildren);
 	}
 
-
+	virtual Matrix4 GetTransformMatrix();
 };

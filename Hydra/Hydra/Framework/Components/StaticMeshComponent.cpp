@@ -1,6 +1,6 @@
 #include "StaticMeshComponent.h"
 
-HStaticMeshComponent::HStaticMeshComponent() : StaticMesh(nullptr)
+HStaticMeshComponent::HStaticMeshComponent() : HMeshComponent(), StaticMesh(nullptr)
 {
 }
 HStaticMeshComponent::~HStaticMeshComponent()

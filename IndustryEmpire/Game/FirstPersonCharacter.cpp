@@ -8,6 +8,8 @@ void FirstPersonCharacter::InitializeComponents()
 {
 	FirstPersonCameraComponent = AddComponent<HCameraComponent>("MainCamera");
 
+	FirstPersonCameraComponent->CameraMode = FCameraMode::Orthographic;
+
 	AddComponent<HStaticMeshComponent>("asd");
 }
 

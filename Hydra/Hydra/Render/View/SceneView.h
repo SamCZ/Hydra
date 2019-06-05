@@ -6,4 +6,7 @@ class FSceneView
 {
 public:
 	NVRHI::TextureHandle RenderTexture;
+
+	int Width;
+	int Height;
 };

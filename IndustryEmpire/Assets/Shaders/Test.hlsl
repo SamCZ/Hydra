@@ -1,9 +1,18 @@
 #pragma hydra vert:MainVS pixel:MainPS
 
+#pragma pack_matrix( column_major )
+
 struct FullScreenQuadOutput
 {
 	float4 position     : SV_Position;
 	float2 uv           : TEXCOORD;
+};
+
+cbuffer Globals
+{
+	float4x4 _ProjectionMatrix;
+	float4x4 _ViewMatrix;
+	float4x4 _ModelMatrix;
 };
 
 FullScreenQuadOutput MainVS(uint id : SV_VertexID)
@@ -13,7 +22,7 @@ FullScreenQuadOutput MainVS(uint id : SV_VertexID)
 	uint u = ~id & 1;
 	uint v = (id >> 1) & 1;
 	OUT.uv = float2(u, v);
-	OUT.position = float4(OUT.uv * 2 - 1, 0, 1);
+	OUT.position = mul(mul(_ProjectionMatrix, _ViewMatrix), mul(_ModelMatrix, float4((OUT.uv * 2 - 1) * 50.0, 0, 1)));
 
 	// In D3D (0, 0) stands for upper left corner
 	OUT.uv.y = 1.0 - OUT.uv.y;

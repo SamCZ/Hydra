@@ -3,11 +3,12 @@
 #include "Hydra/Render/Pipeline/DeviceManager.h"
 
 class HydraEngine;
+class HPrimitiveComponent;
 class HSceneComponent;
 class HCameraComponent;
+class HStaticMesh;
 class FSceneView;
 class FViewPort;
-class HStaticMesh;
 
 class MaterialInterface;
 
@@ -38,6 +39,12 @@ private:
 
 	void OnMeshLoaded(HStaticMesh* mesh);
 	void OnMeshDeleted(HStaticMesh* mesh);
+
+private:
+	NVRHI::InputLayoutHandle GetInputLayoutForMaterial(MaterialInterface* materialInterface);
+
+private:
+	void UpdateMaterialGlobalVariables(MaterialInterface* materialInterface, HPrimitiveComponent* component, HCameraComponent* camera);
 
 private:
 	void UpdateComponent(HSceneComponent* component, float Delta);

@@ -30,7 +30,7 @@ public:
 	~FWorld();
 
 	template<class AActor>
-	AActor* SpawnActor(const String& Name, const Vector3& Position, const Vector3& Rotation, const Vector3& Scale = Vector3(0.0f))
+	AActor* SpawnActor(const String& Name, const Vector3& Position, const Vector3& Rotation, const Vector3& Scale = Vector3(1.0f))
 	{
 		AActor* actor = BeginSpawnActor<AActor>(Name, Position, Rotation, Scale);
 
@@ -40,14 +40,14 @@ public:
 	}
 
 	template<class T>
-	T* BeginSpawnActor(const String& Name, const Vector3& Position, const Vector3& Rotation, const Vector3& Scale = Vector3(0.0f))
+	T* BeginSpawnActor(const String& Name, const Vector3& Position, const Vector3& Rotation, const Vector3& Scale = Vector3(1.0f))
 	{
 		T* actorTemplated = new T();
 		AActor* actor = static_cast<AActor*>(actorTemplated);
 		actor->Engine = _Engine;
 		actor->World = this;
 		actor->Name = Name;
-			
+
 		actor->RootComponent = actor->AddComponent<HSceneComponent>("SceneRoot");
 
 		actor->SetLocation(Position);
