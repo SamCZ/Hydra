@@ -59,6 +59,14 @@ AssetManager::AssetManager(EngineContext* context) : _Context(context)
 
 AssetManager::~AssetManager()
 {
+	for (HStaticMesh* mesh : _TemporalStaticMeshContainer)
+	{
+		OnMeshDeleted.Invoke(mesh);
+
+		delete mesh;
+	}
+
+	_TemporalStaticMeshContainer.clear();
 }
 
 void AssetManager::AddAssetLocator(IAssetLocator * locator)
@@ -93,8 +101,15 @@ NVRHI::TextureHandle AssetManager::GetTexture(const String & path)
 	return nullptr;
 }
 
-HStaticMesh* AssetManager::GetMesh(const String & path)
+HStaticMesh* AssetManager::GetMesh(const String& path)
 {
+	auto iter = _TemportalStaticMeshMap.find(path);
+
+	if (iter != _TemportalStaticMeshMap.end())
+	{
+		return iter->second[0];
+	}
+
 	FileStream stream = FileStream(path);
 	Blob* data = stream.Read();
 
@@ -108,6 +123,17 @@ HStaticMesh* AssetManager::GetMesh(const String & path)
 
 	if (importer.Import(*data, options, assets))
 	{
+		for (HAsset* asset : assets)
+		{
+			HStaticMesh* mesh = asset->SafeCast<HStaticMesh>();
+
+			_TemporalStaticMeshContainer.push_back(mesh);
+
+			OnMeshLoaded.Invoke(mesh);
+
+			_TemportalStaticMeshMap[path].push_back(mesh);
+		}
+
 		return assets[0]->SafeCast<HStaticMesh>();
 	}
 
@@ -345,7 +371,7 @@ void AssetManager::LoadTexture(const File& file)
 	List<HAsset*> assets;
 
 	TextureImporter importer(_Context);
-	
+
 	if (importer.Import(*data, {}, assets))
 	{
 		NVRHI::TextureHandle tex = assets[0]->SafeCast<NVRHI::ITexture>();

@@ -7,6 +7,7 @@ class HSceneComponent;
 class HCameraComponent;
 class FSceneView;
 class FViewPort;
+class HStaticMesh;
 
 class MaterialInterface;
 
@@ -17,7 +18,7 @@ private:
 
 	Map<HCameraComponent*, FSceneView*> _SceneViewForCameras;
 	FViewPort* _ScreenRenderViewport;
-	
+
 public:
 	HydraEngine* Engine;
 
@@ -34,6 +35,9 @@ public:
 private:
 	void OnCameraAdded(HCameraComponent* cmp);
 	void OnCameraRemoved(HCameraComponent* cmp);
+
+	void OnMeshLoaded(HStaticMesh* mesh);
+	void OnMeshDeleted(HStaticMesh* mesh);
 
 private:
 	void UpdateComponent(HSceneComponent* component, float Delta);

@@ -69,6 +69,11 @@ HRESULT VisualController::DeviceCreated()
 		Context->SetRenderManager(new RenderManager(Context));
 	}
 
+	if (Context->GetAssetManager() == nullptr)
+	{
+		Context->SetAssetManager(new AssetManager(Context));
+	}
+
 	_EngineVisualController->OnCreated();
 
 	return S_OK;
@@ -76,12 +81,18 @@ HRESULT VisualController::DeviceCreated()
 
 void VisualController::DeviceDestroyed()
 {
-	_EngineVisualController->OnDestroy();
+	if (Context->GetAssetManager() != nullptr)
+	{
+		delete Context->GetAssetManager();
+		Context->SetAssetManager(nullptr);
+	}
 
 	if (CreatedInputManager)
 	{
 		Context->GetDeviceManager()->OnDeviceDestroy.Invoke();
 	}
+
+	_EngineVisualController->OnDestroy();
 
 	if (Context->GetGraphics() != nullptr)
 	{

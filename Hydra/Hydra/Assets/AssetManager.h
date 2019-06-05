@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Hydra/Core/Common.h"
+#include "Hydra/Core/Delegate.h"
 
 #include "IAssetImporter.h"
 #include "IAssetLocator.h"
@@ -23,7 +24,13 @@ private:
 	Map<String, SharedPtr<Technique>> _Techniques;
 	Map<String, MaterialInterface*> _Materials;
 	Map<String, NVRHI::TextureHandle> _Textures;
+
+	List<HStaticMesh*> _TemporalStaticMeshContainer;
+	Map<String, List<HStaticMesh*>> _TemportalStaticMeshMap;
 public:
+	DelegateEvent<void, HStaticMesh*> OnMeshLoaded;
+	DelegateEvent<void, HStaticMesh*> OnMeshDeleted;
+
 	AssetManager(EngineContext* context);
 	~AssetManager();
 
@@ -32,11 +39,15 @@ public:
 	void AddAssetLocator(IAssetLocator* locator);
 	void AddAssetImporter(IAssetImporter* importer);
 
+	// BLOCK(This whole section in c++ will be redone) begin
+
 	MaterialInterface* GetMaterial(const String& path);
 	NVRHI::TextureHandle GetTexture(const String& path);
 
 	HStaticMesh* GetMesh(const String& path);
 	List<HStaticMesh*> GetMeshParts(const String path);
+
+	// BLOCK end
 private:
 
 	SharedPtr<Technique> LoadTechnique(const File& file); // TODO: These methods are only temporal, we need to create methods or importers that are compatible with compressed or hashed files.

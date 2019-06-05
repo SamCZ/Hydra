@@ -2,6 +2,8 @@
 
 #include "Hydra/Render/VertexBuffer.h"
 
+struct FMeshBufferDataInternal;
+
 struct FStaticMeshSection
 {
 	/** The index of the material with which to render this section. */
@@ -28,17 +30,20 @@ struct FStaticMeshSection
 		, MaxVertexIndex(0)
 		, EnableCollision(false)
 		, CastShadow(true)
-	{ }
+	{
+	}
 };
 
 struct FStaticMeshLODResources
 {
 	List<VertexBufferEntry> VertexData;
 	List<uint32> Indices;
-	
+
 	uint32 LastIndex;
 
 	List<FStaticMeshSection> Sections;
+
+	FMeshBufferDataInternal* InternalBufferData;
 };
 
 class FStaticMeshRenderData

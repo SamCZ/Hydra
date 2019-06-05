@@ -239,6 +239,7 @@
     <ClInclude Include="Hydra\Render\Graphics.h" />
     <ClInclude Include="Hydra\Render\Material.h" />
     <ClInclude Include="Hydra\Render\Mesh.h" />
+    <ClInclude Include="Hydra\Render\MeshBufferDataInternal.h" />
     <ClInclude Include="Hydra\Render\Pipeline\BindingHelpers.h" />
     <ClInclude Include="Hydra\Render\Pipeline\DeviceCreationParameters.h" />
     <ClInclude Include="Hydra\Render\Pipeline\DeviceManager.h" />

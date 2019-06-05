@@ -36,9 +36,6 @@ void HydraEngine::Start()
 
 	World = new FWorld(Context);
 
-	AssetManager* assetManager = new AssetManager(Context);
-	Context->SetAssetManager(assetManager);
-
 	deviceManager->InitContext();
 }
 
@@ -46,9 +43,6 @@ void HydraEngine::OnDestroy()
 {
 	delete World;
 	World = nullptr;
-
-	delete Context->GetAssetManager();
-	Context->SetAssetManager(nullptr);
 }
 
 void HydraEngine::PrepareForEngineStart(DeviceCreationParameters& params)
@@ -71,7 +65,7 @@ void HydraEngine::InitializeAssetManager(AssetManager* assetManager)
 	ModelImportOptions options;
 	options.CombineMeshes = true;
 	modelImporter.Import(*data, options, assets);
-	 
+
 	Log("Loaded meshes", ToString(assets.size()));
 
 	for (HAsset* asset : assets)

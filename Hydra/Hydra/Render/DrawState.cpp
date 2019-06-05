@@ -61,12 +61,17 @@ void FDrawState::SetTargets(NVRHI::TextureHandle* target, int count)
 void FDrawState::SetMaterial(MaterialInterface* materialInterface)
 {
 	materialInterface->ApplyParams(_State);
-	
+
 	_State.VS.shader = materialInterface->GetRawShader(NVRHI::ShaderType::SHADER_VERTEX);
 	_State.HS.shader = materialInterface->GetRawShader(NVRHI::ShaderType::SHADER_HULL);
 	_State.DS.shader = materialInterface->GetRawShader(NVRHI::ShaderType::SHADER_DOMAIN);
 	_State.GS.shader = materialInterface->GetRawShader(NVRHI::ShaderType::SHADER_GEOMETRY);
 	_State.PS.shader = materialInterface->GetRawShader(NVRHI::ShaderType::SHADER_PIXEL);
+}
+
+void FDrawState::SetInputLayout(NVRHI::InputLayoutHandle inputLayout)
+{
+	_State.inputLayout = inputLayout;
 }
 
 void FDrawState::SetIndexBuffer(NVRHI::BufferHandle buffer)

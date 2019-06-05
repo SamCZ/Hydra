@@ -43,7 +43,7 @@ HRESULT CompileShaderFromString(_In_ const String& shaderSource, _In_ const Stri
 	return hr;
 }
 
-Technique::Technique(EngineContext* context, const File& file, bool precompile) : _Context(context), _Source(file), _Precompile(precompile), _NextDefineId(0)
+Technique::Technique(EngineContext* context, const File& file, bool precompile) : _Context(context), _Source(file), _Precompile(precompile), _NextDefineId(0), _InputLayout(nullptr)
 {
 	ReadShaderSource();
 }
@@ -149,6 +149,7 @@ List<Shader*>& Technique::GetShaders(Map<String, String>& defines, bool recompil
 			if (shaderHandle != nullptr)
 			{
 				Shader* shader = new Shader(_Source.GetName(), type, shaderHandle, shaderBlob);
+
 				_VaryingShaders[defineHash].emplace_back(shader);
 			}
 		};

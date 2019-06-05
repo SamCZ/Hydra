@@ -18,6 +18,8 @@
 #include "Hydra/Render/Graphics.h"
 #include "Hydra/Render/DrawState.h"
 
+#include "Hydra/Render/MeshBufferDataInternal.h"
+
 #include "Hydra/Render/View/SceneView.h"
 #include "Hydra/Render/View/ViewPort.h"
 
@@ -45,13 +47,15 @@ void MainRenderView::OnCreated()
 	Engine->GetWorld()->OnCameraComponentAdded += EVENT_ARGS(MainRenderView, OnCameraAdded, HCameraComponent*);
 	Engine->GetWorld()->OnCameraComponentRemoved += EVENT_ARGS(MainRenderView, OnCameraRemoved, HCameraComponent*);
 
+	Context->GetAssetManager()->OnMeshLoaded += EVENT_ARGS(MainRenderView, OnMeshLoaded, HStaticMesh*);
+	Context->GetAssetManager()->OnMeshDeleted += EVENT_ARGS(MainRenderView, OnMeshDeleted, HStaticMesh*);
+
 	Engine->SceneInit();
 }
 
 void MainRenderView::OnDestroy()
 {
-	Engine->GetWorld()->OnCameraComponentAdded -= EVENT_NAME(MainRenderView, OnCameraAdded);
-	Engine->GetWorld()->OnCameraComponentRemoved -= EVENT_NAME(MainRenderView, OnCameraRemoved);
+
 }
 
 void MainRenderView::OnRender(NVRHI::TextureHandle mainRenderTarget)
@@ -67,9 +71,9 @@ void MainRenderView::OnRender(NVRHI::TextureHandle mainRenderTarget)
 	}
 
 	// Test Render
-	
+
 	/*Context->GetGraphics()->Composite(_DefaultMaterial, [](NVRHI::DrawCallState& state) {
-		
+
 	}, mainRenderTarget);*/
 }
 
@@ -79,15 +83,17 @@ void MainRenderView::OnTick(float Delta)
 
 	for (AActor* actor : world->GetActors())
 	{
-		if (actor->IsActive)
+		if (!actor->IsActive)
 		{
-			for (HSceneComponent* component : actor->Components)
-			{
-				UpdateComponent(component, Delta);
-			}
-
-			actor->Tick(Delta);
+			continue;
 		}
+
+		for (HSceneComponent* component : actor->Components)
+		{
+			UpdateComponent(component, Delta);
+		}
+
+		actor->Tick(Delta);
 	}
 }
 
@@ -152,6 +158,76 @@ void MainRenderView::OnCameraRemoved(HCameraComponent* cmp)
 	}
 }
 
+void MainRenderView::OnMeshLoaded(HStaticMesh* mesh)
+{
+	if (!mesh->RenderData)
+	{
+		return;
+	}
+
+	FStaticMeshRenderData* renderData = mesh->RenderData;
+
+	for (FStaticMeshLODResources& lodResouces : renderData->LODResources)
+	{
+		if (lodResouces.VertexData.size() == 0)
+		{
+			continue;
+		}
+
+		FMeshBufferDataInternal* bufferData = new FMeshBufferDataInternal();
+
+		NVRHI::BufferDesc vertexBufferDesc;
+		vertexBufferDesc.isVertexBuffer = true;
+		vertexBufferDesc.byteSize = uint32_t(lodResouces.VertexData.size() * sizeof(VertexBufferEntry));
+		bufferData->VertexBuffer = Context->GetRenderInterface()->createBuffer(vertexBufferDesc, &lodResouces.VertexData[0]);
+
+		Log("OnMeshLoaded", mesh->Name, "Vertex buffer created.");
+
+		if (lodResouces.Indices.size() > 0)
+		{
+			NVRHI::BufferDesc indexBufferDesc;
+			indexBufferDesc.isIndexBuffer = true;
+			indexBufferDesc.byteSize = uint32_t(lodResouces.Indices.size() * sizeof(unsigned int));
+			bufferData->IndexBuffer = Context->GetRenderInterface()->createBuffer(indexBufferDesc, &lodResouces.Indices[0]);
+
+			Log("OnMeshLoaded", mesh->Name, "Index buffer created.");
+		}
+
+		lodResouces.InternalBufferData = bufferData;
+	}
+}
+
+void MainRenderView::OnMeshDeleted(HStaticMesh* mesh)
+{
+	if (!mesh->RenderData)
+	{
+		return;
+	}
+
+	FStaticMeshRenderData* renderData = mesh->RenderData;
+
+	for (FStaticMeshLODResources& lodResouces : renderData->LODResources)
+	{
+		FMeshBufferDataInternal* bufferData = lodResouces.InternalBufferData;
+
+		if (bufferData->VertexBuffer)
+		{
+			Context->GetRenderInterface()->destroyBuffer(bufferData->VertexBuffer);
+			bufferData->VertexBuffer = nullptr;
+
+			Log("OnMeshDeleted", mesh->Name, "Vertex buffer destroyed.");
+		}
+
+		if (bufferData->IndexBuffer)
+		{
+			Context->GetRenderInterface()->destroyBuffer(bufferData->IndexBuffer);
+			bufferData->IndexBuffer = nullptr;
+
+			Log("OnMeshDeleted", mesh->Name, "Index buffer destroyed.");
+		}
+	}
+}
+
 void MainRenderView::UpdateComponent(HSceneComponent* component, float Delta)
 {
 	// Component has no tick function for now
@@ -181,47 +257,61 @@ void MainRenderView::RenderSceneViewFromCamera(FSceneView* view, HCameraComponen
 		{
 			HStaticMesh* mesh = staticMeshComponent->StaticMesh;
 
-			if (mesh)
+			if (!mesh)
 			{
-				FStaticMeshRenderData* renderData = mesh->RenderData;
+				continue;
+			}
 
-				if (renderData)
+			FStaticMeshRenderData* renderData = mesh->RenderData;
+
+			if (!renderData)
+			{
+				continue;
+			}
+
+			List<FStaticMeshLODResources>& lodResource = renderData->LODResources;
+			size_t lodCount = lodResource.size();
+
+			int lod = 0; //TODO: Managing lod
+
+			if (lodCount == 0 || lod < 0 || lod > lodCount - 1)
+			{
+				continue;
+			}
+
+			FStaticMeshLODResources& lodData = lodResource[lod];
+
+			if (lodData.VertexData.size() == 0)
+			{
+				continue;
+			}
+
+			FMeshBufferDataInternal* bufferData = lodData.InternalBufferData;
+
+			if (!bufferData)
+			{
+				continue;
+			}
+
+			drawState.SetVertexBuffer(bufferData->VertexBuffer);
+			drawState.SetIndexBuffer(bufferData->IndexBuffer);
+
+			for (FStaticMeshSection& section : lodData.Sections)
+			{
+				FStaticMaterial& staticMaterial = mesh->StaticMaterials[section.MaterialIndex];
+
+				MaterialInterface* materialInterface = staticMaterial.Material;
+
+				if (materialInterface == nullptr)
 				{
-					List<FStaticMeshLODResources>& lodResource = renderData->LODResources;
-					size_t lodCount = lodResource.size();
+					materialInterface = _DefaultMaterial;
+				}
 
-					int lod = 0; //TODO: Managing lod
+				if (materialInterface != nullptr)
+				{
+					drawState.SetMaterial(materialInterface);
 
-					if (lodCount > 0 && lod >= lodCount - 1)
-					{
-						FStaticMeshLODResources& lodData = lodResource[lod];
-
-						if (lodData.VertexData.size() == 0)
-						{
-							continue;
-						}
-
-						//TODO: Set vertex buffer to FDrawState
-
-						for (FStaticMeshSection& section : lodData.Sections)
-						{
-							FStaticMaterial& staticMaterial = mesh->StaticMaterials[section.MaterialIndex];
-
-							MaterialInterface* materialInterface = staticMaterial.Material;
-
-							if (materialInterface == nullptr)
-							{
-								materialInterface = _DefaultMaterial;
-							}
-
-							if (materialInterface != nullptr)
-							{
-								drawState.SetMaterial(materialInterface);
-
-								drawState.Draw(Context->GetRenderInterface(), section.FirstIndex, section.NumTriangles, 0, 1);
-							}
-						}
-					}
+					drawState.Draw(Context->GetRenderInterface(), section.FirstIndex, section.NumTriangles, 0, 1);
 				}
 			}
 		}

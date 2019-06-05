@@ -27,6 +27,7 @@ public:
 	void SetTargets(NVRHI::TextureHandle* target, int count);
 
 	void SetMaterial(MaterialInterface* materialInterface);
+	void SetInputLayout(NVRHI::InputLayoutHandle inputLayout);
 
 	void SetIndexBuffer(NVRHI::BufferHandle buffer);
 	void SetVertexBuffer(NVRHI::BufferHandle buffer);
