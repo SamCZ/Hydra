@@ -43,7 +43,7 @@ HRESULT CompileShaderFromString(_In_ const String& shaderSource, _In_ const Stri
 	return hr;
 }
 
-Technique::Technique(EngineContext* context, const File& file, bool precompile) : _Context(context), _Source(file), _Precompile(precompile), _NextDefineId(0), _InputLayout(nullptr)
+Technique::Technique(EngineContext* context, const File& file, bool precompile) : _Context(context), _Source(file), _Precompile(precompile), _NextDefineId(0)
 {
 	ReadShaderSource();
 }
