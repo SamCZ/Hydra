@@ -7,6 +7,7 @@
 
 class Shader;
 class EngineContext;
+struct ShaderVertexInputDefinition;
 
 class HYDRA_API Technique
 {
@@ -23,6 +24,12 @@ private:
 	String _ShaderCode;
 
 	Map<uint32, List<Shader*>> _VaryingShaders;
+
+	List<ShaderVertexInputDefinition> _ShaderVertexInputDefinitons;
+	bool _CanCreateInputLayoutID;
+	bool _HasInputLayoutID;
+	uint8 _InputLayoutID;
+	Shader* _VertexShaderInternal;
 public:
 	Technique(EngineContext* context, const File& file, bool precompile);
 	~Technique();
@@ -32,13 +39,17 @@ public:
 
 	List<Shader*>& GetShaders(Map<String, String>& defines, bool recompile);
 
+	void UpdateInputLayoutID(Map<String, uint32>& hashMap, uint32& maxIndex);
+
+	bool GetInputLayoutID(uint32& out_ID) const;
+
+	NVRHI::InputLayoutHandle CreateInputLayout();
+
 	bool IsPrecompiled() const;
 
 	EngineContext* GetEngineContext();
 
 private:
-
-
 	void ReadShaderSource();
 	NVRHI::ShaderType::Enum GetShaderTypeByName(const String& name);
 	String GetFeatureLevelForShaderType(const NVRHI::ShaderType::Enum& type);

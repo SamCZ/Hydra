@@ -555,6 +555,11 @@ void MaterialInterface::ApplyParams(NVRHI::DrawCallState& state)
 
 }
 
+SharedPtr<Technique> MaterialInterface::GetTechnique()
+{
+	return _Technique;
+}
+
 NVRHI::PipelineStageBindings* MaterialInterface::GetPipelineStageBindingsForShaderType(NVRHI::DrawCallState& state, const NVRHI::ShaderType::Enum & type)
 {
 	switch (type)

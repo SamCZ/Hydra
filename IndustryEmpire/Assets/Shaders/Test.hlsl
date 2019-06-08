@@ -22,7 +22,7 @@ FullScreenQuadOutput MainVS(uint id : SV_VertexID)
 	uint u = ~id & 1;
 	uint v = (id >> 1) & 1;
 	OUT.uv = float2(u, v);
-	OUT.position = mul(mul(_ProjectionMatrix, _ViewMatrix), mul(_ModelMatrix, float4((OUT.uv * 2 - 1) * 50.0, 0, 1)));
+	OUT.position = mul(mul(_ProjectionMatrix, _ViewMatrix), mul(_ModelMatrix, float4((OUT.uv * 2 - 1) * 100.0, 0, 1)));
 
 	// In D3D (0, 0) stands for upper left corner
 	OUT.uv.y = 1.0 - OUT.uv.y;
@@ -44,5 +44,5 @@ float4 MainPS(FullScreenQuadOutput IN) : SV_Target
 	color.x = frac(IN.uv.x * 10);
 	color.y = frac(IN.uv.y * 10);
 
-	return color;
+	return float4(0, 0, 0, 2);
 }

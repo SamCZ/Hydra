@@ -13,6 +13,7 @@
 #include "Hydra/Framework/Components/CameraComponent.h"
 
 #include "Hydra/Render/Material.h"
+#include "Hydra/Render/Technique.h"
 #include "Hydra/Render/Shader.h"
 
 #include "Hydra/Render/Graphics.h"
@@ -232,9 +233,36 @@ void MainRenderView::OnMeshDeleted(HStaticMesh* mesh)
 	}
 }
 
-NVRHI::InputLayoutHandle MainRenderView::GetInputLayoutForMaterial(MaterialInterface * materialInterface)
+NVRHI::InputLayoutHandle MainRenderView::GetInputLayoutForMaterial(MaterialInterface* materialInterface)
 {
+	if (materialInterface == nullptr)
+	{
+		return nullptr;
+	}
 
+	SharedPtr<Technique>& technique = materialInterface->GetTechnique();
+
+	technique->UpdateInputLayoutID(_InputLayoutHashID, _InputLayoutMaxID);
+
+	uint32 ID;
+
+	if (technique->GetInputLayoutID(ID))
+	{
+		auto iter = _InputLayoutMap.find(ID);
+
+		if (iter != _InputLayoutMap.end())
+		{
+			return iter->second;
+		}
+		else
+		{
+			NVRHI::InputLayoutHandle newInputLayout = technique->CreateInputLayout();
+
+			_InputLayoutMap[ID] = newInputLayout;
+
+			return newInputLayout;
+		}
+	}
 
 	return nullptr;
 }

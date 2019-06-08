@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <unordered_map>
+#include <set>
 
 #include "Hydra/Core/Array.h"
 
@@ -16,6 +17,9 @@ using Map = std::map<A, B>;
 template <typename A, typename B>
 using FastMap = std::unordered_map<A, B>;
 
+template <typename A>
+using Set = std::set<A>;
+
 #define List_Remove(list, type) { list.erase(std::find(list.begin(), list.end(), type)); }
 //#define Add(type) push_back(type)
 
@@ -23,6 +27,12 @@ using FastMap = std::unordered_map<A, B>;
 
 template <typename T>
 static inline typename List<T>::iterator Find(List<T>& list, T value)
+{
+	return std::find(list.begin(), list.end(), value);
+}
+
+template <typename T>
+static inline typename Set<T>::iterator Find(Set<T>& list, T value)
 {
 	return std::find(list.begin(), list.end(), value);
 }

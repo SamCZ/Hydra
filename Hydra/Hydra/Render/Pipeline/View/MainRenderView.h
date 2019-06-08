@@ -20,6 +20,10 @@ private:
 	Map<HCameraComponent*, FSceneView*> _SceneViewForCameras;
 	FViewPort* _ScreenRenderViewport;
 
+	Map<uint32, NVRHI::InputLayoutHandle> _InputLayoutMap;
+	Map<String, uint32> _InputLayoutHashID;
+	uint32 _InputLayoutMaxID;
+
 public:
 	HydraEngine* Engine;
 

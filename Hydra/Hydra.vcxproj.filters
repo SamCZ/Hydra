@@ -405,6 +405,9 @@
     <ClInclude Include="Hydra\Render\MeshBufferDataInternal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Hydra\Render\InputLayoutDefinition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ImGui\imgui.cpp">

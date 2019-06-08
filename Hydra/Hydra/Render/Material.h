@@ -133,6 +133,8 @@ public:
 	void ApplyParams(NVRHI::DispatchState& state);
 	void ApplyParams(NVRHI::DrawCallState& state);
 
+	SharedPtr<Technique> GetTechnique();
+
 private:
 
 	NVRHI::PipelineStageBindings* GetPipelineStageBindingsForShaderType(NVRHI::DrawCallState& state, const NVRHI::ShaderType::Enum& type);

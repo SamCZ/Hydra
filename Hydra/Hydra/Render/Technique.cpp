@@ -43,7 +43,7 @@ HRESULT CompileShaderFromString(_In_ const String& shaderSource, _In_ const Stri
 	return hr;
 }
 
-Technique::Technique(EngineContext* context, const File& file, bool precompile) : _Context(context), _Source(file), _Precompile(precompile), _NextDefineId(0)
+Technique::Technique(EngineContext* context, const File& file, bool precompile) : _Context(context), _Source(file), _Precompile(precompile), _NextDefineId(0), _HasInputLayoutID(false), _CanCreateInputLayoutID(false), _VertexShaderInternal(nullptr)
 {
 	ReadShaderSource();
 }
@@ -95,6 +95,93 @@ uint32 Technique::GetDefineHash(const String& define, const String& value)
 
 		return id;
 	}
+}
+
+void Technique::UpdateInputLayoutID(Map<String, uint32>& hashMap, uint32& maxIndex)
+{
+	if (_CanCreateInputLayoutID == false)
+	{
+		return;
+	}
+
+	if (!_HasInputLayoutID)
+	{
+		ITER(_VaryingShaders, it)
+		{
+			for (Shader* shader : it->second)
+			{
+				if (shader->GetType() == NVRHI::ShaderType::SHADER_VERTEX)
+				{
+					_ShaderVertexInputDefinitons = shader->GetInputLayoutDefinitions();
+
+					String hash;
+
+					for (ShaderVertexInputDefinition& definition : _ShaderVertexInputDefinitons)
+					{
+						hash += definition.ToHash();
+					}
+
+					auto iter = hashMap.find(hash);
+
+					if (iter != hashMap.end())
+					{
+						_InputLayoutID = iter->second;
+					}
+					else
+					{
+						_InputLayoutID = maxIndex++;
+						hashMap[hash] = _InputLayoutID;
+					}
+
+					_HasInputLayoutID = true;
+
+					return;
+				}
+			}
+		}
+	}
+}
+
+bool Technique::GetInputLayoutID(uint32& out_ID) const
+{
+	if (_HasInputLayoutID)
+	{
+		out_ID = _InputLayoutID;
+
+		return true;
+	}
+
+	return false;
+}
+
+NVRHI::InputLayoutHandle Technique::CreateInputLayout()
+{
+	if (_HasInputLayoutID == false)
+	{
+		return nullptr;
+	}
+
+	int attrCount = _ShaderVertexInputDefinitons.size();
+
+	NVRHI::VertexAttributeDesc* vertexAttrDecs = new NVRHI::VertexAttributeDesc[attrCount];
+
+
+	for (int i = 0; i < attrCount; i++)
+	{
+		ShaderVertexInputDefinition& definition = _ShaderVertexInputDefinitons[i];
+		NVRHI::VertexAttributeDesc& attributeDesc = vertexAttrDecs[i];
+
+		attributeDesc.bufferIndex = definition.Instanced ? 1 : 0;
+		attributeDesc.format = definition.Format;
+		//attributeDesc.
+
+	}
+
+	IRendererInterface renderInterface = _Context->GetRenderInterface();
+
+	ID3DBlob* dataBlob = _VertexShaderInternal->GetBlob();
+
+	return renderInterface->createInputLayout(vertexAttrDecs, attrCount, dataBlob->GetBufferPointer(), dataBlob->GetBufferSize());
 }
 
 List<Shader*>& Technique::GetShaders(Map<String, String>& defines, bool recompile)
@@ -149,6 +236,13 @@ List<Shader*>& Technique::GetShaders(Map<String, String>& defines, bool recompil
 			if (shaderHandle != nullptr)
 			{
 				Shader* shader = new Shader(_Source.GetName(), type, shaderHandle, shaderBlob);
+
+				if (type == NVRHI::ShaderType::SHADER_VERTEX)
+				{
+					_CanCreateInputLayoutID = true;
+
+					_VertexShaderInternal = shader;
+				}
 
 				_VaryingShaders[defineHash].emplace_back(shader);
 			}

@@ -10,7 +10,7 @@ void FirstPersonCharacter::InitializeComponents()
 
 	FirstPersonCameraComponent->CameraMode = FCameraMode::Orthographic;
 
-	AddComponent<HStaticMeshComponent>("asd");
+	//AddComponent<HStaticMeshComponent>("asd");
 }
 
 void FirstPersonCharacter::SetupPlayerInput(InputManager* inputManager)

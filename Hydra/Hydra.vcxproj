@@ -237,6 +237,7 @@
     <ClInclude Include="Hydra\Physics\Collisons\Testing.h" />
     <ClInclude Include="Hydra\Render\DrawState.h" />
     <ClInclude Include="Hydra\Render\Graphics.h" />
+    <ClInclude Include="Hydra\Render\InputLayoutDefinition.h" />
     <ClInclude Include="Hydra\Render\Material.h" />
     <ClInclude Include="Hydra\Render\Mesh.h" />
     <ClInclude Include="Hydra\Render\MeshBufferDataInternal.h" />
