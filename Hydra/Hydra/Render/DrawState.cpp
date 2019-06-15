@@ -9,7 +9,7 @@ FDrawState::FDrawState()
 {
 	_State.renderState.depthStencilState.depthEnable = true;
 	_State.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_NONE;
-	_State.renderState.rasterState.fillMode = NVRHI::RasterState::FILL_LINE;
+	//_State.renderState.rasterState.fillMode = NVRHI::RasterState::FILL_LINE;
 }
 
 FDrawState::~FDrawState()

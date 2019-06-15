@@ -11,7 +11,7 @@ void ACubeActor::InitializeComponents()
 void ACubeActor::BeginPlay()
 {
 	Vector2 Position = ((Vector2)Engine->ScreenSize) * 0.5f;
-	SetLocation(Position.x, Position.y, 0);
+	//SetLocation(Position.x, Position.y, 0);
 
 	Velocity = Rnd.GetRandomUnitVector3() * 10.0f;
 	Acceleration = Vector2(1.005f, 1.005f);
@@ -20,7 +20,7 @@ void ACubeActor::BeginPlay()
 void ACubeActor::Tick(float DeltaTime)
 {
 	//Velocity *= Acceleration;
-	AddLocation(Velocity.x, Velocity.y, 0);
+	//AddLocation(Velocity.x, Velocity.y, 0);
 
 
 	if (GetLocation().x > Engine->ScreenSize.x || GetLocation().x <= 0)

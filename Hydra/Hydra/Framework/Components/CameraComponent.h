@@ -38,6 +38,8 @@ public:
 
 	virtual void Tick(float Delta);
 
+	virtual Matrix4 GetTransformMatrix() const override;
+
 	Matrix4 GetProjectionMatrix() const;
 	Matrix4 GetViewMatrix() const;
 	Matrix4 GetProjectionViewMatrix() const;

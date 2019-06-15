@@ -311,7 +311,7 @@ void MainRenderView::RenderSceneViewFromCamera(FSceneView* view, HCameraComponen
 	FDrawState drawState;
 
 	drawState.SetClearFlags(true, true, false);
-	drawState.SetClearColor(ColorRGBA::White);
+	drawState.SetClearColor(ColorRGBA::Black);
 
 	drawState.SetViewPort(Context->ScreenSize);//TODO: Get size of viewport from FSceneView or HCameraComponent
 	drawState.SetTargetCount(1);

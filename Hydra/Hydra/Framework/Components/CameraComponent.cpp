@@ -31,6 +31,26 @@ void HCameraComponent::Tick(float Delta)
 	_ProjectionViewMatrix = GetProjectionMatrix() * GetViewMatrix();
 }
 
+Matrix4 HCameraComponent::GetTransformMatrix() const
+{
+	//return glm::inverse(HSceneComponent::GetTransformMatrix());
+
+	// define your up vector
+	glm::vec3 upVector = glm::vec3(0, 1, 0);
+	// rotate around to a given bearing: yaw
+	glm::mat4 camera = glm::rotate(glm::mat4(), glm::radians(Rotation.y), upVector);
+	// Define the 'look up' axis, should be orthogonal to the up axis
+	glm::vec3 pitchVector = glm::vec3(1, 0, 0);
+	// rotate around to the required head tilt: pitch
+	camera = glm::rotate(camera, glm::radians(Rotation.x), pitchVector);
+
+	glm::vec3 rollVector = glm::vec3(0, 0, 1);
+	camera = glm::rotate(camera, glm::radians(Rotation.z), rollVector);
+
+	// now get the view matrix by taking the camera inverse
+	return glm::inverse(camera) * glm::translate(glm::vec3(-Location.x, -Location.y, -Location.z));
+}
+
 Matrix4 HCameraComponent::GetProjectionMatrix() const
 {
 	return _ProjectionMatrix;

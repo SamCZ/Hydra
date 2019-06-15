@@ -1,7 +1,9 @@
 #include "Hydra/Framework/World.h"
+#include "Hydra/EngineContext.h"
 
 #include "Hydra/Framework/Components/PrimitiveComponent.h"
 #include "Hydra/Framework/Components/CameraComponent.h"
+#include "Hydra/Framework/Pawn.h"
 
 FWorld::FWorld(EngineContext* context)
 {
@@ -22,6 +24,11 @@ void FWorld::FinishSpawningActor(AActor* actor)
 {
 	if (actor)
 	{
+		if (APawn* pawn = actor->SafeCast<APawn>())
+		{
+			pawn->SetupPlayerInput(_Engine->GetInputManager());
+		}
+
 		actor->BeginPlay();
 	}
 }

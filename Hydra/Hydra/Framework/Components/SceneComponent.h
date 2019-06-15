@@ -47,5 +47,12 @@ public:
 		SetVisibility(!IsVisible, bPropagateToChildren);
 	}
 
-	virtual Matrix4 GetTransformMatrix();
+	virtual Matrix4 GetTransformMatrix() const;
+
+	Vector3 GetForwardVector() const;
+	Vector3 GetUpVector() const;
+	Vector3 GetLeftVector() const;
+
+private:
+	static Vector3 GetRotationColumn(const Matrix4& mat, int i);
 };

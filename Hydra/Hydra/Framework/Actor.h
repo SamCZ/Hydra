@@ -88,9 +88,9 @@ public:
 
 	Matrix4 GetTransformMatrix();
 
-	/*Vector3 GetForwardVector() const;
+	Vector3 GetForwardVector() const;
 	Vector3 GetUpVector() const;
-	Vector3 GetRightVector() const;*/
+	Vector3 GetLeftVector() const;
 
 	// Added only for purpose ludum dare, remove in future
 	virtual void OnHud(UIRenderer* renderer)

@@ -156,6 +156,21 @@ Matrix4 AActor::GetTransformMatrix()
 	return RootComponent->GetTransformMatrix();
 }
 
+Vector3 AActor::GetForwardVector() const
+{
+	return RootComponent->GetForwardVector();
+}
+
+Vector3 AActor::GetUpVector() const
+{
+	return RootComponent->GetUpVector();
+}
+
+Vector3 AActor::GetLeftVector() const
+{
+	return RootComponent->GetLeftVector();
+}
+
 HGameModeBase* AActor::GetGameMode()
 {
 	return World->GetGameMode();

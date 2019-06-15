@@ -3,12 +3,12 @@
 #include "Hydra/Framework/Character.h"
 #include "FirstPersonCharacter.generated.h"
 
-
 HCLASS()
 class FirstPersonCharacter : public ACharacter
 {
 	HCLASS_GENERATED_BODY()
 	class HCameraComponent* FirstPersonCameraComponent;
+	class InputManager* _InputManager;
 
 public:
 
@@ -21,4 +21,9 @@ public:
 
 	void MoveForwardBackward(float val);
 	void MoveLeftRight(float val);
+
+	void LookUpDown(float val);
+	void LookLeftRight(float val);
+
+	void Escape();
 };

@@ -83,7 +83,7 @@ void HSceneComponent::SetVisibility(bool bNewVisibility, bool bPropagateToChildr
 	}
 }
 
-Matrix4 HSceneComponent::GetTransformMatrix()
+Matrix4 HSceneComponent::GetTransformMatrix() const
 {
 	static Vector3 axisX = Vector3(1, 0, 0);
 	static Vector3 axisY = Vector3(0, 1, 0);
@@ -105,4 +105,31 @@ Matrix4 HSceneComponent::GetTransformMatrix()
 	}
 
 	return transform;
+}
+
+Vector3 HSceneComponent::GetForwardVector() const
+{
+	return GetRotationColumn(GetTransformMatrix() , 2);
+}
+
+Vector3 HSceneComponent::GetUpVector() const
+{
+	return GetRotationColumn(GetTransformMatrix(), 1);
+}
+
+Vector3 HSceneComponent::GetLeftVector() const
+{
+	return GetRotationColumn(GetTransformMatrix(), 0);
+}
+
+Vector3 HSceneComponent::GetRotationColumn(const Matrix4 & mat, int i)
+{
+	Matrix4 trns = glm::transpose(mat);
+
+	Vector3 store;
+
+	store.x = trns[i][0];
+	store.y = trns[i][1];
+	store.z = trns[i][2];
+	return store;
 }

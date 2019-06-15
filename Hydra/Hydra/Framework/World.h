@@ -48,13 +48,16 @@ public:
 		actor->World = this;
 		actor->Name = Name;
 
-		actor->RootComponent = actor->AddComponent<HSceneComponent>("SceneRoot");
+		actor->InitializeComponents();
+
+		if (!actor->RootComponent)
+		{
+			actor->RootComponent = actor->AddComponent<HSceneComponent>("SceneRoot");
+		}
 
 		actor->SetLocation(Position);
 		actor->SetRotation(Rotation);
 		actor->SetScale(Scale);
-
-		actor->InitializeComponents();
 
 		_Actors.push_back(actor);
 
