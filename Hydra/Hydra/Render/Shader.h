@@ -5,6 +5,7 @@
 #include "Hydra/Core/Common.h"
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
 #include "Hydra/Render/VarType.h"
+#include "Hydra/Render/ShaderVertexInputDefinition.h"
 
 struct RawShaderVariable
 {
@@ -64,29 +65,6 @@ struct ShaderVars
 	Map<String, VarType::Type> VariableTypes;
 };
 
-struct ShaderVertexInputDefinition
-{
-	String SemanticName;
-	int SemanticIndex;
-	DXGI_FORMAT Format;
-	bool Instanced;
-
-	inline bool operator==(const ShaderVertexInputDefinition& other)
-	{
-		return SemanticName == other.SemanticName && SemanticIndex == other.SemanticIndex && Format == other.Format && Instanced == other.Instanced;
-	}
-
-	inline String ToHash()
-	{
-		return SemanticName + String(":") + ToString(SemanticIndex) + String(":") + ToString((int)Format) + String(":") + ToString(Instanced);
-	}
-
-	inline String Print()
-	{
-		return String("ShaderVertexInputDefinition(") + "Name=" + SemanticName + ", SemanticIndex=" + ToString(SemanticIndex) + ", Format=" + ToString((int)Format) + ", IsInstanced=" + ToString(Instanced);
-	}
-};
-
 class HYDRA_API Shader
 {
 private:
@@ -108,7 +86,7 @@ public:
 
 	ShaderVars* CreateShaderVars();
 
-	List<ShaderVertexInputDefinition> GetInputLayoutDefinitions();
+	List<ShaderVertexInputDefinition> GetInputLayoutDefinitions(NVRHI::IRendererInterface* renderInterface);
 
 private:
 	void Initialize();

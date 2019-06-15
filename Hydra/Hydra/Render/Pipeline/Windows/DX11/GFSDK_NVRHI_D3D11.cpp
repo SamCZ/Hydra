@@ -325,6 +325,19 @@ namespace NVRHI
         clearCachedData();
     }
 
+	Format::Enum RendererInterfaceD3D11::GetFormatFromDXGI(uint8 format)
+	{
+		for (FormatMapping mapping : FormatMappings)
+		{
+			if (mapping.srvFormat == (DXGI_FORMAT)format)
+			{
+				return mapping.abstractFormat;
+			}
+		}
+
+		return Format::UNKNOWN;
+	}
+
 
     RendererInterfaceD3D11::RendererInterfaceD3D11(IErrorCallback* errorCB, ID3D11DeviceContext* context)
         : context(context)

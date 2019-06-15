@@ -112,7 +112,9 @@ void Technique::UpdateInputLayoutID(Map<String, uint32>& hashMap, uint32& maxInd
 			{
 				if (shader->GetType() == NVRHI::ShaderType::SHADER_VERTEX)
 				{
-					_ShaderVertexInputDefinitons = shader->GetInputLayoutDefinitions();
+					IRendererInterface renderInterface = _Context->GetRenderInterface();
+
+					_ShaderVertexInputDefinitons = shader->GetInputLayoutDefinitions(renderInterface);
 
 					String hash;
 
@@ -154,17 +156,25 @@ bool Technique::GetInputLayoutID(uint32& out_ID) const
 	return false;
 }
 
-NVRHI::InputLayoutHandle Technique::CreateInputLayout()
+NVRHI::InputLayoutHandle Technique::CreateInputLayout(InputLayoutDefininition* inputDef, int count)
 {
 	if (_HasInputLayoutID == false)
 	{
 		return nullptr;
 	}
 
+	Log(ToString(_ShaderVertexInputDefinitons.size()));
+	
+	IRendererInterface renderInterface = _Context->GetRenderInterface();
+
 	int attrCount = _ShaderVertexInputDefinitons.size();
 
-	NVRHI::VertexAttributeDesc* vertexAttrDecs = new NVRHI::VertexAttributeDesc[attrCount];
+	if (count != attrCount)
+	{
+		return nullptr;
+	}
 
+	NVRHI::VertexAttributeDesc* vertexAttrDecs = new NVRHI::VertexAttributeDesc[attrCount];
 
 	for (int i = 0; i < attrCount; i++)
 	{
@@ -173,11 +183,13 @@ NVRHI::InputLayoutHandle Technique::CreateInputLayout()
 
 		attributeDesc.bufferIndex = definition.Instanced ? 1 : 0;
 		attributeDesc.format = definition.Format;
-		//attributeDesc.
-
+		attributeDesc.isInstanced = definition.Instanced;
+		attributeDesc.name = definition.SemanticName.c_str();
+		attributeDesc.offset = inputDef[i].Offset;
+		attributeDesc.semanticIndex = definition.SemanticIndex;
+		
+		vertexAttrDecs[i] = attributeDesc;
 	}
-
-	IRendererInterface renderInterface = _Context->GetRenderInterface();
 
 	ID3DBlob* dataBlob = _VertexShaderInternal->GetBlob();
 

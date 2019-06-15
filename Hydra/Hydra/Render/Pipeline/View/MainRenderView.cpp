@@ -24,6 +24,21 @@
 #include "Hydra/Render/View/SceneView.h"
 #include "Hydra/Render/View/ViewPort.h"
 
+InputLayoutDefininition InputLayoutDefs[11]{
+	{"POSITION", offsetof(VertexBufferEntry, Position) },
+	{"TEXCOORD", offsetof(VertexBufferEntry, TexCoord) },
+	{"TEXCOORD", offsetof(VertexBufferEntry, TexCoord2) },
+	{"COLOR", offsetof(VertexBufferEntry, Color) },
+	{"NORMAL", offsetof(VertexBufferEntry, Normal) },
+	{"TANGENT", offsetof(VertexBufferEntry, Tangent) },
+	{"BINORMAL", offsetof(VertexBufferEntry, BiTangent) },
+
+	{"WORLD_PER_INSTANCE", 0 },
+	{"WORLD_PER_INSTANCE", 16 },
+	{"WORLD_PER_INSTANCE", 32 },
+	{"WORLD_PER_INSTANCE", 48 }
+};
+
 MainRenderView::MainRenderView(EngineContext* context, HydraEngine* engine) : IVisualController(context), Engine(engine), _ScreenRenderViewport(nullptr)
 {
 }
@@ -114,6 +129,7 @@ void MainRenderView::OnCameraAdded(HCameraComponent* cmp)
 
 	//TODO: Setup automatically FSceneView render targets from HCameraComponent
 	sceneView->RenderTexture = Context->GetGraphics()->CreateRenderTarget("CharacterRenderTarget", NVRHI::Format::RGBA8_UNORM, Context->ScreenSize.x, Context->ScreenSize.y, NVRHI::Color(0.0f), 1);
+	sceneView->DepthTexture = Context->GetGraphics()->CreateRenderTarget("DPBR_Depth", NVRHI::Format::D24S8, Context->ScreenSize.x, Context->ScreenSize.y, NVRHI::Color(1.f, 0.f, 0.f, 0.f), 1);
 
 	// If camera component in on character actor, create viewport for the player.
 	// Viewport is physical rendering part on the viewport.
@@ -256,7 +272,7 @@ NVRHI::InputLayoutHandle MainRenderView::GetInputLayoutForMaterial(MaterialInter
 		}
 		else
 		{
-			NVRHI::InputLayoutHandle newInputLayout = technique->CreateInputLayout();
+			NVRHI::InputLayoutHandle newInputLayout = technique->CreateInputLayout(InputLayoutDefs, 11);
 
 			_InputLayoutMap[ID] = newInputLayout;
 
@@ -269,10 +285,14 @@ NVRHI::InputLayoutHandle MainRenderView::GetInputLayoutForMaterial(MaterialInter
 
 void MainRenderView::UpdateMaterialGlobalVariables(MaterialInterface* materialInterface, HPrimitiveComponent* component, HCameraComponent* camera)
 {
-	materialInterface->SetMatrix4("_ProjectionMatrix", camera->GetProjectionMatrix());
-	materialInterface->SetMatrix4("_ViewMatrix", camera->GetViewMatrix());
+	Matrix4& projectionMatrix = camera->GetProjectionMatrix();
+	Matrix4& viewMatrix = camera->GetViewMatrix();
+	Matrix4& modelMatrix = component->GetTransformMatrix();
 
-	materialInterface->SetMatrix4("_ModelMatrix", component->GetTransformMatrix());
+	materialInterface->SetMatrix4("_ProjectionMatrix", projectionMatrix);
+	materialInterface->SetMatrix4("_ViewMatrix", viewMatrix);
+
+	materialInterface->SetMatrix4("_ModelMatrix", modelMatrix);
 }
 
 void MainRenderView::UpdateComponent(HSceneComponent* component, float Delta)
@@ -296,9 +316,12 @@ void MainRenderView::RenderSceneViewFromCamera(FSceneView* view, HCameraComponen
 	drawState.SetViewPort(Context->ScreenSize);//TODO: Get size of viewport from FSceneView or HCameraComponent
 	drawState.SetTargetCount(1);
 	drawState.SetTarget(0, view->RenderTexture);
+	drawState.SetDepthTarget(view->DepthTexture);
 
 	for (HPrimitiveComponent* cmp : components)
 	{
+		//drawState.SetInstanceBuffer(nullptr);
+
 		if (HStaticMeshComponent* staticMeshComponent = cmp->SafeCast<HStaticMeshComponent>())
 		{
 			HStaticMesh* mesh = staticMeshComponent->StaticMesh;

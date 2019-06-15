@@ -872,6 +872,8 @@ namespace NVRHI
     public:
 		virtual ~IRendererInterface() {};
 
+		virtual Format::Enum GetFormatFromDXGI(uint8 format) = 0;
+
         virtual TextureHandle createTexture(const TextureDesc& d, const void* data) = 0;
         virtual const TextureDesc& describeTexture(TextureHandle t) = 0;
         virtual void clearTextureFloat(TextureHandle t, const Color& clearColor) = 0;

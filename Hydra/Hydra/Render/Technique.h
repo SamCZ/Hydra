@@ -3,11 +3,12 @@
 #include "Hydra/Core/Common.h"
 #include "Hydra/Core/File.h"
 
+#include "Hydra/Render/ShaderVertexInputDefinition.h"
+#include "Hydra/Render/InputLayoutDefinition.h"
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
 
 class Shader;
 class EngineContext;
-struct ShaderVertexInputDefinition;
 
 class HYDRA_API Technique
 {
@@ -43,7 +44,7 @@ public:
 
 	bool GetInputLayoutID(uint32& out_ID) const;
 
-	NVRHI::InputLayoutHandle CreateInputLayout();
+	NVRHI::InputLayoutHandle CreateInputLayout(InputLayoutDefininition* inputDef, int count);
 
 	bool IsPrecompiled() const;
 

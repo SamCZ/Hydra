@@ -25,6 +25,7 @@ public:
 	void SetTargetCount(int count);
 	void SetTarget(int index, NVRHI::TextureHandle target);
 	void SetTargets(NVRHI::TextureHandle* target, int count);
+	void SetDepthTarget(NVRHI::TextureHandle target);
 
 	void SetMaterial(MaterialInterface* materialInterface);
 	void SetInputLayout(NVRHI::InputLayoutHandle inputLayout);

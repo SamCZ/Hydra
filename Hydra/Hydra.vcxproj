@@ -258,6 +258,7 @@
     <ClInclude Include="Hydra\Render\Pipeline\Windows\DX11\VisualController11.h" />
     <ClInclude Include="Hydra\Render\RenderManager.h" />
     <ClInclude Include="Hydra\Render\Shader.h" />
+    <ClInclude Include="Hydra\Render\ShaderVertexInputDefinition.h" />
     <ClInclude Include="Hydra\Render\Technique.h" />
     <ClInclude Include="Hydra\Render\TextureLayoutDef.h" />
     <ClInclude Include="Hydra\Render\UI\UIRenderer.h" />

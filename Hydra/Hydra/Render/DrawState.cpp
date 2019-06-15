@@ -9,6 +9,7 @@ FDrawState::FDrawState()
 {
 	_State.renderState.depthStencilState.depthEnable = true;
 	_State.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_NONE;
+	_State.renderState.rasterState.fillMode = NVRHI::RasterState::FILL_LINE;
 }
 
 FDrawState::~FDrawState()
@@ -58,6 +59,11 @@ void FDrawState::SetTargets(NVRHI::TextureHandle* target, int count)
 	}
 }
 
+void FDrawState::SetDepthTarget(NVRHI::TextureHandle target)
+{
+	_State.renderState.depthTarget = target;
+}
+
 void FDrawState::SetMaterial(MaterialInterface* materialInterface)
 {
 	materialInterface->ApplyParams(_State);
@@ -82,7 +88,11 @@ void FDrawState::SetIndexBuffer(NVRHI::BufferHandle buffer)
 
 void FDrawState::SetVertexBuffer(NVRHI::BufferHandle buffer)
 {
-	_State.vertexBufferCount = 1;
+	if (_State.vertexBufferCount == 0)
+	{
+		_State.vertexBufferCount = 1;
+	}
+
 	_State.vertexBuffers[0].buffer = buffer;
 	_State.vertexBuffers[0].slot = 0;
 	_State.vertexBuffers[0].stride = sizeof(VertexBufferEntry);

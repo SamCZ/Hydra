@@ -94,7 +94,7 @@ DXGI_FORMAT GetDXGIFormat(D3D11_SIGNATURE_PARAMETER_DESC& pd)
 	return DXGI_FORMAT_UNKNOWN;
 }
 
-List<ShaderVertexInputDefinition> Shader::GetInputLayoutDefinitions()
+List<ShaderVertexInputDefinition> Shader::GetInputLayoutDefinitions(NVRHI::IRendererInterface* renderInterface)
 {
 	List<ShaderVertexInputDefinition> definitions;
 
@@ -133,11 +133,13 @@ List<ShaderVertexInputDefinition> Shader::GetInputLayoutDefinitions()
 		ShaderVertexInputDefinition def = {};
 		def.SemanticName = paramDesc.SemanticName;
 		def.SemanticIndex = semanticIndex;
-		def.Format = format;
+		def.Format = renderInterface->GetFormatFromDXGI(format);
 		def.Instanced = isPerInstance;
 
 		definitions.emplace_back(def);
 	}
+
+	Log(ToString(shaderDesc.InputParameters));
 
 	reflection->Release();
 

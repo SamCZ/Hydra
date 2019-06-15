@@ -49,6 +49,8 @@ namespace NVRHI
     RendererInterfaceD3D11(IErrorCallback* errorCB, ID3D11DeviceContext* context);
     virtual ~RendererInterfaceD3D11();
 
+	virtual Format::Enum GetFormatFromDXGI(uint8 format);
+
     void forgetAboutTexture(ID3D11Resource* resource);
     void forgetAboutBuffer(ID3D11Buffer* resource);
 
