@@ -213,6 +213,10 @@ void ModelImporter::ProcessMesh(aiMesh* mesh, aiNode* node, HStaticMesh* staticM
 		
 		aiVector3D vert = transform * mesh->mVertices[vertIdx];
 
+		vertexEntry.Position.x = vert.x;
+		vertexEntry.Position.y = vert.y;
+		vertexEntry.Position.z = vert.z;
+
 		if (mesh->HasNormals())
 		{
 			aiVector3D norm = transform * mesh->mNormals[vertIdx];
