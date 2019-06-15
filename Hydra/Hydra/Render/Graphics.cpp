@@ -5,7 +5,7 @@
 
 #include "Hydra/Render/Shader.h"
 
-Graphics::~Graphics()
+FGraphics::~FGraphics()
 {
 	delete _BlitMaterial;
 
@@ -25,20 +25,20 @@ Graphics::~Graphics()
 	}
 }
 
-Graphics::Graphics(EngineContext* context) : _Context(context)
+FGraphics::FGraphics(EngineContext* context) : _Context(context)
 {
 	_BlitMaterial = new MaterialInterface("Blit", MakeShared<Technique>(context, "Assets/Shaders/Blit.hlsl", true));
 	//_BlitMaterial = Material::CreateOrGet("Assets/Shaders/Blit.hlsl", true, true);
 	//_BlurMaterial = Material::CreateOrGet("Assets/Shaders/PostProcess/GaussianBlur.hlsl", true, true);
 }
 
-void Graphics::AllocateViewDependentResources(uint32 width, uint32 height, uint32 sampleCount)
+void FGraphics::AllocateViewDependentResources(uint32 width, uint32 height, uint32 sampleCount)
 {
 	ReleaseRenderTarget("G_MEM_BLUR_PASS");
 	CreateRenderTarget("G_MEM_BLUR_PASS", NVRHI::Format::RGBA8_UNORM, width, height, NVRHI::Color(1.f), sampleCount);
 }
 
-void Graphics::Blit(TexturePtr pSource, TexturePtr pDest)
+void FGraphics::Blit(TexturePtr pSource, TexturePtr pDest)
 {
 	NVRHI::DrawCallState state;
 
@@ -61,17 +61,17 @@ void Graphics::Blit(TexturePtr pSource, TexturePtr pDest)
 	_Context->GetRenderInterface()->draw(state, &args, 1);
 }
 
-void Graphics::Blit(const String & name, TexturePtr pDest)
+void FGraphics::Blit(const String & name, TexturePtr pDest)
 {
 	Blit(GetRenderTarget(name), pDest);
 }
 
-void Graphics::Blit(const String & pSource, const String & pDest)
+void FGraphics::Blit(const String & pSource, const String & pDest)
 {
 	Blit(GetRenderTarget(pSource), GetRenderTarget(pDest));
 }
 
-void Graphics::BlurTexture(TexturePtr pSource, TexturePtr pDest)
+void FGraphics::BlurTexture(TexturePtr pSource, TexturePtr pDest)
 {
 	//TODO: Different size of textures
 
@@ -105,12 +105,12 @@ void Graphics::BlurTexture(TexturePtr pSource, TexturePtr pDest)
 	}, pDest);
 }
 
-void Graphics::BlurTexture(const String pSource, const String pDest)
+void FGraphics::BlurTexture(const String pSource, const String pDest)
 {
 	BlurTexture(GetRenderTarget(pSource), GetRenderTarget(pDest));
 }
 
-void Graphics::Composite(MaterialInterface* material, Function<void(NVRHI::DrawCallState&)> preRenderFunction, TexturePtr pDest)
+void FGraphics::Composite(MaterialInterface* material, Function<void(NVRHI::DrawCallState&)> preRenderFunction, TexturePtr pDest)
 {
 	NVRHI::DrawCallState state;
 
@@ -135,12 +135,12 @@ void Graphics::Composite(MaterialInterface* material, Function<void(NVRHI::DrawC
 	_Context->GetRenderInterface()->draw(state, &args, 1);
 }
 
-void Graphics::Composite(MaterialInterface* material, Function<void(NVRHI::DrawCallState&)> preRenderFunction, const String& outputName)
+void FGraphics::Composite(MaterialInterface* material, Function<void(NVRHI::DrawCallState&)> preRenderFunction, const String& outputName)
 {
 	Composite(material, preRenderFunction, GetRenderTarget(outputName));
 }
 
-void Graphics::Composite(MaterialInterface* material, TexturePtr slot0Texture, TexturePtr pDest)
+void FGraphics::Composite(MaterialInterface* material, TexturePtr slot0Texture, TexturePtr pDest)
 {
 	Composite(material, [material, slot0Texture](NVRHI::DrawCallState& state)
 	{
@@ -148,12 +148,12 @@ void Graphics::Composite(MaterialInterface* material, TexturePtr slot0Texture, T
 	}, pDest);
 }
 
-void Graphics::Composite(MaterialInterface* material, const String & slot0Texture, const String & pDest)
+void FGraphics::Composite(MaterialInterface* material, const String & slot0Texture, const String & pDest)
 {
 	Composite(material, GetRenderTarget(slot0Texture), GetRenderTarget(pDest));
 }
 
-void Graphics::Dispatch(MaterialInterface* material, uint32_t groupsX, uint32_t groupsY, uint32_t groupsZ)
+void FGraphics::Dispatch(MaterialInterface* material, uint32_t groupsX, uint32_t groupsY, uint32_t groupsZ)
 {
 	NVRHI::DispatchState state;
 
@@ -171,12 +171,12 @@ void Graphics::Dispatch(MaterialInterface* material, uint32_t groupsX, uint32_t 
 	_Context->GetRenderInterface()->dispatch(state, groupsX, groupsY, groupsZ);
 }
 
-void Graphics::RenderCubeMap(MaterialInterface* material, InputLayoutPtr inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, TexturePtr pDest)
+void FGraphics::RenderCubeMap(MaterialInterface* material, InputLayoutPtr inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, TexturePtr pDest)
 {
 	_Context->GetRenderInterface()->beginRenderingPass();
 
 	NVRHI::DrawCallState state;
-	Graphics::SetClearFlags(state, MakeRGBf(0.2f, 0.2f, 0.2f));
+	FGraphics::SetClearFlags(state, MakeRGBf(0.2f, 0.2f, 0.2f));
 
 	state.renderState.viewportCount = 1;
 	state.renderState.viewports[0] = NVRHI::Viewport(viewPort.x, viewPort.y);
@@ -211,12 +211,12 @@ void Graphics::RenderCubeMap(MaterialInterface* material, InputLayoutPtr inputLa
 	_Context->GetRenderInterface()->endRenderingPass();
 }
 
-void Graphics::RenderCubeMap(MaterialInterface* material, const String& inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, const String & outputName)
+void FGraphics::RenderCubeMap(MaterialInterface* material, const String& inputLayout, const Vector2& viewPort, Function<void(NVRHI::DrawCallState&, int, int)> preRenderFunction, const String & outputName)
 {
 	RenderCubeMap(material, GetInputLayout(inputLayout), viewPort, preRenderFunction, GetRenderTarget(outputName));
 }
 
-void Graphics::SetMaterialShaders(NVRHI::DrawCallState& state, MaterialInterface* material)
+void FGraphics::SetMaterialShaders(NVRHI::DrawCallState& state, MaterialInterface* material)
 {
 	state.VS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_VERTEX);
 	state.HS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_HULL);
@@ -225,19 +225,19 @@ void Graphics::SetMaterialShaders(NVRHI::DrawCallState& state, MaterialInterface
 	state.PS.shader = material->GetRawShader(NVRHI::ShaderType::SHADER_PIXEL);
 }
 
-void Graphics::ApplyMaterialParameters(NVRHI::DrawCallState & state, MaterialInterface* mateiral)
+void FGraphics::ApplyMaterialParameters(NVRHI::DrawCallState & state, MaterialInterface* mateiral)
 {
 	mateiral->ApplyParams(state);
 }
 
-void Graphics::SetClearFlags(NVRHI::DrawCallState& state, const ColorRGBA& color)
+void FGraphics::SetClearFlags(NVRHI::DrawCallState& state, const ColorRGBA& color)
 {
 	state.renderState.clearColor = NVRHI::Color(color.r, color.g, color.b, color.a);
 	state.renderState.clearColorTarget = true;
 	state.renderState.clearDepthTarget = true;
 }
 
-NVRHI::ConstantBufferHandle Graphics::CreateConstantBuffer(uint32_t size, const String & mappedName, const unsigned int specificBinding, int slot)
+NVRHI::ConstantBufferHandle FGraphics::CreateConstantBuffer(uint32_t size, const String & mappedName, const unsigned int specificBinding, int slot)
 {
 	if (_ConstantBuffers.find(mappedName) != _ConstantBuffers.end())
 	{
@@ -257,12 +257,12 @@ NVRHI::ConstantBufferHandle Graphics::CreateConstantBuffer(uint32_t size, const 
 	return info.Handle;
 }
 
-void Graphics::WriteConstantBufferData(NVRHI::ConstantBufferHandle handle, const void* data, uint32_t size)
+void FGraphics::WriteConstantBufferData(NVRHI::ConstantBufferHandle handle, const void* data, uint32_t size)
 {
 	_Context->GetRenderInterface()->writeConstantBuffer(handle, data, size);
 }
 
-void Graphics::WriteConstantBufferData(const String& mappedName, const void* data)
+void FGraphics::WriteConstantBufferData(const String& mappedName, const void* data)
 {
 	if (_ConstantBuffers.find(mappedName) == _ConstantBuffers.end())
 	{
@@ -275,18 +275,18 @@ void Graphics::WriteConstantBufferData(const String& mappedName, const void* dat
 	_Context->GetRenderInterface()->writeConstantBuffer(info.Handle, data, info.DataSize);
 }
 
-void Graphics::WriteConstantBufferDataAndBind(NVRHI::DrawCallState& state, const String& mappedName, const void* data)
+void FGraphics::WriteConstantBufferDataAndBind(NVRHI::DrawCallState& state, const String& mappedName, const void* data)
 {
 	WriteConstantBufferData(mappedName, data);
 	BindConstantBuffer(state, mappedName);
 }
 
-void Graphics::BindConstantBuffer(NVRHI::PipelineStageBindings& ds, uint32_t slot, NVRHI::ConstantBufferHandle handle)
+void FGraphics::BindConstantBuffer(NVRHI::PipelineStageBindings& ds, uint32_t slot, NVRHI::ConstantBufferHandle handle)
 {
 	NVRHI::BindConstantBuffer(ds, slot, handle);
 }
 
-void Graphics::BindConstantBuffer(NVRHI::DrawCallState & state, const String & mappedName, uint32_t slot, bool slotOverride)
+void FGraphics::BindConstantBuffer(NVRHI::DrawCallState & state, const String & mappedName, uint32_t slot, bool slotOverride)
 {
 	if (_ConstantBuffers.find(mappedName) == _ConstantBuffers.end())
 	{
@@ -337,7 +337,7 @@ void Graphics::BindConstantBuffer(NVRHI::DrawCallState & state, const String & m
 	}
 }
 
-ConstantBufferPtr Graphics::GetConstantBuffer(const String & mappedName)
+ConstantBufferPtr FGraphics::GetConstantBuffer(const String & mappedName)
 {
 	if (_ConstantBuffers.find(mappedName) == _ConstantBuffers.end())
 	{
@@ -350,7 +350,7 @@ ConstantBufferPtr Graphics::GetConstantBuffer(const String & mappedName)
 	return info.Handle;
 }
 
-TexturePtr Graphics::CreateRenderTarget(const String & name, const NVRHI::Format::Enum & format, UINT width, UINT height, const NVRHI::Color & clearColor, UINT sampleCount)
+TexturePtr FGraphics::CreateRenderTarget(const String & name, const NVRHI::Format::Enum & format, UINT width, UINT height, const NVRHI::Color & clearColor, UINT sampleCount)
 {
 	if (_RenderViewTargets.find(name) != _RenderViewTargets.end())
 	{
@@ -367,13 +367,13 @@ TexturePtr Graphics::CreateRenderTarget(const String & name, const NVRHI::Format
 
 	gbufferDesc.format = format;
 	gbufferDesc.clearValue = clearColor;
-	gbufferDesc.debugName = name.c_str();
+	gbufferDesc.debugName = name;
 	NVRHI::TextureHandle handle = _Context->GetRenderInterface()->createTexture(gbufferDesc, NULL);
 	_RenderViewTargets[name] = handle;
 	return handle;
 }
 
-TexturePtr Graphics::CreateRenderTarget2DArray(const String & name, const NVRHI::Format::Enum & format, UINT width, UINT height, int mipCount, int arrSize)
+TexturePtr FGraphics::CreateRenderTarget2DArray(const String & name, const NVRHI::Format::Enum & format, UINT width, UINT height, int mipCount, int arrSize)
 {
 	if (_RenderViewTargets.find(name) != _RenderViewTargets.end())
 	{
@@ -394,7 +394,7 @@ TexturePtr Graphics::CreateRenderTarget2DArray(const String & name, const NVRHI:
 	gbufferDesc.isArray = true;
 
 	gbufferDesc.format = format;
-	gbufferDesc.debugName = name.c_str();
+	gbufferDesc.debugName = name;
 
 	NVRHI::TextureHandle handle = _Context->GetRenderInterface()->createTexture(gbufferDesc, NULL);
 
@@ -403,7 +403,7 @@ TexturePtr Graphics::CreateRenderTarget2DArray(const String & name, const NVRHI:
 	return handle;
 }
 
-TexturePtr Graphics::CreateRenderTargetCubeMap(const String & name, const NVRHI::Format::Enum & format, UINT width, UINT height, const NVRHI::Color& clearColor, int mipLevels)
+TexturePtr FGraphics::CreateRenderTargetCubeMap(const String & name, const NVRHI::Format::Enum & format, UINT width, UINT height, const NVRHI::Color& clearColor, int mipLevels)
 {
 	if (_RenderViewTargets.find(name) != _RenderViewTargets.end())
 	{
@@ -426,7 +426,7 @@ TexturePtr Graphics::CreateRenderTargetCubeMap(const String & name, const NVRHI:
 	gbufferDesc.isCubeMap = true;
 
 	gbufferDesc.format = format;
-	gbufferDesc.debugName = name.c_str();
+	gbufferDesc.debugName = name;
 
 	NVRHI::TextureHandle handle = _Context->GetRenderInterface()->createTexture(gbufferDesc, NULL);
 
@@ -435,7 +435,7 @@ TexturePtr Graphics::CreateRenderTargetCubeMap(const String & name, const NVRHI:
 	return handle;
 }
 
-TexturePtr Graphics::CreateUAVTexture(const String& name, const NVRHI::Format::Enum & format, UINT width, UINT height, const NVRHI::Color & clearColor, int mipLevels)
+TexturePtr FGraphics::CreateUAVTexture(const String& name, const NVRHI::Format::Enum & format, UINT width, UINT height, const NVRHI::Color & clearColor, int mipLevels)
 {
 	if (_RenderViewTargets.find(name) != _RenderViewTargets.end())
 	{
@@ -454,13 +454,13 @@ TexturePtr Graphics::CreateUAVTexture(const String& name, const NVRHI::Format::E
 
 	gbufferDesc.format = format;
 	gbufferDesc.clearValue = clearColor;
-	gbufferDesc.debugName = name.c_str();
+	gbufferDesc.debugName = name;
 	NVRHI::TextureHandle handle = _Context->GetRenderInterface()->createTexture(gbufferDesc, NULL);
 	_RenderViewTargets[name] = handle;
 	return handle;
 }
 
-TexturePtr Graphics::CreateUAVTexture3D(const String & name, const NVRHI::Format::Enum & format, UINT width, UINT height, UINT depth, const NVRHI::Color & clearColor, int mipLevels)
+TexturePtr FGraphics::CreateUAVTexture3D(const String & name, const NVRHI::Format::Enum & format, UINT width, UINT height, UINT depth, const NVRHI::Color & clearColor, int mipLevels)
 {
 	if (_RenderViewTargets.find(name) != _RenderViewTargets.end())
 	{
@@ -480,13 +480,39 @@ TexturePtr Graphics::CreateUAVTexture3D(const String & name, const NVRHI::Format
 
 	gbufferDesc.format = format;
 	gbufferDesc.clearValue = clearColor;
-	gbufferDesc.debugName = name.c_str();
+	gbufferDesc.debugName = name;
 	NVRHI::TextureHandle handle = _Context->GetRenderInterface()->createTexture(gbufferDesc, NULL);
 	_RenderViewTargets[name] = handle;
 	return handle;
 }
 
-TexturePtr Graphics::GetRenderTarget(const String & name)
+TexturePtr FGraphics::ResizeRenderTarget(TexturePtr texture, int w, int h)
+{
+	if (texture)
+	{
+		return ResizeRenderTarget(texture->GetDesc().debugName, w, h);
+	}
+
+	return nullptr;
+}
+
+TexturePtr FGraphics::ResizeRenderTarget(const String& textureName, int w, int h)
+{
+	TexturePtr texture = GetRenderTarget(textureName);
+
+	if (texture)
+	{
+		NVRHI::TextureDesc desc = texture->GetDesc();
+
+		ReleaseRenderTarget(texture);
+
+		return CreateRenderTarget(desc.debugName, desc.format, w, h, desc.clearValue, desc.sampleCount);
+	}
+
+	return nullptr;
+}
+
+TexturePtr FGraphics::GetRenderTarget(const String & name)
 {
 	if (_RenderViewTargets.find(name) != _RenderViewTargets.end())
 	{
@@ -495,19 +521,27 @@ TexturePtr Graphics::GetRenderTarget(const String & name)
 	return nullptr;
 }
 
-void Graphics::ReleaseRenderTarget(const String & name)
+void FGraphics::ReleaseRenderTarget(const String & name)
 {
 	if (_RenderViewTargets.find(name) != _RenderViewTargets.end())
 	{
 		TexturePtr rt = _RenderViewTargets[name];
 
-		_Context->GetRenderInterface()->destroyTexture(rt);
-
 		_RenderViewTargets.erase(name);
+
+		_Context->GetRenderInterface()->destroyTexture(rt);
 	}
 }
 
-void Graphics::BindRenderTarget(NVRHI::DrawCallState & state, const String & name, int index)
+void FGraphics::ReleaseRenderTarget(TexturePtr texture)
+{
+	if (texture)
+	{
+		ReleaseRenderTarget(texture->GetDesc().debugName);
+	}
+}
+
+void FGraphics::BindRenderTarget(NVRHI::DrawCallState & state, const String & name, int index)
 {
 	if (_RenderViewTargets.find(name) != _RenderViewTargets.end())
 	{
@@ -517,7 +551,7 @@ void Graphics::BindRenderTarget(NVRHI::DrawCallState & state, const String & nam
 	}
 }
 
-InputLayoutPtr Graphics::CreateInputLayout(const String& name, const NVRHI::VertexAttributeDesc * d, uint32_t attributeCount, MaterialInterface* material)
+InputLayoutPtr FGraphics::CreateInputLayout(const String& name, const NVRHI::VertexAttributeDesc * d, uint32_t attributeCount, MaterialInterface* material)
 {
 	if (_InputLayouts.find(name) != _InputLayouts.end())
 	{
@@ -533,7 +567,7 @@ InputLayoutPtr Graphics::CreateInputLayout(const String& name, const NVRHI::Vert
 	return layout;
 }
 
-InputLayoutPtr Graphics::GetInputLayout(const String & name)
+InputLayoutPtr FGraphics::GetInputLayout(const String & name)
 {
 	if (_InputLayouts.find(name) != _InputLayouts.end())
 	{
@@ -543,7 +577,7 @@ InputLayoutPtr Graphics::GetInputLayout(const String & name)
 	return nullptr;
 }
 
-SamplerPtr Graphics::CreateSampler(const String & name, const WrapMode & wrapX, const WrapMode & wrapY, const WrapMode & wrapZ, bool minFilter, bool magFilter, bool mipFilter, int anisotropy)
+SamplerPtr FGraphics::CreateSampler(const String & name, const WrapMode & wrapX, const WrapMode & wrapY, const WrapMode & wrapZ, bool minFilter, bool magFilter, bool mipFilter, int anisotropy)
 {
 	if (_Samplers.find(name) != _Samplers.end())
 	{
@@ -566,7 +600,7 @@ SamplerPtr Graphics::CreateSampler(const String & name, const WrapMode & wrapX, 
 	return sampler;
 }
 
-SamplerPtr Graphics::CreateShadowCompareSampler(const String & name)
+SamplerPtr FGraphics::CreateShadowCompareSampler(const String & name)
 {
 	if (_Samplers.find(name) != _Samplers.end())
 	{
@@ -588,7 +622,7 @@ SamplerPtr Graphics::CreateShadowCompareSampler(const String & name)
 	return sampler;
 }
 
-SamplerPtr Graphics::GetSampler(const String & name)
+SamplerPtr FGraphics::GetSampler(const String & name)
 {
 	if (_Samplers.find(name) != _Samplers.end())
 	{
@@ -597,7 +631,7 @@ SamplerPtr Graphics::GetSampler(const String & name)
 
 	return nullptr;
 }
-void Graphics::BindSampler(NVRHI::DrawCallState & state, const String & name, int slot)
+void FGraphics::BindSampler(NVRHI::DrawCallState & state, const String & name, int slot)
 {
 	if (_Samplers.find(name) != _Samplers.end())
 	{

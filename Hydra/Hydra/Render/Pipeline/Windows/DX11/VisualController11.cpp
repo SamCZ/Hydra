@@ -45,7 +45,7 @@ HRESULT VisualController::DeviceCreated()
 
 	if (Context->GetGraphics() == nullptr)
 	{
-		Context->SetGraphics(new Graphics(Context));
+		Context->SetGraphics(new FGraphics(Context));
 	}
 
 	if (Context->GetInputManager() == nullptr)

@@ -5,7 +5,7 @@
 void ACubeActor::InitializeComponents()
 {
 	CubeComponent = AddComponent<HStaticMeshComponent>("Cube");
-	CubeComponent->StaticMesh = Engine->GetAssetManager()->GetMesh("Assets/BasicShapes/Cube.FBX");
+	CubeComponent->StaticMesh = Engine->GetAssetManager()->GetMesh("Assets/BasicShapes/Sphere.FBX");
 }
 
 void ACubeActor::BeginPlay()

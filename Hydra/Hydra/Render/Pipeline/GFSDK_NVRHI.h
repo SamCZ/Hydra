@@ -155,7 +155,7 @@ namespace NVRHI
         uint32_t sampleCount, sampleQuality;
         Format::Enum format;
         Usage usage;
-        const char* debugName;
+        String debugName;
 
         bool isArray; //3D or array if .z != 0?
         bool isCubeMap;
@@ -176,7 +176,7 @@ namespace NVRHI
             usage(USAGE_DEFAULT),
             sampleCount(1),
             sampleQuality(0),
-            debugName(0),
+            debugName(),
             isCPUWritable(false),
             isUAV(false),
             isRenderTarget(false),

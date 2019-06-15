@@ -47,6 +47,10 @@ void HydraEngine::OnDestroy()
 
 void HydraEngine::PrepareForEngineStart(DeviceCreationParameters& params)
 {
+#if WITH_EDITOR
+	params.Maximized = true;
+#endif
+
 	Context->ScreenSize = Vector2i(params.Width, params.Height);
 }
 

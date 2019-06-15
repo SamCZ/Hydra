@@ -12,7 +12,7 @@
 
 typedef NVRHI::IRendererInterface* IRendererInterface;
 
-class Graphics;
+class FGraphics;
 
 class HYDRA_API EngineContext
 {
@@ -21,7 +21,7 @@ private:
 	RenderManager* _RenderManager;
 	DeviceManager* _DeviceManager;
 	InputManager* _InputManager;
-	Graphics* _Graphics;
+	FGraphics* _Graphics;
 	UIRenderer* _UIRenderer;
 	AssetManager* _AssetManager;
 public:
@@ -42,8 +42,8 @@ public:
 	void SetInputManager(InputManager* inputManager);
 	InputManager* GetInputManager();
 
-	void SetGraphics(Graphics* graphics);
-	Graphics* GetGraphics();
+	void SetGraphics(FGraphics* graphics);
+	FGraphics* GetGraphics();
 
 	void SetUIRenderer(UIRenderer* uiRenderer);
 	UIRenderer* GetUIRenderer();

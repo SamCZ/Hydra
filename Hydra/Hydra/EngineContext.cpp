@@ -45,12 +45,12 @@ InputManager* EngineContext::GetInputManager()
 	return _InputManager;
 }
 
-void EngineContext::SetGraphics(Graphics * graphics)
+void EngineContext::SetGraphics(FGraphics * graphics)
 {
 	_Graphics = graphics;
 }
 
-Graphics* EngineContext::GetGraphics()
+FGraphics* EngineContext::GetGraphics()
 {
 	return _Graphics;
 }

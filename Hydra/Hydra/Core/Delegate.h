@@ -97,5 +97,6 @@ public:
 #define EVENT_NAME(ClassName, MethodName) (String(#ClassName) + ":" + String(#MethodName))
 #define EVENT(ClassName, MethodName) NammedDelegate<void> { EVENT_NAME(ClassName, MethodName), new Delegate<ClassName, void>(this, &ClassName::MethodName) }
 #define EVENT_ARGS(ClassName, MethodName, ...) NammedDelegate<void, __VA_ARGS__> { EVENT_NAME(ClassName, MethodName), new Delegate<ClassName, void, __VA_ARGS__>(this, &ClassName::MethodName) }
+#define OEVENT_ARGS(ClassName, MethodName, Instance, ...) NammedDelegate<void, __VA_ARGS__> { EVENT_NAME(ClassName, MethodName), new Delegate<ClassName, void, __VA_ARGS__>(Instance, &ClassName::MethodName) }
 
 #define FUNC_POINTER(Name, ReturnType, ...) ReturnType* (*Name)(__VA_ARGS__)

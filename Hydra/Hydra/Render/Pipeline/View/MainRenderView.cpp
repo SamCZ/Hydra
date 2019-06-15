@@ -1,4 +1,5 @@
 #include "MainRenderView.h"
+#include "Hydra/EngineContext.h"
 #include "Hydra/HydraEngine.h"
 
 #include "Hydra/Framework/World.h"
@@ -39,7 +40,8 @@ InputLayoutDefininition InputLayoutDefs[11]{
 	{"WORLD_PER_INSTANCE", 48 }
 };
 
-MainRenderView::MainRenderView(EngineContext* context, HydraEngine* engine) : IVisualController(context), Engine(engine), _ScreenRenderViewport(nullptr)
+MainRenderView::MainRenderView(EngineContext* context, HydraEngine* engine) 
+	: IVisualController(context), Engine(engine), _ScreenRenderViewport(nullptr)
 {
 }
 
@@ -57,6 +59,9 @@ void MainRenderView::OnCreated()
 	Engine->InitializeAssetManager(Context->GetAssetManager());
 
 	Context->GetAssetManager()->LoadProjectFiles();
+
+	RenderInterface = Context->GetRenderInterface();
+	Graphics = Context->GetGraphics();
 
 	_DefaultMaterial = Context->GetAssetManager()->GetMaterial("Assets/Materials/Default.mat");
 
@@ -119,6 +124,11 @@ void MainRenderView::OnResize(uint32 width, uint32 height, uint32 sampleCount)
 	Context->ScreenSize.y = height;
 
 	_ScreenRenderViewport->Resize(width, height);
+
+	FSceneView* view = _ScreenRenderViewport->GetSceneView();
+
+	view->RenderTexture = Graphics->ResizeRenderTarget(view->RenderTexture, width, height);
+	view->DepthTexture = Graphics->ResizeRenderTarget(view->DepthTexture, width, height);
 }
 
 void MainRenderView::OnCameraAdded(HCameraComponent* cmp)

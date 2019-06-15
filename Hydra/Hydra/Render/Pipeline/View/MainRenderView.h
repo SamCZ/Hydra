@@ -12,9 +12,17 @@ class FViewPort;
 
 class MaterialInterface;
 
+namespace NVRHI
+{
+	class IRendererInterface;
+}
+
 class MainRenderView : public IVisualController
 {
 private:
+	NVRHI::IRendererInterface* RenderInterface;
+	class FGraphics* Graphics;
+
 	MaterialInterface* _DefaultMaterial;
 
 	Map<HCameraComponent*, FSceneView*> _SceneViewForCameras;

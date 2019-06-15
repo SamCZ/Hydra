@@ -432,8 +432,8 @@ namespace NVRHI
             if (d.disableGPUsSync)
                 disableSLIResouceSync(newTexture.Get());
 
-            if (d.debugName)
-                SetDebugName(newTexture.Get(), d.debugName);
+            if (d.debugName.length() > 0)
+                SetDebugName(newTexture.Get(), d.debugName.c_str());
 
             if (initialData)
                 delete[] initialData;
@@ -462,8 +462,8 @@ namespace NVRHI
             if (d.disableGPUsSync)
                 disableSLIResouceSync(newTexture.Get());
 
-            if (d.debugName)
-                SetDebugName(newTexture.Get(), d.debugName);
+            if (d.debugName.length() > 0)
+                SetDebugName(newTexture.Get(), d.debugName.c_str());
 
             if (initialData)
                 delete[] initialData;
@@ -2080,7 +2080,6 @@ namespace NVRHI
     {
 
         TextureDesc returnValue;
-        returnValue.debugName = NULL;
 
         D3D11_USAGE usage = D3D11_USAGE_DEFAULT;
         DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN;

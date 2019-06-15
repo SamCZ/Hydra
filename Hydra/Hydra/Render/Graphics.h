@@ -39,7 +39,7 @@ struct ConstantBufferInfo
 	ConstantBufferPtr Handle;
 };
 
-class HYDRA_API Graphics
+class HYDRA_API FGraphics
 {
 private:
 	EngineContext* _Context;
@@ -52,8 +52,8 @@ private:
 	MaterialInterface* _BlitMaterial;
 	MaterialInterface* _BlurMaterial;
 public:
-	Graphics(EngineContext* context);
-	~Graphics();
+	FGraphics(EngineContext* context);
+	~FGraphics();
 
 	void AllocateViewDependentResources(uint32 width, uint32 height, uint32 sampleCount);
 
@@ -96,8 +96,12 @@ public:
 	TexturePtr CreateUAVTexture(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, const NVRHI::Color& clearColor = NVRHI::Color(0.0f), int mipLevels = 1);
 	TexturePtr CreateUAVTexture3D(const String& name, const NVRHI::Format::Enum& format, UINT width, UINT height, UINT depth, const NVRHI::Color& clearColor = NVRHI::Color(0.0f), int mipLevels = 1);
 
+	TexturePtr ResizeRenderTarget(TexturePtr texture, int w, int h);
+	TexturePtr ResizeRenderTarget(const String& textureName, int w, int h);
+
 	TexturePtr GetRenderTarget(const String& name);
 	void ReleaseRenderTarget(const String& name);
+	void ReleaseRenderTarget(TexturePtr texture);
 	void BindRenderTarget(NVRHI::DrawCallState& state, const String& name, int index);
 
 	InputLayoutPtr CreateInputLayout(const String& name, const NVRHI::VertexAttributeDesc* d, uint32_t attributeCount, MaterialInterface* material);
