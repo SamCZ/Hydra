@@ -125,8 +125,8 @@ void MainRenderView::OnResize(uint32 width, uint32 height, uint32 sampleCount)
 
 	_ScreenRenderViewport->Resize(width, height);
 
+	//TODO: Redo this ugly part
 	FSceneView* view = _ScreenRenderViewport->GetSceneView();
-
 	view->RenderTexture = Graphics->ResizeRenderTarget(view->RenderTexture, width, height);
 	view->DepthTexture = Graphics->ResizeRenderTarget(view->DepthTexture, width, height);
 }
