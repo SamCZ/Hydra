@@ -205,6 +205,8 @@
     <ClInclude Include="Hydra\Core\Stream\IStream.h" />
     <ClInclude Include="Hydra\Core\Timing.h" />
     <ClInclude Include="Hydra\Core\YamlConvertors.h" />
+    <ClInclude Include="Hydra\Editor\ShaderGraph\GraphLibrary.h" />
+    <ClInclude Include="Hydra\Editor\ShaderGraph\GraphNode.h" />
     <ClInclude Include="Hydra\Engine.h" />
     <ClInclude Include="Hydra\EngineContext.h" />
     <ClInclude Include="Hydra\Framework\Character.h" />
