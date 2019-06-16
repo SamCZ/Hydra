@@ -31,7 +31,7 @@ public:
 	void End();
 	virtual void SetRenderTarget(NVRHI::TextureHandle tex) = 0;
 
-	void DrawImage(NVRHI::TextureHandle tex, float x, float y, float width, float height, float borderRadius, float alpha = 1.0f);
+	void DrawImage(NVRHI::TextureHandle tex, float x, float y, float width, float height, float borderRadius = 0.0f, float alpha = 1.0f, float angle = 0.0f);
 
 	void DrawString(const String& text, float x, float y, float fontSize, const ColorRGBA& color, const Align& alignX = Align::Left, const Align& alignY = Align::Top);
 
@@ -45,6 +45,11 @@ public:
 	void DrawOval(float x, float y, float w, float h, ColorRGBA color);
 	void DrawLine(float x0, float y0, float x1, float y1, float strength, const ColorRGBA& startColor, const ColorRGBA& endColor);
 	void DrawLine(float x0, float y0, float x1, float y1, float strength, const ColorRGBA& color);
+
+	void RB_RenderLine(float x1, float y1, float x2, float y2, float strokeWidth, const ColorRGBA& color);
+	void RB_RenderGradient(float x, float y, float width, float height, const ColorRGBA& leftColor, const ColorRGBA& rightColor, float radius = 0.0f);
+	void RB_RenderBlock(const String& title, float x, float y, float width, float height, bool isSelected);
+	void RB_RenderSpline(float x1, float y1, float x2, float y2, int count, float strokeWidth = 1.5f);
 
 protected:
 	virtual NVGcontext* CreateContext(int flags) = 0;

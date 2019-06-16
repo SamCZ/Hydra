@@ -71,6 +71,10 @@ void MainRenderView::OnCreated()
 	Context->GetAssetManager()->OnMeshLoaded += EVENT_ARGS(MainRenderView, OnMeshLoaded, HStaticMesh*);
 	Context->GetAssetManager()->OnMeshDeleted += EVENT_ARGS(MainRenderView, OnMeshDeleted, HStaticMesh*);
 
+#if WITH_EDITOR
+	Graphics->CreateRenderTarget("HGameView", NVRHI::Format::RGBA8_UNORM, Context->ScreenSize);
+#endif
+
 	Engine->SceneInit();
 }
 
@@ -88,7 +92,11 @@ void MainRenderView::OnRender(NVRHI::TextureHandle mainRenderTarget)
 
 	if (_ScreenRenderViewport != nullptr)
 	{
+#if WITH_EDITOR
+		BlitFromViewportToTarget(_ScreenRenderViewport, Graphics->GetRenderTarget("HGameView"));
+#else
 		BlitFromViewportToTarget(_ScreenRenderViewport, mainRenderTarget);
+#endif
 	}
 
 	// Test Render
@@ -129,6 +137,8 @@ void MainRenderView::OnResize(uint32 width, uint32 height, uint32 sampleCount)
 	FSceneView* view = _ScreenRenderViewport->GetSceneView();
 	view->RenderTexture = Graphics->ResizeRenderTarget(view->RenderTexture, width, height);
 	view->DepthTexture = Graphics->ResizeRenderTarget(view->DepthTexture, width, height);
+
+	Graphics->ResizeRenderTarget("HGameView", width, height);
 }
 
 void MainRenderView::OnCameraAdded(HCameraComponent* cmp)

@@ -37,10 +37,21 @@ void UIRenderer::End()
 	nvgEndFrame(_Context);
 }
 
-void UIRenderer::DrawImage(NVRHI::TextureHandle tex, float x, float y, float width, float height, float borderRadius, float alpha)
+void UIRenderer::DrawImage(NVRHI::TextureHandle tex, float x, float y, float width, float height, float borderRadius, float alpha, float angle)
 {
+	bool flip = !tex->GetDesc().isRenderTarget;
+
 	int handle = GetHandleForTexture(_Context, tex);
-	NVGpaint paint = nvgImagePattern(_Context, x, y + height, width, -height, 0, handle, 1.0f);
+	NVGpaint paint;
+
+	if (flip)
+	{
+		paint = nvgImagePattern(_Context, x, y + height, width, -height, angle, handle, 1.0f);
+	}
+	else
+	{
+		paint = nvgImagePattern(_Context, x, y, width, height, angle, handle, 1.0f);
+	}
 
 	nvgBeginPath(_Context);
 	if (borderRadius > 0)
@@ -126,14 +137,14 @@ void UIRenderer::ClearClipping()
 
 void UIRenderer::DrawRect(float x, float y, float w, float h, ColorRGBA color, bool isStroke, float strokeSize, float topLeft, float topRight, float bottomRight, float bottomLeft)
 {
-
+	/* Shadow
 	NVGpaint shadowPaint = nvgBoxGradient(_Context, x, y + 2, w, h, topLeft * 2, 10, nvgRGBA(0, 0, 0, 128), nvgRGBA(0, 0, 0, 0));
 	nvgBeginPath(_Context);
 	nvgRect(_Context, x - 10, y - 10, w + 20, h + 30);
 	nvgRoundedRect(_Context, x, y, w, h, topLeft);
 	nvgPathWinding(_Context, NVG_HOLE);
 	nvgFillPaint(_Context, shadowPaint);
-	nvgFill(_Context);
+	nvgFill(_Context);*/
 
 	nvgBeginPath(_Context);
 	if (topLeft == topRight && bottomRight == bottomLeft && topLeft == bottomRight && topRight == bottomLeft)
@@ -195,4 +206,85 @@ void UIRenderer::DrawLine(float x0, float y0, float x1, float y1, float strength
 void UIRenderer::DrawLine(float x0, float y0, float x1, float y1, float strength, const ColorRGBA & color)
 {
 	DrawLine(x0, y0, x1, y1, strength, color, color);
+}
+
+void UIRenderer::RB_RenderLine(float x1, float y1, float x2, float y2, float strokeWidth, const ColorRGBA & color)
+{
+	nvgBeginPath(_Context);
+	nvgMoveTo(_Context, x1, y1);
+	nvgLineTo(_Context, x2, y2);
+	nvgStrokeColor(_Context, FromRGBA(color));
+	nvgStrokeWidth(_Context, strokeWidth);
+	nvgStroke(_Context);
+}
+
+void UIRenderer::RB_RenderGradient(float x, float y, float width, float height, const ColorRGBA & leftColor, const ColorRGBA & rightColor, float radius)
+{
+	const NVGpaint paint = nvgLinearGradient(_Context, x, y, x + width, y, FromRGBA(leftColor), FromRGBA(rightColor));
+	nvgBeginPath(_Context);
+	nvgFillPaint(_Context, paint);
+	nvgRoundedRect(_Context, x, y, width, height, radius);
+	nvgClosePath(_Context);
+	nvgFill(_Context);
+}
+
+void UIRenderer::RB_RenderBlock(const String & title, float x, float y, float width, float height, bool isSelected)
+{
+	DrawRect(x, y, width, height, MakeRGBA(37, 37, 38, 210)); //Background
+	
+	RB_RenderGradient(x, y, width, 25, MakeRGB(20, 100, 200), MakeRGB(4, 40, 80), 2.0f);
+
+	DrawString(title, x + width / 2.0f, y + 2, 20, MakeRGB(181, 188, 188), Align::Center); //Title
+
+	if (isSelected)
+	{
+		DrawRect(x, y, width, height, MakeRGB(82, 158, 207), true, 1.5f, 2.0f); //Outline
+	}
+	else
+	{
+		DrawRect(x, y, width, height, MakeRGB(100, 100, 100), true, 1.5f, 2.0f); //Outline
+	}
+}
+
+void UIRenderer::RB_RenderSpline(float x1, float y1, float x2, float y2, int count, float strokeWidth)
+{
+	NVGcolor color;
+	color.a = 1.0f;
+	color.r = 1.0f;
+	color.g = 1.0f;
+	color.b = 1.0f;
+
+	static NVGcolor colors[4] {
+
+	};
+
+	float spsz = sqrtf((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) * 0.5f;
+	float spacing = 3.3f;
+	float tbsw = spacing;
+
+	if (x2 < x1)
+	{
+		std::swap(x1, x2);
+		std::swap(y1, y2);
+	}
+
+	if (y2 < y1)
+	{
+		tbsw *= -1;
+	}
+
+	for (int i = 0; i < count; i++)
+	{
+		if (count > 1)
+		{
+			
+		}
+
+		nvgBeginPath(_Context);
+		nvgMoveTo(_Context, x1, y1 + (spacing * i));
+		nvgBezierTo(_Context, x1 + spsz - (tbsw * i), y1 + (spacing * i), x2 - spsz - (tbsw * i), y2 + (spacing * i), x2, y2 + (spacing * i));
+		nvgStrokeColor(_Context, color);
+		nvgStrokeWidth(_Context, strokeWidth);
+		nvgStroke(_Context);
+	}
 }

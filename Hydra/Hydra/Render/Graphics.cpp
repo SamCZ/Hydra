@@ -373,6 +373,11 @@ TexturePtr FGraphics::CreateRenderTarget(const String & name, const NVRHI::Forma
 	return handle;
 }
 
+TexturePtr FGraphics::CreateRenderTarget(const String & name, const NVRHI::Format::Enum & format, const Vector2i & size)
+{
+	return CreateRenderTarget(name, format, size.x, size.y, NVRHI::Color(0, 0, 0, 1), 1);
+}
+
 TexturePtr FGraphics::CreateRenderTarget2DArray(const String & name, const NVRHI::Format::Enum & format, UINT width, UINT height, int mipCount, int arrSize)
 {
 	if (_RenderViewTargets.find(name) != _RenderViewTargets.end())
