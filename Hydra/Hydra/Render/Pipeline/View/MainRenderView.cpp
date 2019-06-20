@@ -40,7 +40,7 @@ InputLayoutDefininition InputLayoutDefs[11]{
 	{"WORLD_PER_INSTANCE", 48 }
 };
 
-MainRenderView::MainRenderView(EngineContext* context, HydraEngine* engine) 
+MainRenderView::MainRenderView(EngineContext* context, HydraEngine* engine)
 	: IVisualController(context), Engine(engine), _ScreenRenderViewport(nullptr)
 {
 }

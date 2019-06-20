@@ -11,6 +11,11 @@
 
 #include "GeneratedHeaders/HydraClassDatabase.generated.h"
 
+// Test includes
+#include "Hydra/Platform/WIndows/App/WinApplication.h"
+#include "Hydra/Platform/WIndows/App/WinWindow.h"
+
+
 HydraEngine::~HydraEngine()
 {
 	delete Context;
@@ -25,7 +30,7 @@ void HydraEngine::Start()
 {
 	Context = new EngineContext();
 
-	DeviceManager* deviceManager = DeviceManager::CreateDeviceManagerForPlatform();
+	/*DeviceManager* deviceManager = DeviceManager::CreateDeviceManagerForPlatform();
 	Context->SetDeviceManager(deviceManager);
 
 	deviceManager->OnPrepareDeviceContext += EVENT_ARGS(HydraEngine, PrepareForEngineStart, DeviceCreationParameters&);
@@ -36,13 +41,87 @@ void HydraEngine::Start()
 
 	World = new FWorld(Context);
 
-	deviceManager->InitContext();
+	deviceManager->InitContext();*/
+
+	SharedPtr<Application> app = MakeShared<WinApplication>();
+
+	{
+		SharedPtr<FWindowDefinition> winDefinition = MakeShared<FWindowDefinition>();
+
+		winDefinition->AcceptsInput = true;
+		winDefinition->ActivationPolicy = EWindowActivationPolicy::Always;
+		winDefinition->AppearsInTaskbar = true;
+		winDefinition->FocusWhenFirstShown = true;
+		winDefinition->HasCloseButton = true;
+		winDefinition->HasOSWindowBorder = true;
+		winDefinition->HasSizingFrame = true;
+		winDefinition->IsRegularWindow = true;
+		winDefinition->Opacity = 0.5f;
+		winDefinition->SupportsMaximize = true;
+		winDefinition->SupportsMinimize = true;
+		winDefinition->Title = "Yo";
+
+		winDefinition->WidthDesiredOnScreen = 800;
+		winDefinition->HeightDesiredOnScreen = 600;
+
+		winDefinition->XDesiredPositionOnScreen = 1920 / 2 - winDefinition->WidthDesiredOnScreen / 2;
+		winDefinition->YDesiredPositionOnScreen = 1080 / 2 - winDefinition->HeightDesiredOnScreen / 2;
+
+		SharedPtr<FWindow> window = app->MakeWindow();
+		app->InitializeWindow(window, winDefinition, nullptr, true);
+	}
+
+	{
+		SharedPtr<FWindowDefinition> winDefinition = MakeShared<FWindowDefinition>();
+
+		winDefinition->AcceptsInput = true;
+		winDefinition->ActivationPolicy = EWindowActivationPolicy::Always;
+		winDefinition->AppearsInTaskbar = true;
+		winDefinition->FocusWhenFirstShown = true;
+		winDefinition->HasCloseButton = true;
+		winDefinition->HasOSWindowBorder = true;
+		winDefinition->HasSizingFrame = true;
+		winDefinition->IsRegularWindow = true;
+		winDefinition->Opacity = 0.5f;
+		winDefinition->SupportsMaximize = true;
+		winDefinition->SupportsMinimize = true;
+		winDefinition->Title = "Yo";
+
+		winDefinition->WidthDesiredOnScreen = 800;
+		winDefinition->HeightDesiredOnScreen = 600;
+
+		winDefinition->XDesiredPositionOnScreen = 1920 / 2 - winDefinition->WidthDesiredOnScreen / 2 - 200;
+		winDefinition->YDesiredPositionOnScreen = 1080 / 2 - winDefinition->HeightDesiredOnScreen / 2 - 200;
+
+
+		winDefinition->Title = "Makarenis";
+
+		winDefinition->AppearsInTaskbar = false;
+
+		SharedPtr<FWindow> window = app->MakeWindow();
+		app->InitializeWindow(window, winDefinition, nullptr, true);
+
+	}
+
+	MSG msg = { 0 };
+
+	while (WM_QUIT != msg.message)
+	{
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+	}
 }
 
 void HydraEngine::OnDestroy()
 {
-	delete World;
-	World = nullptr;
+	if (World)
+	{
+		delete World;
+		World = nullptr;
+	}
 }
 
 void HydraEngine::PrepareForEngineStart(DeviceCreationParameters& params)

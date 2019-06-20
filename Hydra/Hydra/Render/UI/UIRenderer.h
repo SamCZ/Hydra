@@ -51,6 +51,8 @@ public:
 	void RB_RenderBlock(const String& title, float x, float y, float width, float height, bool isSelected);
 	void RB_RenderSpline(float x1, float y1, float x2, float y2, int count, float strokeWidth = 1.5f);
 
+	void DrawCheck(float x, float y, const ColorRGBA& color, float thickness);
+
 protected:
 	virtual NVGcontext* CreateContext(int flags) = 0;
 	virtual void DestroyContext(NVGcontext* context) = 0;

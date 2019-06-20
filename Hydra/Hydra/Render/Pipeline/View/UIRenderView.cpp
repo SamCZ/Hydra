@@ -10,12 +10,13 @@
 #include "Hydra/Framework/Actor.h"
 
 #include "Hydra/Render/Graphics.h"
+#include "Hydra/Render/UI/ImHud.h"
 
 void UIRenderView::OnCreated()
 {
 	//Context->GetGraphics()->CreateRenderTarget("UI", NVRHI::Format::RGBA8_UNORM, 1280, 720, NVRHI::Color(1.0), 1);
 
-
+	ImHud::Init(Context);
 }
 
 void UIRenderView::OnDestroy()
@@ -32,7 +33,7 @@ int HudRenderCompareFnc(AActor* left, AActor* right)
 
 void UIRenderView::OnRender(NVRHI::TextureHandle mainRenderTarget)
 {
-	//(void)mainRenderTarget;
+	(void)mainRenderTarget;
 
 	UIRenderer* renderer = Context->GetUIRenderer();
 
@@ -79,9 +80,13 @@ void UIRenderView::OnRender(NVRHI::TextureHandle mainRenderTarget)
 
 	renderer->RB_RenderBlock("Multiply", 100, 100, 200, 125, true);
 
-	renderer->RB_RenderSpline(100, 100, Context->GetInputManager()->GetCursorPos().x, Context->GetInputManager()->GetCursorPos().y, 4, 1);
-	
+	renderer->RB_RenderSpline(100, 100, Context->GetInputManager()->GetCursorPos().x, Context->GetInputManager()->GetCursorPos().y, 4);
+
 	renderer->DrawImage(Context->GetGraphics()->GetRenderTarget("HGameView"), 300, 300, 640, 350);
+
+	static bool aezakmi;
+
+	ImHud::Checkbox("test", Vector2(50, 50), &aezakmi);
 
 	renderer->End();
 
@@ -90,7 +95,7 @@ void UIRenderView::OnRender(NVRHI::TextureHandle mainRenderTarget)
 
 void UIRenderView::OnTick(float Delta)
 {
-	
+
 }
 
 void UIRenderView::OnResize(uint32 width, uint32 height, uint32 sampleCount)

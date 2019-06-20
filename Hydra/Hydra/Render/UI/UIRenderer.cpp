@@ -74,26 +74,26 @@ void UIRenderer::DrawString(const String& text, float x, float y, float fontSize
 	int flags = 0;
 	switch (alignX)
 	{
-	case Align::Left:
+		case Align::Left:
 		flags |= NVG_ALIGN_LEFT;
 		break;
-	case Align::Right:
+		case Align::Right:
 		flags |= NVG_ALIGN_RIGHT;
 		break;
-	case Align::Center:
+		case Align::Center:
 		flags |= NVG_ALIGN_CENTER;
 		break;
 	}
 
 	switch (alignY)
 	{
-	case Align::Top:
+		case Align::Top:
 		flags |= NVG_ALIGN_TOP;
 		break;
-	case Align::Bottom:
+		case Align::Bottom:
 		flags |= NVG_ALIGN_BOTTOM;
 		break;
-	case Align::Center:
+		case Align::Center:
 		flags |= NVG_ALIGN_MIDDLE;
 		break;
 	}
@@ -231,7 +231,7 @@ void UIRenderer::RB_RenderGradient(float x, float y, float width, float height, 
 void UIRenderer::RB_RenderBlock(const String & title, float x, float y, float width, float height, bool isSelected)
 {
 	DrawRect(x, y, width, height, MakeRGBA(37, 37, 38, 210)); //Background
-	
+
 	RB_RenderGradient(x, y, width, 25, MakeRGB(20, 100, 200), MakeRGB(4, 40, 80), 2.0f);
 
 	DrawString(title, x + width / 2.0f, y + 2, 20, MakeRGB(181, 188, 188), Align::Center); //Title
@@ -254,8 +254,11 @@ void UIRenderer::RB_RenderSpline(float x1, float y1, float x2, float y2, int cou
 	color.g = 1.0f;
 	color.b = 1.0f;
 
-	static NVGcolor colors[4] {
-
+	static NVGcolor colors[4]{
+		{ 1.0f, 0.0f, 0.0f, 1.0f },
+		{ 0.0f, 1.0f, 0.0f, 1.0f },
+		{ 0.0f, 0.0f, 1.0f, 1.0f },
+		{ 1.0f, 1.0f, 1.0f, 1.0f }
 	};
 
 	float spsz = sqrtf((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) * 0.5f;
@@ -277,7 +280,7 @@ void UIRenderer::RB_RenderSpline(float x1, float y1, float x2, float y2, int cou
 	{
 		if (count > 1)
 		{
-			
+			color = colors[i];
 		}
 
 		nvgBeginPath(_Context);
@@ -287,4 +290,18 @@ void UIRenderer::RB_RenderSpline(float x1, float y1, float x2, float y2, int cou
 		nvgStrokeWidth(_Context, strokeWidth);
 		nvgStroke(_Context);
 	}
+}
+
+void UIRenderer::DrawCheck(float x, float y, const ColorRGBA& color, float thickness)
+{
+	nvgSave(_Context);
+	nvgBeginPath(_Context);
+	nvgTranslate(_Context, x - 15, y - 16);
+	nvgMoveTo(_Context, 10, 17);
+	nvgLineTo(_Context, 13, 20);
+	nvgLineTo(_Context, 20, 13);
+	nvgStrokeWidth(_Context, thickness);
+	nvgStrokeColor(_Context, FromRGBA(color));
+	nvgStroke(_Context);
+	nvgRestore(_Context);
 }

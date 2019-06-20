@@ -20,6 +20,7 @@ inline static SharedPtr<T> MakeShareable(T* pointer)
 {
 	return SharedPtr<T> { pointer };
 }
+#define StaticCastSharedPtr std::static_pointer_cast
 
 #define New(classname, ...) MakeShared<classname>(__VA_ARGS__)
 
