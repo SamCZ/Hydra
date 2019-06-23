@@ -18,7 +18,9 @@ public: // Inerhited from Application
 
 	virtual SharedPtr<FWindow> MakeWindow() override;
 
-	virtual void InitializeWindow(const SharedPtr<FWindow>& InWindow, const SharedPtr<FWindowDefinition>& InDefinition, const SharedPtr<FWindow>& InParent, const bool bShowImmediately) override;
+	virtual void InitializeWindow(const SharedPtr<FWindow>& InWindow, const SharedPtr<FWindowDefinition>& InDefinition, const SharedPtr<FWindow>& InParent) override;
+
+	virtual void Run() override;
 
 protected:
 	virtual SharedPtr<FTaskbar> MakeTaskbar() override;

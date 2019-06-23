@@ -23,10 +23,7 @@ WinApplication::WinApplication() : Application()
 
 WinApplication::~WinApplication()
 {
-	for (SharedPtr<WinWindow> window : Windows)
-	{
-		window->Destroy();
-	}
+
 }
 
 SharedPtr<FWindow> WinApplication::MakeWindow()
@@ -39,7 +36,7 @@ SharedPtr<FTaskbar> WinApplication::MakeTaskbar()
 	return MakeShared<WinTaskbar>();
 }
 
-void WinApplication::InitializeWindow(const SharedPtr<FWindow>& InWindow, const SharedPtr<FWindowDefinition>& InDefinition, const SharedPtr<FWindow>& InParent, const bool bShowImmediately)
+void WinApplication::InitializeWindow(const SharedPtr<FWindow>& InWindow, const SharedPtr<FWindowDefinition>& InDefinition, const SharedPtr<FWindow>& InParent)
 {
 	if (InWindow == nullptr)
 	{
@@ -51,10 +48,19 @@ void WinApplication::InitializeWindow(const SharedPtr<FWindow>& InWindow, const 
 
 	Windows.push_back(winWindow);
 	winWindow->Initialize(this, InDefinition, _hInstance, parentWinWindow);
+}
 
-	if (bShowImmediately)
+void WinApplication::Run()
+{
+	MSG msg = { 0 };
+
+	while (WM_QUIT != msg.message)
 	{
-		winWindow->Show();
+		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
 	}
 }
 
@@ -116,7 +122,15 @@ int32 WinApplication::ProcessMessage(HWND hwnd, uint32 msg, WPARAM wParam, LPARA
 	{
 		case WM_DESTROY:
 		{
+			OnWindowDestroy.Invoke(window);
+
 			List_Remove(Windows, window);
+
+			if (Windows.size() == 0)
+			{
+				PostQuitMessage(0);
+			}
+
 			return 0;
 		}
 		break;

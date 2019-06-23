@@ -420,25 +420,37 @@
     <ClInclude Include="Hydra\Render\UI\ImHud.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hydra\Editor\UI\UIWidget.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Hydra\App\Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Hydra\App\Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hydra\Platform\WIndows\App\WinApplication.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Platform\WIndows\App\WinWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Hydra\App\Taskbar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hydra\Platform\WIndows\App\WinTaskbar.h">
+    <ClInclude Include="Hydra\Platform\Windows\App\WinApplication.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Platform\Windows\App\WinTaskbar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Platform\Windows\App\WinWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\App\UI\UIWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\App\UI\WindowManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\App\UI\UI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\App\UI\UIWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Framework\Optional.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -722,13 +734,22 @@
     <ClCompile Include="Hydra\App\Taskbar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hydra\Platform\WIndows\App\WinTaskbar.cpp">
+    <ClCompile Include="Hydra\Platform\Windows\App\WinApplication.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hydra\Platform\WIndows\App\WinWindow.cpp">
+    <ClCompile Include="Hydra\Platform\Windows\App\WinTaskbar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hydra\Platform\WIndows\App\WinApplication.cpp">
+    <ClCompile Include="Hydra\Platform\Windows\App\WinWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\App\UI\UIWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\App\UI\UIWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\App\UI\WindowManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
