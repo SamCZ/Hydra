@@ -67,3 +67,8 @@ void FWindow::SetFocus()
 void FWindow::SetOpacity(float Opacity)
 {
 }
+
+void * FWindow::GetOSWindowHandle()
+{
+	return nullptr;
+}

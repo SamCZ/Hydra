@@ -181,10 +181,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Hydra\App\Application.h" />
+    <ClInclude Include="Hydra\App\Render\WindowRender.h" />
     <ClInclude Include="Hydra\App\Taskbar.h" />
     <ClInclude Include="Hydra\App\UI\UI.h" />
     <ClInclude Include="Hydra\App\UI\UIWindow.h" />
-    <ClInclude Include="Hydra\App\UI\WindowManager.h" />
+    <ClInclude Include="Hydra\App\WindowManager.h" />
     <ClInclude Include="Hydra\App\Window.h" />
     <ClInclude Include="Hydra\Assets\Asset.h" />
     <ClInclude Include="Hydra\Assets\IAssetImporter.h" />
@@ -245,6 +246,7 @@
     <ClInclude Include="Hydra\Physics\Collisons\CollisionResults.h" />
     <ClInclude Include="Hydra\Physics\Collisons\Ray.h" />
     <ClInclude Include="Hydra\Physics\Collisons\Testing.h" />
+    <ClInclude Include="Hydra\Platform\Windows\App\D3DWindowRender.h" />
     <ClInclude Include="Hydra\Platform\Windows\App\WinApplication.h" />
     <ClInclude Include="Hydra\Platform\Windows\App\WinTaskbar.h" />
     <ClInclude Include="Hydra\Platform\Windows\App\WinWindow.h" />
@@ -332,7 +334,7 @@
     <ClCompile Include="Hydra\App\Taskbar.cpp" />
     <ClCompile Include="Hydra\App\UI\UIWidget.cpp" />
     <ClCompile Include="Hydra\App\UI\UIWindow.cpp" />
-    <ClCompile Include="Hydra\App\UI\WindowManager.cpp" />
+    <ClCompile Include="Hydra\App\WindowManager.cpp" />
     <ClCompile Include="Hydra\App\Window.cpp" />
     <ClCompile Include="Hydra\Assets\AssetManager.cpp" />
     <ClCompile Include="Hydra\Assets\Importers\ModelImporter.cpp" />
@@ -358,6 +360,7 @@
     <ClCompile Include="Hydra\Physics\Collisons\BIH\BIHTree.cpp" />
     <ClCompile Include="Hydra\Physics\Collisons\CollisionResults.cpp" />
     <ClCompile Include="Hydra\Physics\Collisons\Ray.cpp" />
+    <ClCompile Include="Hydra\Platform\Windows\App\D3DWindowRender.cpp" />
     <ClCompile Include="Hydra\Platform\Windows\App\WinApplication.cpp" />
     <ClCompile Include="Hydra\Platform\Windows\App\WinTaskbar.cpp" />
     <ClCompile Include="Hydra\Platform\Windows\App\WinWindow.cpp" />

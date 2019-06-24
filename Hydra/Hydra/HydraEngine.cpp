@@ -15,7 +15,7 @@
 #include "Hydra/Platform/Windows/App/WinApplication.h"
 #include "Hydra/Platform/Windows/App/WinWindow.h"
 
-#include "Hydra/App/UI/WindowManager.h"
+#include "Hydra/App/WindowManager.h"
 
 
 HydraEngine::~HydraEngine()
@@ -47,19 +47,38 @@ void HydraEngine::Start()
 
 
 	SharedPtr<Application> app = MakeShared<WinApplication>();
+	app->Initialize();
 
-	SharedPtr<UIWindow> window = UINew(UIWindow)
-		.Type(EWindowType::Normal)
-		.CreateTitleBar(true)
-		.FocusWhenFirstShown(true)
-		.HasCloseButton(true)
-		.InitialOpacity(1.0f)
-		.SupportsMaximize(false)
-		.SupportsMinimize(true)
-		.Title("Hydra")
-		.UseOSWindowBorder(true);
+	{
+		SharedPtr<UIWindow> window = UINew(UIWindow)
+			.Type(EWindowType::Normal)
+			.CreateTitleBar(true)
+			.FocusWhenFirstShown(true)
+			.HasCloseButton(true)
+			.InitialOpacity(1.0f)
+			.SupportsMaximize(true)
+			.SupportsMinimize(true)
+			.Title("Hydra")
+			.UseOSWindowBorder(true);
 
-	WindowManager::Get().AddWindow(window, true);
+		WindowManager::Get().AddWindow(window, true);
+	}
+
+	{
+		SharedPtr<UIWindow> window = UINew(UIWindow)
+			.Type(EWindowType::Normal)
+			.CreateTitleBar(true)
+			.FocusWhenFirstShown(true)
+			.HasCloseButton(true)
+			.InitialOpacity(1.0f)
+			.SupportsMaximize(true)
+			.SupportsMinimize(true)
+			.Title("Hydra")
+			.Size(Vector2i(200, 200))
+			.UseOSWindowBorder(true);
+
+		WindowManager::Get().AddWindow(window, true);
+	}
 
 	app->Run();
 }

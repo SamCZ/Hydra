@@ -2,7 +2,7 @@
 
 #include "Hydra/Core/Common.h"
 
-class HYDRA_API UIWidget
+class HYDRA_API UIWidget : public SharedFromThis<UIWidget>
 {
 public:
 	virtual ~UIWidget();

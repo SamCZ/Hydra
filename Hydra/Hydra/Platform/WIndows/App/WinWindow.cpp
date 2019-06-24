@@ -170,6 +170,7 @@ void WinWindow::Initialize(WinApplication* const Application, const SharedPtr<FW
 		SetOpacity(Definition->Opacity);
 	}
 
+
 	// No region for non regular windows or windows displaying the os window border
 	if (IsRegularWindow() && !Definition->HasOSWindowBorder)
 	{
@@ -625,4 +626,9 @@ void WinWindow::SetFocus()
 void WinWindow::SetOpacity(float Opacity)
 {
 	SetLayeredWindowAttributes(HWnd, 0, (int)floor(Opacity * 255.0f), LWA_ALPHA);
+}
+
+void* WinWindow::GetOSWindowHandle()
+{
+	return HWnd;
 }

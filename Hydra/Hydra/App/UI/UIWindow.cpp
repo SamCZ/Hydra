@@ -1,5 +1,11 @@
 #include "UIWindow.h"
 
+#include "Hydra/App/WindowManager.h"
+
+UIWindow::UIWindow() : bHasEverBeenShown(false), bSizeWillChangeOften(false)
+{
+}
+
 UIWindow::~UIWindow()
 {
 }
@@ -27,10 +33,20 @@ void UIWindow::Initialize(const FArguments& InArgs)
 	this->WindowActivationPolicy = InArgs._ActivationPolicy;
 	this->bVirtualWindow = false;
 
+	Size = InArgs._Size;
+	ScreenPosition = InArgs._ScreenPosition;
+
 	bCreateTitleBar = InArgs._CreateTitleBar && !bIsPopupWindow && Type != EWindowType::CursorDecorator && !bHasOSWindowBorder;
 
-	Size = Vector2i(800, 600);
-	ScreenPosition = Vector2i(200, 200);
+	if (SizingRule == ESizingRule::Autosized || (Size.x == 0 || Size.y == 0))
+	{
+		Size = Vector2i(1280, 720);
+	}
+
+	if (InArgs._AutoCenter)
+	{
+		ScreenPosition = Vector2i(1920, 1080) / 2 - (Size / 2);
+	}
 }
 
 void UIWindow::SetNativeWindow(SharedPtr<FWindow>& window)
@@ -41,6 +57,16 @@ void UIWindow::SetNativeWindow(SharedPtr<FWindow>& window)
 SharedPtr<FWindow>& UIWindow::GetNativeWindow()
 {
 	return NativeWindow;
+}
+
+void UIWindow::SetViewPort(SharedPtr<FWindowViewPort>& viewport)
+{
+	ViewPort = viewport;
+}
+
+SharedPtr<FWindowViewPort> UIWindow::GetViewport()
+{
+	return ViewPort;
 }
 
 bool UIWindow::SupportsKeyboardFocus() const
@@ -59,7 +85,17 @@ void UIWindow::Show()
 	{
 		bHasEverBeenShown = true;
 
-		//TODO: Viewport initialization
+		WindowManager::Get().GetRenderer().CreateViewport(AsShared<UIWindow>());
+
+		if (NativeWindow != nullptr && bInitiallyMaximized)
+		{
+			NativeWindow->Maximize();
+		}
+
+		if (NativeWindow != nullptr && bInitiallyMinimized)
+		{
+			NativeWindow->Minimize();
+		}
 	}
 
 	if (NativeWindow != nullptr)

@@ -73,4 +73,6 @@ public: // Inherited from FWindow
 	virtual void SetFocus();
 
 	virtual void SetOpacity(float Opacity);
+
+	virtual void* GetOSWindowHandle();
 };

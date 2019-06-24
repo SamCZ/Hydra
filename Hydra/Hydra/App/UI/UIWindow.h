@@ -6,6 +6,8 @@
 #include "Hydra/App/Window.h"
 #include "Hydra/Framework/Optional.h"
 
+struct FWindowViewPort;
+
 enum class ESizingRule : uint8
 {
 	/* The windows size fixed and cannot be resized **/
@@ -79,6 +81,7 @@ public:
 
 private:
 	SharedPtr<FWindow> NativeWindow;
+	SharedPtr<FWindowViewPort> ViewPort;
 
 protected:
 	EWindowType Type;
@@ -113,12 +116,16 @@ protected:
 	//TWeakPtr<ISlateViewport> Viewport;
 
 public:
+	UIWindow();
 	virtual ~UIWindow();
 
 	void Initialize(const FArguments& arguments);
 
 	void SetNativeWindow(SharedPtr<FWindow>& window);
 	SharedPtr<FWindow>& GetNativeWindow();
+
+	void SetViewPort(SharedPtr<FWindowViewPort>& viewport);
+	SharedPtr<FWindowViewPort> GetViewport();
 
 	bool SupportsKeyboardFocus() const;
 	bool IsFocusedInitially() const;

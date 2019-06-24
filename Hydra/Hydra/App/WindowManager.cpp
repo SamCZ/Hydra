@@ -7,11 +7,25 @@ WindowManager* WindowManager::SelfInstance = nullptr;
 WindowManager::WindowManager(Application* app) : App(app)
 {
 	SelfInstance = this;
+
+	WindowRenderer = App->MakeWindowRenderer();
+
+	App->OnWindowDestroy += EVENT_ARGS(WindowManager, OnWindowDestroy, SharedPtr<FWindow>);
 }
 
 WindowManager::~WindowManager()
 {
 	SelfInstance = nullptr;
+}
+
+void WindowManager::Tick(float Delta)
+{
+
+}
+
+void WindowManager::Render()
+{
+	WindowRenderer->RenderWindows();
 }
 
 SharedPtr<UIWindow> WindowManager::AddWindow(SharedPtr<UIWindow>& window, bool showImmediately)
@@ -31,6 +45,11 @@ SharedPtr<UIWindow> WindowManager::AddWindow(SharedPtr<UIWindow>& window, bool s
 	}
 
 	return window;
+}
+
+FWindowRender& WindowManager::GetRenderer()
+{
+	return *WindowRenderer;
 }
 
 WindowManager& WindowManager::Get()
@@ -80,4 +99,17 @@ void WindowManager::MakeWindow(SharedPtr<UIWindow>& InSlateWindow)
 	App->InitializeWindow(nativeWindow, Definition, nullptr);
 
 	InSlateWindow->SetNativeWindow(nativeWindow);
+}
+
+void WindowManager::OnWindowDestroy(SharedPtr<FWindow> nativeWindow)
+{
+	for (SharedPtr<UIWindow>& window : Windows)
+	{
+		if (window->GetNativeWindow() == nativeWindow)
+		{
+			WindowRenderer->OnWindowDestroy(window);
+			List_Remove(Windows, window);
+			return;
+		}
+	}
 }

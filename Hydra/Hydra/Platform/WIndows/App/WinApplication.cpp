@@ -5,6 +5,8 @@
 #include "WinWindow.h"
 #include "WinTaskbar.h"
 
+#include "D3DWindowRender.h"
+
 static WinApplication* WinApp;
 
 LRESULT CALLBACK AppWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -29,6 +31,11 @@ WinApplication::~WinApplication()
 SharedPtr<FWindow> WinApplication::MakeWindow()
 {
 	return WinWindow::Make();
+}
+
+SharedPtr<FWindowRender> WinApplication::MakeWindowRenderer()
+{
+	return MakeShared<D3DWindowRender>();
 }
 
 SharedPtr<FTaskbar> WinApplication::MakeTaskbar()
@@ -56,11 +63,15 @@ void WinApplication::Run()
 
 	while (WM_QUIT != msg.message)
 	{
-		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+
+		IUWindowManager->Tick(0);
+
+		IUWindowManager->Render();
 	}
 }
 

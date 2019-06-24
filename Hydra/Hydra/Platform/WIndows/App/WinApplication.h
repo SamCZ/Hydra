@@ -17,6 +17,7 @@ public: // Inerhited from Application
 	virtual ~WinApplication();
 
 	virtual SharedPtr<FWindow> MakeWindow() override;
+	virtual SharedPtr<FWindowRender> MakeWindowRenderer() override;
 
 	virtual void InitializeWindow(const SharedPtr<FWindow>& InWindow, const SharedPtr<FWindowDefinition>& InDefinition, const SharedPtr<FWindow>& InParent) override;
 

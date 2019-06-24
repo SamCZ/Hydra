@@ -441,9 +441,6 @@
     <ClInclude Include="Hydra\App\UI\UIWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hydra\App\UI\WindowManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Hydra\App\UI\UI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -451,6 +448,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Hydra\Framework\Optional.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\App\WindowManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\App\Render\WindowRender.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\Platform\Windows\App\D3DWindowRender.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -749,7 +755,10 @@
     <ClCompile Include="Hydra\App\UI\UIWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hydra\App\UI\WindowManager.cpp">
+    <ClCompile Include="Hydra\App\WindowManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\Platform\Windows\App\D3DWindowRender.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

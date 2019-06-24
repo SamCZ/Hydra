@@ -2,13 +2,18 @@
 
 Application::Application()
 {
-	Taskbar = MakeTaskbar();
-	IUWindowManager = new WindowManager(this);
+
 }
 
 Application::~Application()
 {
 	delete IUWindowManager;
+}
+
+void Application::Initialize()
+{
+	Taskbar = MakeTaskbar();
+	IUWindowManager = new WindowManager(this);
 }
 
 void Application::InitializeWindow(const SharedPtr<FWindow>& InWindow, const SharedPtr<FWindowDefinition>& InDefinition, const SharedPtr<FWindow>& InParent)
