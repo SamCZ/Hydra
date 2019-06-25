@@ -75,6 +75,15 @@ void WinApplication::Run()
 	}
 }
 
+void WinApplication::InitializeEngineContext(EngineContext* context)
+{
+	Context = context;
+
+	D3DWindowRender& windowRenderer = static_cast<D3DWindowRender&>(IUWindowManager->GetRenderer());
+
+
+}
+
 bool WinApplication::RegisterClassInstance(const HINSTANCE HInstance, const HICON HIcon)
 {
 	_hInstance = HInstance;

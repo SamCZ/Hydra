@@ -3,13 +3,39 @@
 #include "Hydra/App/UI/UIWindow.h"
 #include "Hydra/App/Window.h"
 
+class RendererErrorCallbacka : public NVRHI::IErrorCallback
+{
+	void signalError(const char* file, int line, const char* errorDesc)
+	{
+		char buffer[4096];
+		int length = (int)strlen(errorDesc);
+		length = std::min<int>(length, 4000); // avoid a "buffer too small" exception for really long error messages
+		sprintf_s(buffer, "%s:%i\n%.*s", file, line, length, errorDesc);
+
+		OutputDebugStringA(buffer);
+		OutputDebugStringA("\n");
+		MessageBoxA(NULL, buffer, "ERROR", MB_ICONERROR | MB_OK);
+	}
+};
+RendererErrorCallbacka g_ErrorCallbacka;
+
 D3DWindowRender::D3DWindowRender() : GD3DDevice(nullptr), GD3DDeviceContext(nullptr)
 {
-	CreateDevice();
+	if (CreateDevice())
+	{
+		RenderInterface = new NVRHI::RendererInterfaceD3D11(&g_ErrorCallbacka, GD3DDeviceContext);
+
+		UI2DRenderer = new D3DUIRenderer(RenderInterface, GD3DDevice);
+		UI2DRenderer->Create();
+	}
 }
 
 D3DWindowRender::~D3DWindowRender()
 {
+	UI2DRenderer->Destroy();
+
+	delete RenderInterface;
+
 	GD3DDeviceContext->Release();
 	GD3DDevice->Release();
 }
@@ -161,7 +187,11 @@ void D3DWindowRender::RenderWindows()
 
 		GD3DDeviceContext->OMSetRenderTargets(1, &RTV, NULL);
 
+		UI2DRenderer->Begin(Vector2i(viewport->ViewportInfo.Width, viewport->ViewportInfo.Height));
 
+		UI2DRenderer->DrawRect(100, 100, 100, 100, ColorRGBA::White);
+
+		UI2DRenderer->End();
 
 		GD3DDeviceContext->OMSetRenderTargets(0, NULL, NULL);
 
@@ -174,4 +204,9 @@ void D3DWindowRender::RenderWindows()
 void D3DWindowRender::OnWindowDestroy(const SharedPtr<UIWindow>& window)
 {
 	List_Remove(Windows, window);
+}
+
+NVRHI::IRendererInterface * D3DWindowRender::GetRenderInterface()
+{
+	return RenderInterface;
 }

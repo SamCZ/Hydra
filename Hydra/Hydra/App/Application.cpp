@@ -23,3 +23,7 @@ void Application::InitializeWindow(const SharedPtr<FWindow>& InWindow, const Sha
 void Application::Run()
 {
 }
+
+void Application::InitializeEngineContext(EngineContext * context)
+{
+}

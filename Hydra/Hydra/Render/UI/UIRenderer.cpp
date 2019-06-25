@@ -8,6 +8,10 @@ UIRenderer::UIRenderer() : _Context(nullptr)
 
 }
 
+UIRenderer::~UIRenderer()
+{
+}
+
 void UIRenderer::Create()
 {
 	if (_Context == nullptr)

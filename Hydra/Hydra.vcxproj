@@ -246,6 +246,7 @@
     <ClInclude Include="Hydra\Physics\Collisons\CollisionResults.h" />
     <ClInclude Include="Hydra\Physics\Collisons\Ray.h" />
     <ClInclude Include="Hydra\Physics\Collisons\Testing.h" />
+    <ClInclude Include="Hydra\Platform\Windows\App\D3DUIRenderer.h" />
     <ClInclude Include="Hydra\Platform\Windows\App\D3DWindowRender.h" />
     <ClInclude Include="Hydra\Platform\Windows\App\WinApplication.h" />
     <ClInclude Include="Hydra\Platform\Windows\App\WinTaskbar.h" />
@@ -360,6 +361,7 @@
     <ClCompile Include="Hydra\Physics\Collisons\BIH\BIHTree.cpp" />
     <ClCompile Include="Hydra\Physics\Collisons\CollisionResults.cpp" />
     <ClCompile Include="Hydra\Physics\Collisons\Ray.cpp" />
+    <ClCompile Include="Hydra\Platform\Windows\App\D3DUIRenderer.cpp" />
     <ClCompile Include="Hydra\Platform\Windows\App\D3DWindowRender.cpp" />
     <ClCompile Include="Hydra\Platform\Windows\App\WinApplication.cpp" />
     <ClCompile Include="Hydra\Platform\Windows\App\WinTaskbar.cpp" />

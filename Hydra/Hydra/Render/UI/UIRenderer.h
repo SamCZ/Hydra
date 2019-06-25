@@ -23,6 +23,7 @@ private:
 	float _TextBounds[4];
 public:
 	UIRenderer();
+	virtual ~UIRenderer();
 
 	void Create();
 	void Destroy();

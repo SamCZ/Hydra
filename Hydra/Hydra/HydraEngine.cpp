@@ -49,20 +49,7 @@ void HydraEngine::Start()
 	SharedPtr<Application> app = MakeShared<WinApplication>();
 	app->Initialize();
 
-	{
-		SharedPtr<UIWindow> window = UINew(UIWindow)
-			.Type(EWindowType::Normal)
-			.CreateTitleBar(true)
-			.FocusWhenFirstShown(true)
-			.HasCloseButton(true)
-			.InitialOpacity(1.0f)
-			.SupportsMaximize(true)
-			.SupportsMinimize(true)
-			.Title("Hydra")
-			.UseOSWindowBorder(true);
-
-		WindowManager::Get().AddWindow(window, true);
-	}
+	app->InitializeEngineContext(Context);
 
 	{
 		SharedPtr<UIWindow> window = UINew(UIWindow)
@@ -74,7 +61,6 @@ void HydraEngine::Start()
 			.SupportsMaximize(true)
 			.SupportsMinimize(true)
 			.Title("Hydra")
-			.Size(Vector2i(200, 200))
 			.UseOSWindowBorder(true);
 
 		WindowManager::Get().AddWindow(window, true);

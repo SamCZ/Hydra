@@ -5,6 +5,11 @@
 #include "Hydra/Core/SmartPointer.h"
 #include "Hydra/App/Render/WindowRender.h"
 
+#include "Hydra/Render/UI/UIRenderer.h"
+#include "Hydra/Render/Pipeline/Windows/DX11/GFSDK_NVRHI_D3D11.h"
+
+#include "D3DUIRenderer.h"
+
 #include <Windows.h>
 #include <DXGI.h>
 #include <D3D11.h>
@@ -45,17 +50,23 @@ private:
 	ID3D11Device* GD3DDevice;
 	ID3D11DeviceContext* GD3DDeviceContext;
 
+	NVRHI::RendererInterfaceD3D11* RenderInterface;
+
+	D3DUIRenderer * UI2DRenderer;
+
 	List<SharedPtr<UIWindow>> Windows;
 public:
 
 	D3DWindowRender();
-	~D3DWindowRender();
+	virtual ~D3DWindowRender();
 
 	virtual void CreateViewport(SharedPtr<UIWindow>& window) override;
 
 	virtual void RenderWindows() override;
 
 	virtual void OnWindowDestroy(const SharedPtr<UIWindow>& window) override;
+
+	NVRHI::IRendererInterface* GetRenderInterface();
 
 private:
 	bool CreateDevice();

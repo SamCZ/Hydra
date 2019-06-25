@@ -8,6 +8,7 @@
 #include "Taskbar.h"
 
 class FWindowRender;
+class EngineContext;
 
 class HYDRA_API Application
 {
@@ -29,6 +30,8 @@ public:
 	virtual void InitializeWindow(const SharedPtr<FWindow>& InWindow, const SharedPtr<FWindowDefinition>& InDefinition, const SharedPtr<FWindow>& InParent);
 
 	virtual void Run();
+
+	virtual void InitializeEngineContext(EngineContext* context);
 
 protected:
 	virtual SharedPtr<FTaskbar> MakeTaskbar() { return MakeShared<FTaskbar>(); }

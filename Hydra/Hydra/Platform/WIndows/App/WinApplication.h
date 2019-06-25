@@ -10,6 +10,7 @@ class HYDRA_API WinApplication : public Application
 {
 private:
 	HINSTANCE _hInstance;
+	EngineContext* Context;
 public:
 	List<SharedPtr<WinWindow>> Windows;
 public: // Inerhited from Application
@@ -22,6 +23,8 @@ public: // Inerhited from Application
 	virtual void InitializeWindow(const SharedPtr<FWindow>& InWindow, const SharedPtr<FWindowDefinition>& InDefinition, const SharedPtr<FWindow>& InParent) override;
 
 	virtual void Run() override;
+
+	virtual void InitializeEngineContext(EngineContext* context) override;
 
 protected:
 	virtual SharedPtr<FTaskbar> MakeTaskbar() override;
