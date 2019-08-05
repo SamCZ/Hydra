@@ -40,9 +40,11 @@ public:
 			return *this; \
 		}
 
-#define UI_DEFAULT_SLOT(DataType, SlotName) \
+#define UI_DEFAULT_SLOT(SlotName) \
+		SharedPtr<UIWidget> _##SlotName; \
 		FArguments& operator[](const SharedPtr<UIWidget>& widget) \
 		{ \
+			_##SlotName = widget; \
 			return *this; \
 		}
 

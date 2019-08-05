@@ -462,6 +462,12 @@
     <ClInclude Include="Hydra\Platform\Windows\App\D3DUIRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Hydra\App\UI\Widgets\GameViewWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hydra\App\Render\PaintRenderQueueLayered.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ImGui\imgui.cpp">
@@ -765,6 +771,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Platform\Windows\App\D3DUIRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\App\UI\Widgets\GameViewWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra\App\Render\PaintRenderQueueLayered.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

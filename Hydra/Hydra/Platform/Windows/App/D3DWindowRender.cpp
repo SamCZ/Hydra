@@ -161,6 +161,35 @@ void D3DWindowRender::CreateViewport(SharedPtr<UIWindow>& window)
 	Windows.push_back(window);
 }
 
+void D3DWindowRender::ResizeViewPort(SharedPtr<UIWindow>& window, int newWidth, int newHeight)
+{
+	SharedPtr<FWindowViewPort> viewport = window->GetViewport();
+
+	if (viewport == nullptr)
+	{
+		return;
+	}
+
+	bool bFullscreen = window->GetNativeWindow()->GetMode() == EWindowMode::Fullscreen;
+
+	viewport->BackBufferTexture->Release();
+	viewport->RenderTargetView->Release();
+
+	viewport->ViewportInfo.Width = newWidth;
+	viewport->ViewportInfo.Height = newHeight;
+	viewport->bFullscreen = bFullscreen;
+
+	DXGI_SWAP_CHAIN_DESC Desc;
+	viewport->D3DSwapChain->GetDesc(&Desc);
+
+	HRESULT Hr = viewport->D3DSwapChain->ResizeBuffers(Desc.BufferCount, viewport->ViewportInfo.Width, viewport->ViewportInfo.Height, Desc.BufferDesc.Format, Desc.Flags);
+
+	if (SUCCEEDED(Hr))
+	{
+		CreateBackBufferResources(viewport->D3DSwapChain, viewport->BackBufferTexture, viewport->RenderTargetView);
+	}
+}
+
 void D3DWindowRender::RenderWindows()
 {
 	for (SharedPtr<UIWindow>& window : Windows)
@@ -168,6 +197,10 @@ void D3DWindowRender::RenderWindows()
 		SharedPtr<FWindowViewPort> viewport = window->GetViewport();
 
 		if (viewport == nullptr) continue;
+
+		FPaintRenderQueueLayered renderQueue;
+		window->OnPaint(renderQueue, *UI2DRenderer, 0);
+
 
 		GD3DDeviceContext->RSSetViewports(1, &viewport->ViewportInfo);
 
@@ -188,9 +221,7 @@ void D3DWindowRender::RenderWindows()
 		GD3DDeviceContext->OMSetRenderTargets(1, &RTV, NULL);
 
 		UI2DRenderer->Begin(Vector2i(viewport->ViewportInfo.Width, viewport->ViewportInfo.Height));
-
-		UI2DRenderer->DrawRect(100, 100, 100, 100, ColorRGBA::White);
-
+		renderQueue.Render();
 		UI2DRenderer->End();
 
 		GD3DDeviceContext->OMSetRenderTargets(0, NULL, NULL);

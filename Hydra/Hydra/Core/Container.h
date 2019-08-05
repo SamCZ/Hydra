@@ -20,6 +20,9 @@ using FastMap = std::unordered_map<A, B>;
 template <typename A>
 using Set = std::set<A>;
 
+template <typename A, typename B>
+using Pair = std::pair<A, B>;
+
 #define List_Remove(list, type) { list.erase(std::find(list.begin(), list.end(), type)); }
 //#define Add(type) push_back(type)
 

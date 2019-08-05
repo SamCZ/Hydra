@@ -28,6 +28,19 @@ void WindowManager::Render()
 	WindowRenderer->RenderWindows();
 }
 
+SharedPtr<UIWindow> WindowManager::FindUIWindowByNativeWindow(SharedPtr<FWindow>& nativeWindow)
+{
+	for (SharedPtr<UIWindow>& window : Windows)
+	{
+		if (window->GetNativeWindow() == nativeWindow)
+		{
+			return window;
+		}
+	}
+
+	return nullptr;
+}
+
 SharedPtr<UIWindow> WindowManager::AddWindow(SharedPtr<UIWindow>& window, bool showImmediately)
 {
 	Windows.push_back(window);

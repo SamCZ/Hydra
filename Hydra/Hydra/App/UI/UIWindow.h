@@ -75,13 +75,15 @@ public:
 	UI_ARGUMENT(bool, CreateTitleBar);
 	UI_ARGUMENT(bool, SaneWindowPlacement);
 
-	UI_DEFAULT_SLOT(FArguments, Content);
+	UI_DEFAULT_SLOT(Content);
 
 	UI_END_ARGS;
 
 private:
 	SharedPtr<FWindow> NativeWindow;
 	SharedPtr<FWindowViewPort> ViewPort;
+
+	SharedPtr<UIWidget> ContentWidget;
 
 protected:
 	EWindowType Type;
@@ -132,6 +134,8 @@ public:
 
 	void Show();
 	void SetFocus();
+
+	virtual int32 OnPaint(FPaintRenderQueueLayered& paintQueue, UIRenderer& renderer, int layerID);
 
 public:
 

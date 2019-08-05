@@ -62,6 +62,8 @@ public:
 
 	virtual void CreateViewport(SharedPtr<UIWindow>& window) override;
 
+	virtual void ResizeViewPort(SharedPtr<UIWindow>& window, int newWidth, int newHeight) override;
+
 	virtual void RenderWindows() override;
 
 	virtual void OnWindowDestroy(const SharedPtr<UIWindow>& window) override;

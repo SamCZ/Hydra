@@ -17,6 +17,9 @@
 
 #include "Hydra/App/WindowManager.h"
 
+#include "Hydra/App/UI/Widgets/GameViewWidget.h"
+
+HydraEngine* GEngine = nullptr;
 
 HydraEngine::~HydraEngine()
 {
@@ -31,6 +34,8 @@ HydraEngine::HydraEngine()
 void HydraEngine::Start()
 {
 	Context = new EngineContext();
+
+	GEngine = this;
 
 	/*DeviceManager* deviceManager = DeviceManager::CreateDeviceManagerForPlatform();
 	Context->SetDeviceManager(deviceManager);
@@ -51,6 +56,8 @@ void HydraEngine::Start()
 
 	app->InitializeEngineContext(Context);
 
+	World = new FWorld(Context);
+
 	{
 		SharedPtr<UIWindow> window = UINew(UIWindow)
 			.Type(EWindowType::Normal)
@@ -61,7 +68,10 @@ void HydraEngine::Start()
 			.SupportsMaximize(true)
 			.SupportsMinimize(true)
 			.Title("Hydra")
-			.UseOSWindowBorder(true);
+			.UseOSWindowBorder(true)
+			[
+				UINew(GameViewWidget)
+			];
 
 		WindowManager::Get().AddWindow(window, true);
 	}

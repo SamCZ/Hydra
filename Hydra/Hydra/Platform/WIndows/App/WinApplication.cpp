@@ -7,6 +7,11 @@
 
 #include "D3DWindowRender.h"
 
+#include "Hydra/EngineContext.h"
+
+#include "Hydra/Assets/AssetManager.h"
+#include "Hydra/Render/Graphics.h"
+
 static WinApplication* WinApp;
 
 LRESULT CALLBACK AppWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -81,7 +86,11 @@ void WinApplication::InitializeEngineContext(EngineContext* context)
 
 	D3DWindowRender& windowRenderer = static_cast<D3DWindowRender&>(IUWindowManager->GetRenderer());
 
+	Context->SetRenderInterface(windowRenderer.GetRenderInterface());
 
+	Context->SetAssetManager(new AssetManager(context));
+
+	Context->SetGraphics(new FGraphics(context));
 }
 
 bool WinApplication::RegisterClassInstance(const HINSTANCE HInstance, const HICON HIcon)
@@ -149,11 +158,19 @@ int32 WinApplication::ProcessMessage(HWND hwnd, uint32 msg, WPARAM wParam, LPARA
 			if (Windows.size() == 0)
 			{
 				PostQuitMessage(0);
+
+				return 0;
 			}
 
-			return 0;
+			break;
 		}
-		break;
+
+		case WM_SIZE:
+		{
+			IUWindowManager->GetRenderer().ResizeViewPort(IUWindowManager->FindUIWindowByNativeWindow(StaticCastSharedPtr<FWindow, WinWindow>(window)), LOWORD(lParam), HIWORD(lParam));
+
+			break;
+		}
 	}
 
 	return DefWindowProc(hwnd, msg, wParam, lParam);;

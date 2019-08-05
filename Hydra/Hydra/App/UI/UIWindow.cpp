@@ -2,7 +2,7 @@
 
 #include "Hydra/App/WindowManager.h"
 
-UIWindow::UIWindow() : bHasEverBeenShown(false), bSizeWillChangeOften(false)
+UIWindow::UIWindow() : NativeWindow(nullptr), ViewPort(nullptr), bHasEverBeenShown(false), bSizeWillChangeOften(false)
 {
 }
 
@@ -47,6 +47,8 @@ void UIWindow::Initialize(const FArguments& InArgs)
 	{
 		ScreenPosition = Vector2i(1920, 1080) / 2 - (Size / 2);
 	}
+
+	ContentWidget = InArgs._Content;
 }
 
 void UIWindow::SetNativeWindow(SharedPtr<FWindow>& window)
@@ -110,4 +112,9 @@ void UIWindow::SetFocus()
 	{
 		NativeWindow->SetFocus();
 	}
+}
+
+int32 UIWindow::OnPaint(FPaintRenderQueueLayered & paintQueue, UIRenderer & renderer, int layerID)
+{
+	return ContentWidget->OnPaint(paintQueue, renderer, layerID + 1);
 }

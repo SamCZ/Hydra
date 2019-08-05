@@ -181,10 +181,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Hydra\App\Application.h" />
+    <ClInclude Include="Hydra\App\Render\PaintRenderQueueLayered.h" />
     <ClInclude Include="Hydra\App\Render\WindowRender.h" />
     <ClInclude Include="Hydra\App\Taskbar.h" />
     <ClInclude Include="Hydra\App\UI\UI.h" />
     <ClInclude Include="Hydra\App\UI\UIWindow.h" />
+    <ClInclude Include="Hydra\App\UI\Widgets\GameViewWidget.h" />
     <ClInclude Include="Hydra\App\WindowManager.h" />
     <ClInclude Include="Hydra\App\Window.h" />
     <ClInclude Include="Hydra\Assets\Asset.h" />
@@ -332,9 +334,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Hydra\App\Application.cpp" />
+    <ClCompile Include="Hydra\App\Render\PaintRenderQueueLayered.cpp" />
     <ClCompile Include="Hydra\App\Taskbar.cpp" />
     <ClCompile Include="Hydra\App\UI\UIWidget.cpp" />
     <ClCompile Include="Hydra\App\UI\UIWindow.cpp" />
+    <ClCompile Include="Hydra\App\UI\Widgets\GameViewWidget.cpp" />
     <ClCompile Include="Hydra\App\WindowManager.cpp" />
     <ClCompile Include="Hydra\App\Window.cpp" />
     <ClCompile Include="Hydra\Assets\AssetManager.cpp" />

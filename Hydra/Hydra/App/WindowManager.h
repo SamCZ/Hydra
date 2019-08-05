@@ -22,6 +22,8 @@ public:
 	void Tick(float Delta);
 	void Render();
 
+	SharedPtr<UIWindow> FindUIWindowByNativeWindow(SharedPtr<FWindow>& nativeWindow);
+
 	SharedPtr<UIWindow> AddWindow(SharedPtr<UIWindow>& window, bool showImmediately);
 
 	FWindowRender& GetRenderer();
