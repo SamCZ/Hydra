@@ -8,15 +8,14 @@
 
 NVRHI::TextureHandle tex;
 
-GameViewWidget::GameViewWidget() : GameRenderView(nullptr)
+GameViewWidget::GameViewWidget()
 {
 
 }
 
 GameViewWidget::~GameViewWidget()
 {
-	GameRenderView->OnDestroy();
-	delete GameRenderView;
+
 }
 
 void GameViewWidget::Initialize(const FArguments& arguments)
@@ -29,16 +28,6 @@ void GameViewWidget::Initialize(const FArguments& arguments)
 
 int32 GameViewWidget::OnPaint(FPaintRenderQueueLayered & paintQueue, UIRenderer & renderer, int layerID)
 {
-	if (GameRenderView == nullptr)
-	{
-		GameRenderView = new MainRenderView(GEngine->GetContext(), GEngine);
-		GameRenderView->OnCreated();
-	}
-
-	GameRenderView->OnTick(0);
-
-	GameRenderView->OnRender(tex);
-
 	paintQueue.Add(layerID, [&]()
 	{
 		//renderer.DrawRect(0, 0, 600, 600, ColorRGBA::Blue);

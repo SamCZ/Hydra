@@ -3,8 +3,6 @@
 #include "Hydra/App/UI/UI.h"
 #include "Hydra/App/UI/UIWidget.h"
 
-class MainRenderView;
-
 class HYDRA_API GameViewWidget : public UIWidget
 {
 public:
@@ -17,7 +15,7 @@ public:
 
 
 private:
-	MainRenderView* GameRenderView;
+
 public:
 	GameViewWidget();
 	virtual ~GameViewWidget();

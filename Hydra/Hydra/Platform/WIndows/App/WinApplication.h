@@ -5,12 +5,14 @@
 #include <Windows.h>
 
 class WinWindow;
+class MainRenderView;
 
 class HYDRA_API WinApplication : public Application
 {
 private:
 	HINSTANCE _hInstance;
 	EngineContext* Context;
+	MainRenderView* RenderView;
 public:
 	List<SharedPtr<WinWindow>> Windows;
 public: // Inerhited from Application

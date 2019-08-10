@@ -7,10 +7,13 @@
 
 #include "D3DWindowRender.h"
 
+#include "Hydra/HydraEngine.h"
 #include "Hydra/EngineContext.h"
 
 #include "Hydra/Assets/AssetManager.h"
 #include "Hydra/Render/Graphics.h"
+
+#include "Hydra/Render/Pipeline/View/MainRenderView.h"
 
 static WinApplication* WinApp;
 
@@ -19,7 +22,7 @@ LRESULT CALLBACK AppWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	return WinApp->ProcessMessage(hWnd, uMsg, wParam, lParam);
 }
 
-WinApplication::WinApplication() : Application()
+WinApplication::WinApplication() : Application(), RenderView(nullptr)
 {
 	Taskbar = MakeTaskbar();
 
@@ -30,7 +33,8 @@ WinApplication::WinApplication() : Application()
 
 WinApplication::~WinApplication()
 {
-
+	RenderView->OnDestroy();
+	delete RenderView;
 }
 
 SharedPtr<FWindow> WinApplication::MakeWindow()
@@ -75,7 +79,9 @@ void WinApplication::Run()
 		}
 
 		IUWindowManager->Tick(0);
+		RenderView->OnTick(0);
 
+		RenderView->OnRender(nullptr);
 		IUWindowManager->Render();
 	}
 }
@@ -91,6 +97,9 @@ void WinApplication::InitializeEngineContext(EngineContext* context)
 	Context->SetAssetManager(new AssetManager(context));
 
 	Context->SetGraphics(new FGraphics(context));
+
+	RenderView = new MainRenderView(context, GEngine);
+	RenderView->OnCreated();
 }
 
 bool WinApplication::RegisterClassInstance(const HINSTANCE HInstance, const HICON HIcon)

@@ -49,6 +49,9 @@ void UIWindow::Initialize(const FArguments& InArgs)
 	}
 
 	ContentWidget = InArgs._Content;
+
+	ContentWidget->SetParent(this->AsShared<UIWidget>());
+	ContentWidget->SetParentWindow(this->AsShared<UIWindow>());
 }
 
 void UIWindow::SetNativeWindow(SharedPtr<FWindow>& window)
