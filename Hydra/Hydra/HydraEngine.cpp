@@ -19,6 +19,9 @@
 
 #include "Hydra/App/UI/Widgets/GameViewWidget.h"
 
+
+#include "Hydra/Input/Windows/WindowsInputManager.h"
+
 HydraEngine* GEngine = nullptr;
 
 HydraEngine::~HydraEngine()
@@ -52,11 +55,16 @@ void HydraEngine::Start()
 
 
 	SharedPtr<Application> app = MakeShared<WinApplication>();
+
+	World = new FWorld(Context);
+
+	GEngine->GetContext()->ScreenSize = Vector2(500, 500);
+	GEngine->GetContext()->SetInputManager(new WindowsInputManager(GEngine->GetContext()));
+
 	app->Initialize();
 
 	app->InitializeEngineContext(Context);
 
-	World = new FWorld(Context);
 
 	{
 		SharedPtr<UIWindow> window = UINew(UIWindow)
