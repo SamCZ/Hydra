@@ -130,7 +130,7 @@
       <AdditionalLibraryDirectories>$(ProjectDir)nvapi-public\amd64;$(ProjectDir)assimp\lib;$(ProjectDir)FreeImage\Win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
-      <Command>call $(SolutionDir)HydraHeaderTool\bin\Debug\HydraHeaderTool.exe</Command>
+      <Command>call $(ProjectDir)..\HydraHeaderTool\bin\Debug\HydraHeaderTool.exe</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Editor|x64'">
@@ -234,6 +234,7 @@
     <ClInclude Include="Hydra\Framework\StaticMesh.h" />
     <ClInclude Include="Hydra\Framework\StaticMeshResources.h" />
     <ClInclude Include="Hydra\Framework\Optional.h" />
+    <ClInclude Include="Hydra\Framework\Utils\ProceduralMesh.h" />
     <ClInclude Include="Hydra\Framework\World.h" />
     <ClInclude Include="Hydra\HydraEngine.h" />
     <ClInclude Include="Hydra\Input\GenericPlatformInput.h" />
@@ -359,6 +360,7 @@
     <ClCompile Include="Hydra\Framework\GameModeBase.cpp" />
     <ClCompile Include="Hydra\Framework\Pawn.cpp" />
     <ClCompile Include="Hydra\Framework\StaticMesh.cpp" />
+    <ClCompile Include="Hydra\Framework\Utils\ProceduralMesh.cpp" />
     <ClCompile Include="Hydra\Framework\World.cpp" />
     <ClCompile Include="Hydra\HydraEngine.cpp" />
     <ClCompile Include="Hydra\Physics\Collisons\BIH\BIHNode.cpp" />

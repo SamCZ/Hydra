@@ -15,12 +15,12 @@ private:
 public:
 	String Name;
 public:
-	FORCEINLINE virtual ~HObject() {}
+	FORCEINLINE virtual ~HObject() { }
 
 	template<class T>
 	bool IsA() const
 	{
-		HClass& clazz = GetClass();
+		HClass clazz = GetClass();
 
 		return clazz == T::StaticClass();
 	}
