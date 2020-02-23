@@ -58,8 +58,7 @@ void HydraEngine::Start()
 
 	World = new FWorld(Context);
 
-	GEngine->GetContext()->ScreenSize = Vector2(500, 500);
-	GEngine->GetContext()->SetInputManager(new WindowsInputManager(GEngine->GetContext()));
+	GEngine->GetContext()->ScreenSize = Vector2(1280, 720);
 
 	app->Initialize();
 

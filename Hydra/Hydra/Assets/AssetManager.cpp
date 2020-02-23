@@ -86,6 +86,8 @@ MaterialInterface* AssetManager::GetMaterial(const String & path)
 		return iter->second;
 	}
 
+	LogError("AssetManager::GetMaterial", path, "File not found !");
+
 	return nullptr;
 }
 

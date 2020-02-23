@@ -15,6 +15,8 @@
 
 #include "Hydra/Render/Pipeline/View/MainRenderView.h"
 
+#include "Hydra/Input/Windows/WindowsInputManager.h"
+
 static WinApplication* WinApp;
 
 LRESULT CALLBACK AppWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -98,6 +100,8 @@ void WinApplication::InitializeEngineContext(EngineContext* context)
 
 	Context->SetGraphics(new FGraphics(context));
 
+	Context->SetInputManager(new WindowsInputManager(context));
+
 	RenderView = new MainRenderView(context, GEngine);
 	RenderView->OnCreated();
 }
@@ -155,6 +159,8 @@ int32 WinApplication::ProcessMessage(HWND hwnd, uint32 msg, WPARAM wParam, LPARA
 	{
 		return DefWindowProc(hwnd, msg, wParam, lParam);;
 	}
+
+	((WindowsInputManager*)Context->GetInputManager())->MsgProc(hwnd, msg, wParam, lParam);
 
 	switch (msg)
 	{

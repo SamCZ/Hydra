@@ -10,6 +10,8 @@
 
 #include "Hydra/Framework/Class.h"
 
+class HYDRA_API UIWindow;
+
 HENUM()
 enum InputEvent
 {
@@ -120,7 +122,7 @@ public:
 	void ToggleMouseCapture();
 	bool IsMouseCaptured() const;
 
-	virtual void Update();
+	virtual void Update(SharedPtr<UIWindow> window);
 
 	bool OnKeyChar(const char Character, const bool IsRepeat);
 	bool OnKeyDown(const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat);

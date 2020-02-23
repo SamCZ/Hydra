@@ -5,7 +5,6 @@
 #include "Hydra/Render/RenderManager.h"
 #include "Hydra/Render/UI/UIRenderer.h"
 #include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
-#include "Hydra/Render/Pipeline/Windows/DX11/DeviceManager11.h"
 
 #include "Hydra/Input/InputManager.h"
 #include "Hydra/Assets/AssetManager.h"
@@ -19,7 +18,6 @@ class HYDRA_API EngineContext
 private:
 	IRendererInterface _RenderInterface;
 	RenderManager* _RenderManager;
-	DeviceManager* _DeviceManager;
 	InputManager* _InputManager;
 	FGraphics* _Graphics;
 	UIRenderer* _UIRenderer;
@@ -35,9 +33,6 @@ public:
 
 	void SetRenderManager(RenderManager* renderManager);
 	RenderManager* GetRenderManager();
-
-	void SetDeviceManager(DeviceManager* deviceManager);
-	DeviceManager* GetDeviceManager();
 
 	void SetInputManager(InputManager* inputManager);
 	InputManager* GetInputManager();

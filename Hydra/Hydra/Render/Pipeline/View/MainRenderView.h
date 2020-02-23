@@ -1,6 +1,10 @@
 #pragma once
 
-#include "Hydra/Render/Pipeline/DeviceManager.h"
+#include "Hydra/Core/Common.h"
+#include "Hydra/Core/Delegate.h"
+#include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
+
+class EngineContext;
 
 class HydraEngine;
 class HPrimitiveComponent;
@@ -17,7 +21,7 @@ namespace NVRHI
 	class IRendererInterface;
 }
 
-class MainRenderView : public IVisualController
+class MainRenderView
 {
 private:
 	NVRHI::IRendererInterface* RenderInterface;
@@ -34,6 +38,7 @@ private:
 
 public:
 	HydraEngine* Engine;
+	EngineContext* Context;
 
 	MainRenderView(EngineContext* context, HydraEngine* engine);
 	~MainRenderView();

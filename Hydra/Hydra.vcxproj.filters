@@ -318,13 +318,7 @@
     <ClInclude Include="Hydra\Framework\Components\MeshComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hydra\Render\Pipeline\Windows\DX11\DeviceManager11.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Hydra\Render\Pipeline\Windows\DX11\GFSDK_NVRHI_D3D11.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Render\Pipeline\Windows\DX11\UIRendererDX11.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Hydra\Render\Pipeline\Windows\DDS\DDS.h">
@@ -351,13 +345,7 @@
     <ClInclude Include="Hydra\Render\Pipeline\View\UIRenderView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hydra\Render\Pipeline\DeviceManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Hydra\Render\Pipeline\DeviceCreationParameters.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hydra\Render\Pipeline\Windows\DX11\VisualController11.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Hydra\Framework\StaticMesh.h">
@@ -674,22 +662,10 @@
     <ClCompile Include="Hydra\Framework\Pawn.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hydra\Render\Pipeline\Windows\DX11\DeviceManager11.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Hydra\Render\Pipeline\Windows\DX11\GFSDK_NVRHI_D3D11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hydra\Render\Pipeline\Windows\DX11\UIRendererDX11.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Hydra\Render\Pipeline\Windows\DDS\DDSTextureLoader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Render\Pipeline\DeviceManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hydra\Render\Pipeline\Windows\DX11\VisualController11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hydra\Render\Pipeline\View\MainRenderView.cpp">

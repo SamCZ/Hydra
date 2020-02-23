@@ -1,15 +1,19 @@
 #pragma once
 
-#include "Hydra/Render/Pipeline/DeviceManager.h"
+#include "Hydra/Core/Common.h"
+#include "Hydra/Core/Delegate.h"
+#include "Hydra/Render/Pipeline/GFSDK_NVRHI.h"
 
 class HYDRA_API HydraEngine;
+class HYDRA_API EngineContext;
 
-class UIRenderView : public IVisualController
+class UIRenderView
 {
 public:
 	HydraEngine* Engine;
+	EngineContext* Context;
 
-	UIRenderView(EngineContext* context, HydraEngine* engine) : IVisualController(context), Engine(engine) {}
+	UIRenderView(EngineContext* context, HydraEngine* engine) : Context(context), Engine(engine) { }
 
 	void OnCreated();
 	void OnDestroy();

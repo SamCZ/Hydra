@@ -41,7 +41,7 @@ InputLayoutDefininition InputLayoutDefs[11]{
 };
 
 MainRenderView::MainRenderView(EngineContext* context, HydraEngine* engine)
-	: IVisualController(context), Engine(engine), _ScreenRenderViewport(nullptr)
+	: Context(context), Engine(engine), _ScreenRenderViewport(nullptr)
 {
 }
 

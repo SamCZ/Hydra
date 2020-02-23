@@ -4,7 +4,7 @@
 #include "Hydra/App/Render/PaintRenderQueueLayered.h"
 #include "Hydra/Render/UI/UIRenderer.h"
 
-class UIWindow;
+class HYDRA_API UIWindow;
 
 class HYDRA_API UIWidget : public SharedFromThis<UIWidget>
 {

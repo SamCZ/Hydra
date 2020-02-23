@@ -262,7 +262,6 @@
     <ClInclude Include="Hydra\Render\MeshBufferDataInternal.h" />
     <ClInclude Include="Hydra\Render\Pipeline\BindingHelpers.h" />
     <ClInclude Include="Hydra\Render\Pipeline\DeviceCreationParameters.h" />
-    <ClInclude Include="Hydra\Render\Pipeline\DeviceManager.h" />
     <ClInclude Include="Hydra\Render\Pipeline\View\MainRenderView.h" />
     <ClInclude Include="Hydra\Render\Pipeline\View\UIRenderView.h" />
     <ClInclude Include="Hydra\Render\Pipeline\Windows\DDS\DDS.h" />
@@ -270,11 +269,8 @@
     <ClInclude Include="Hydra\Render\Pipeline\Windows\DDS\DirectXHelpers.h" />
     <ClInclude Include="Hydra\Render\Pipeline\Windows\DDS\LoaderHelpers.h" />
     <ClInclude Include="Hydra\Render\Pipeline\Windows\DDS\PlatformHelpers.h" />
-    <ClInclude Include="Hydra\Render\Pipeline\Windows\DX11\DeviceManager11.h" />
-    <ClInclude Include="Hydra\Render\Pipeline\Windows\DX11\UIRendererDX11.h" />
     <ClInclude Include="Hydra\Render\Pipeline\GFSDK_NVRHI.h" />
     <ClInclude Include="Hydra\Render\Pipeline\Windows\DX11\GFSDK_NVRHI_D3D11.h" />
-    <ClInclude Include="Hydra\Render\Pipeline\Windows\DX11\VisualController11.h" />
     <ClInclude Include="Hydra\Render\RenderManager.h" />
     <ClInclude Include="Hydra\Render\Shader.h" />
     <ClInclude Include="Hydra\Render\ShaderVertexInputDefinition.h" />
@@ -373,11 +369,8 @@
     <ClCompile Include="Hydra\Platform\Windows\App\WinTaskbar.cpp" />
     <ClCompile Include="Hydra\Platform\Windows\App\WinWindow.cpp" />
     <ClCompile Include="Hydra\Render\DrawState.cpp" />
-    <ClCompile Include="Hydra\Render\Pipeline\DeviceManager.cpp" />
     <ClCompile Include="Hydra\Render\Pipeline\View\MainRenderView.cpp" />
     <ClCompile Include="Hydra\Render\Pipeline\View\UIRenderView.cpp" />
-    <ClCompile Include="Hydra\Render\Pipeline\Windows\DX11\UIRendererDX11.cpp" />
-    <ClCompile Include="Hydra\Render\Pipeline\Windows\DX11\VisualController11.cpp" />
     <ClCompile Include="Hydra\Render\Shader.cpp" />
     <ClCompile Include="Hydra\Render\Technique.cpp" />
     <ClCompile Include="Hydra\Render\TextureLayoutDef.cpp" />
@@ -398,7 +391,6 @@
     <ClCompile Include="Hydra\Render\Graphics.cpp" />
     <ClCompile Include="Hydra\Render\Mesh.cpp" />
     <ClCompile Include="Hydra\Render\Pipeline\Windows\DDS\DDSTextureLoader.cpp" />
-    <ClCompile Include="Hydra\Render\Pipeline\Windows\DX11\DeviceManager11.cpp" />
     <ClCompile Include="Hydra\Render\Pipeline\Windows\DX11\GFSDK_NVRHI_D3D11.cpp" />
     <ClCompile Include="Hydra\Core\ColorRGBA.cpp" />
     <ClCompile Include="Hydra\Core\File.cpp" />

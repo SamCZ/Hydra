@@ -126,12 +126,14 @@
   <ItemGroup>
     <ClCompile Include="Cubix.cpp" />
     <ClCompile Include="Game\CubixGameMode.cpp" />
+    <ClCompile Include="Game\FirstPersonCharacter.cpp" />
     <ClCompile Include="Game\Generation\WorldGeneratorActor.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cubix.h" />
     <ClInclude Include="Game\CubixGameMode.h" />
+    <ClInclude Include="Game\FirstPersonCharacter.h" />
     <ClInclude Include="Game\Generation\WorldGeneratorActor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

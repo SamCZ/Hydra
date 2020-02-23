@@ -39,7 +39,7 @@ void InputManager::ReadInputMapping(const File & file)
 {
 }
 
-void InputManager::Update()
+void InputManager::Update(SharedPtr<UIWindow> window)
 {
 	ITER(_KeyStates, it)
 	{
@@ -63,6 +63,11 @@ void InputManager::Update()
 				}
 			}
 		}
+	}
+
+	if (_LastMousePos.x == -1)
+	{
+		_LastMousePos = _MousePos;
 	}
 
 	if (_MousePos != _LastMousePos)
@@ -171,16 +176,16 @@ Key InputManager::MouseButtonToKey(const EMouseButtons::Type btn)
 {
 	switch (btn)
 	{
-	case EMouseButtons::Left:
+		case EMouseButtons::Left:
 		return Keys::LeftMouseButton;
-	case EMouseButtons::Right:
+		case EMouseButtons::Right:
 		return Keys::RightMouseButton;
-	case EMouseButtons::Thumb01:
+		case EMouseButtons::Thumb01:
 		return Keys::ThumbMouseButton;
-	case EMouseButtons::Thumb02:
+		case EMouseButtons::Thumb02:
 		return Keys::ThumbMouseButton2;
 
-	default:
+		default:
 		return Keys::Invalid;
 	}
 }

@@ -40,7 +40,7 @@ private:
 	void UpdateAllModifierKeyStates();
 
 public:
-	virtual void Update() override;
+	void Update(SharedPtr<UIWindow> window) override;
 
 };
 

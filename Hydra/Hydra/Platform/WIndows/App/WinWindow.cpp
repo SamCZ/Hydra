@@ -601,13 +601,13 @@ EWindowMode::Type WinWindow::GetMode() const
 
 bool WinWindow::IsMaximized() const
 {
-	bool bIsMaximized = !!::IsZoomed(HWnd);
+	bool bIsMaximized = !!(::IsZoomed(HWnd));
 	return bIsMaximized;
 }
 
 bool WinWindow::IsMinimized() const
 {
-	return !!::IsIconic(HWnd);
+	return !!(::IsIconic(HWnd));
 }
 
 bool WinWindow::IsVisible() const
