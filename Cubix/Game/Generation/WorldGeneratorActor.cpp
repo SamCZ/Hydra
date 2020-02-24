@@ -139,7 +139,7 @@ HStaticMesh* CreateChunk()
 
 	BlockType* GrassType = new BlockType();
 	GrassType->HasMultipleTextureFaces = true;
-	GrassType->Texture[(int)BlockFace::Bottom].x = 0;
+	GrassType->Texture[(int)BlockFace::Bottom].x = 2;
 	GrassType->Texture[(int)BlockFace::Left].x = 3;
 	GrassType->Texture[(int)BlockFace::Right].x = 3;
 	GrassType->Texture[(int)BlockFace::Front].x = 3;
@@ -171,6 +171,8 @@ HStaticMesh* CreateChunk()
 
 			if (x == 5 && z == 5) {
 				chunk->GetBlock(x, maxY, z).LightLevel = 255;
+
+				chunk->SetBlock(x, maxY + 3, z, Block(GrassType));
 			}
 
 			/*for (int y = 0; y < Chunk::ChunkTall; y++)
