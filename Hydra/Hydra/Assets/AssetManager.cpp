@@ -363,7 +363,7 @@ void AssetManager::SaveMaterial(MaterialInterface* material)
 
 void AssetManager::LoadTexture(const File& file)
 {
-	if (true) return;
+	//if (true) return;
 
 	Log("AssetManager::LoadTexture", file, "Trying to load...");
 

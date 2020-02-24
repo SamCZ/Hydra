@@ -34,5 +34,5 @@ public:
 	void SetVertexBuffer(NVRHI::BufferHandle buffer);
 	void SetInstanceBuffer(NVRHI::BufferHandle buffer);
 
-	void Draw(NVRHI::IRendererInterface* renderInterface, int startIndex, int indexCount, int startInstaceIndex, int instanceCount);
+	void Draw(NVRHI::IRendererInterface* renderInterface, int startVertex, int startIndex, int indexCount, int startInstaceIndex, int instanceCount);
 };

@@ -8,7 +8,7 @@
 FDrawState::FDrawState()
 {
 	_State.renderState.depthStencilState.depthEnable = true;
-	_State.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_BACK;
+	_State.renderState.rasterState.cullMode = NVRHI::RasterState::CULL_NONE;
 	//_State.renderState.rasterState.fillMode = NVRHI::RasterState::FILL_LINE;
 }
 
@@ -107,7 +107,7 @@ void FDrawState::SetInstanceBuffer(NVRHI::BufferHandle buffer)
 }
 
 
-void FDrawState::Draw(NVRHI::IRendererInterface* renderInterface, int startIndex, int indexCount, int startInstaceIndex, int instanceCount)
+void FDrawState::Draw(NVRHI::IRendererInterface* renderInterface, int startVertex, int startIndex, int indexCount, int startInstaceIndex, int instanceCount)
 {
 	if (_State.vertexBufferCount == 0)
 	{
@@ -117,7 +117,7 @@ void FDrawState::Draw(NVRHI::IRendererInterface* renderInterface, int startIndex
 	NVRHI::DrawArguments args;
 
 	args.startIndexLocation = startIndex;
-	args.startVertexLocation = 0;
+	args.startVertexLocation = startVertex;
 	args.instanceCount = instanceCount;
 	args.startInstanceLocation = startInstaceIndex;
 	args.vertexCount = indexCount;

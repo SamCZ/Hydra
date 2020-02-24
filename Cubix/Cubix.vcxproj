@@ -76,7 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Hydra;$(SolutionDir)Hydra\GeneratedHeaders;$(ProjectDir)GeneratedHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Hydra;$(SolutionDir)Hydra\GeneratedHeaders;$(ProjectDir)GeneratedHeaders;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <PreBuildEvent>
@@ -125,16 +125,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Cubix.cpp" />
+    <ClCompile Include="Game\CubeActor.cpp" />
     <ClCompile Include="Game\CubixGameMode.cpp" />
     <ClCompile Include="Game\FirstPersonCharacter.cpp" />
     <ClCompile Include="Game\Generation\WorldGeneratorActor.cpp" />
+    <ClCompile Include="Game\World\Chunk.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cubix.h" />
+    <ClInclude Include="Game\CubeActor.h" />
     <ClInclude Include="Game\CubixGameMode.h" />
     <ClInclude Include="Game\FirstPersonCharacter.h" />
     <ClInclude Include="Game\Generation\WorldGeneratorActor.h" />
+    <ClInclude Include="Game\World\Block.h" />
+    <ClInclude Include="Game\World\BlockType.h" />
+    <ClInclude Include="Game\World\Chunk.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

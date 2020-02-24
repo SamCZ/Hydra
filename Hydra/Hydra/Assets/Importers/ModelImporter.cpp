@@ -13,7 +13,7 @@ static std::vector<std::string> TextureTypeEnumToString = {
 				"aiTextureType_DISPLACEMENT", "aiTextureType_LIGHTMAP", "aiTextureType_REFLECTION",
 				"aiTextureType_UNKNOWN", "_aiTextureType_Force32Bit" };
 
-static Map<uint8, String> PrimitiveTypeToString {
+static Map<uint8, String> PrimitiveTypeToString{
 	{(uint8)aiPrimitiveType::aiPrimitiveType_POINT, "aiPrimitiveType_POINT"},
 	{(uint8)aiPrimitiveType::aiPrimitiveType_LINE, "aiPrimitiveType_LINE"},
 	{(uint8)aiPrimitiveType::aiPrimitiveType_TRIANGLE, "aiPrimitiveType_TRIANGLE"},
@@ -105,7 +105,7 @@ void ModelImporter::ProcessNode(const aiScene* scene, aiNode* node, Map<String, 
 			meshResources = &staticMesh->RenderData->LODResources[0];
 		}
 	}
-	else if(triangleMeshes.size() > 0)
+	else if (triangleMeshes.size() > 0)
 	{
 		materialSlotIndex = 0;
 		staticMesh = new HStaticMesh();
@@ -210,7 +210,7 @@ void ModelImporter::ProcessMesh(aiMesh* mesh, aiNode* node, HStaticMesh* staticM
 	for (uint32 vertIdx = 0u; vertIdx < mesh->mNumVertices; vertIdx++)
 	{
 		VertexBufferEntry vertexEntry = {};
-		
+
 		aiVector3D vert = transform * mesh->mVertices[vertIdx];
 
 		vertexEntry.Position.x = vert.x;
@@ -252,9 +252,9 @@ void ModelImporter::ProcessMesh(aiMesh* mesh, aiNode* node, HStaticMesh* staticM
 	}
 
 	meshSection.MaxVertexIndex = meshResources.VertexData.size();
-	
+
 	int lastIndex = meshResources.LastIndex;
-	
+
 	meshSection.FirstIndex = lastIndex;
 
 	for (std::uint32_t faceIdx = 0u; faceIdx < mesh->mNumFaces; faceIdx++)
@@ -263,14 +263,9 @@ void ModelImporter::ProcessMesh(aiMesh* mesh, aiNode* node, HStaticMesh* staticM
 		{
 			uint32 index = mesh->mFaces[faceIdx].mIndices[id];
 
-			uint32 newIndex = lastIndex + index;
-			
-			meshResources.Indices.push_back(newIndex);
+			meshResources.Indices.push_back(index);
 
-			if (newIndex > meshResources.LastIndex)
-			{
-				meshResources.LastIndex = newIndex;
-			}
+			meshResources.LastIndex++;
 		}
 	}
 

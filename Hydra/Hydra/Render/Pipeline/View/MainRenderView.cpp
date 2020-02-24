@@ -403,7 +403,7 @@ void MainRenderView::RenderSceneViewFromCamera(FSceneView* view, HCameraComponen
 					drawState.SetMaterial(materialInterface);
 					drawState.SetInputLayout(GetInputLayoutForMaterial(materialInterface));
 
-					drawState.Draw(Context->GetRenderInterface(), section.FirstIndex, section.NumTriangles, 0, 1);
+					drawState.Draw(Context->GetRenderInterface(), 0, section.FirstIndex, section.NumTriangles, 0, 1);
 
 					drawState.SetClearFlags(false, false, false);
 				}
