@@ -124,7 +124,8 @@ float4 MainPS(PS_Input IN) : SV_Target
 {
 	float3 ray_world = normalize(IN.positionLS);
 
-	float3 g_LightDir = normalize(float3(0.5, -0.1, 0));
+	//float3 g_LightDir = normalize(float3(0.5, -0.1, 0));
+	float3 g_LightDir = normalize(float3(0, -1, 0));
 
 	float4 cloud_color = (0.0).xxxx;
 	float4 finalColor = cloud_color;

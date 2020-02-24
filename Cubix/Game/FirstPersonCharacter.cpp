@@ -44,7 +44,7 @@ void FirstPersonCharacter::BeginPlay()
 
 }
 
-static float moveSpeed = 0.5f;
+static float moveSpeed = 0.1f;
 
 void FirstPersonCharacter::MoveForwardBackward(float val)
 {

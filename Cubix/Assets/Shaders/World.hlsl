@@ -8,6 +8,7 @@ struct PS_Input
 	float3 positionLS : WSPOSITION1;
 	float3 normal : NORMAL;
 	float2 uv : TEXCOORD0;
+	float3 color : COLOR;
 };
 
 cbuffer Globals
@@ -27,12 +28,19 @@ PS_Input MainVS(in VS_Input input, uint id : SV_VertexID)
 
 	OUT.normal = normalize(input.normal);
 	OUT.uv = input.texCoord;
+	OUT.color = input.color;
 
 	return OUT;
 }
 
-Texture2D _GrassTex : register(t0);
-SamplerState DefaultSampler	: register(s0);
+Texture2D _TerrainTexture : register(t0);
+
+SamplerState _PixelSamplera
+{
+	MipFilter = LINEAR;
+	MinFilter = NEAREST;
+	MagFilter = NEAREST;
+};
 
 float4 MainPS(PS_Input IN) : SV_Target
 {
@@ -40,7 +48,13 @@ float4 MainPS(PS_Input IN) : SV_Target
 	d = clamp(d, 0.5, 1.0);
 	//d = 1.0;
 
-	float3 color = _GrassTex.Sample(DefaultSampler, IN.uv).xyz;
+	//float3 color = _GrassTex.Sample(_PixelSamplera, IN.uv).xyz;
+	float3 color = _TerrainTexture[IN.uv * 256].xyz;
+
+	float lightLevel = IN.color.x / 256.0;
+	lightLevel = clamp(lightLevel, 0.25, 1.0);
+	
+	d *= lightLevel;
 
 	return float4(d * color.r, d * color.g, d * color.b, 1.0);
 }

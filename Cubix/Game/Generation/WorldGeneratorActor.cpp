@@ -69,8 +69,37 @@ static Vector3 FaceNormals[6]{
 	{ 0, 0, 1 }
 };
 
-void AddFace(ProceduralMesh& mesh, Block& block, float x, float y, float z, float pattern[4][3], const BlockFace& face)
+void AddFace(ProceduralMesh& mesh, Chunk& chunk, Block& block, float x, float y, float z, float pattern[4][3], const BlockFace& face)
 {
+	Block* faceBlock = nullptr;
+
+	switch (face) {
+	case BlockFace::Top:
+		faceBlock = &chunk.GetBlock((int)x, (int)y + 1, (int)z);
+		break;
+	case BlockFace::Bottom:
+		faceBlock = &chunk.GetBlock((int)x, (int)y - 1, (int)z);
+		break;
+	case BlockFace::Left:
+		faceBlock = &chunk.GetBlock((int)x - 1, (int)y, (int)z);
+		break;
+	case BlockFace::Right:
+		faceBlock = &chunk.GetBlock((int)x + 1, (int)y, (int)z);
+		break;
+	case BlockFace::Front:
+		faceBlock = &chunk.GetBlock((int)x, (int)y, (int)z - 1);
+		break;
+	case BlockFace::Back:
+		faceBlock = &chunk.GetBlock((int)x, (int)y, (int)z + 1);
+		break;
+	}
+
+	uint8_t lightLevel = 0;
+
+	if (faceBlock != nullptr) {
+		lightLevel = faceBlock->LightLevel;
+	}
+
 	float size = 1.0f;
 	float halfSize = size * 0.5f;
 
@@ -79,17 +108,21 @@ void AddFace(ProceduralMesh& mesh, Block& block, float x, float y, float z, floa
 	Vector3 v2 = { x + halfSize + pattern[2][0] * halfSize, y + halfSize + pattern[2][1] * halfSize, z + halfSize + pattern[2][2] * halfSize };
 	Vector3 v3 = { x + halfSize + pattern[3][0] * halfSize, y + halfSize + pattern[3][1] * halfSize, z + halfSize + pattern[3][2] * halfSize };
 
-	Vector2 uv0 = { 0, 0 };
-	Vector2 uv1 = { 0, 1 };
-	Vector2 uv2 = { 1, 1 };
-	Vector2 uv3 = { 1, 0 };
+	float tUnit = 1.0F / (256.0f / 16.0f);
+
+	Vector2& texture = block.Type->Texture[block.Type->HasMultipleTextureFaces ? (int)face : 0];
+
+	Vector2 uv0 = { tUnit * texture.x, 1.0 - (tUnit * texture.y) };
+	Vector2 uv1 = { tUnit * texture.x, 1.0 - (tUnit * texture.y + tUnit) };
+	Vector2 uv2 = { tUnit * texture.x + tUnit, 1.0 - (tUnit * texture.y + tUnit) };
+	Vector2 uv3 = { tUnit * texture.x + tUnit, 1.0 - (tUnit * texture.y) };
 
 	Vector3 normal = FaceNormals[(int)face];
 
-	mesh.AddVertex(v0, uv0, normal);
-	mesh.AddVertex(v1, uv1, normal);
-	mesh.AddVertex(v2, uv2, normal);
-	mesh.AddVertex(v3, uv3, normal);
+	mesh.AddVertex(v0, uv0, normal, Vector3(lightLevel, 0, 0));
+	mesh.AddVertex(v1, uv1, normal, Vector3(lightLevel, 0, 0));
+	mesh.AddVertex(v2, uv2, normal, Vector3(lightLevel, 0, 0));
+	mesh.AddVertex(v3, uv3, normal, Vector3(lightLevel, 0, 0));
 
 	mesh.AddQuadIndices();
 }
@@ -99,6 +132,18 @@ HStaticMesh* CreateChunk()
 	Chunk* chunk = new Chunk();
 
 	BlockType* StoneType = new BlockType();
+	StoneType->Texture[0].x = 1;
+
+	BlockType* DirtType = new BlockType();
+	DirtType->Texture[0].x = 2;
+
+	BlockType* GrassType = new BlockType();
+	GrassType->HasMultipleTextureFaces = true;
+	GrassType->Texture[(int)BlockFace::Bottom].x = 0;
+	GrassType->Texture[(int)BlockFace::Left].x = 3;
+	GrassType->Texture[(int)BlockFace::Right].x = 3;
+	GrassType->Texture[(int)BlockFace::Front].x = 3;
+	GrassType->Texture[(int)BlockFace::Back].x = 3;
 
 	FastNoise noise;
 	noise.SetNoiseType(FastNoise::PerlinFractal);
@@ -107,22 +152,45 @@ HStaticMesh* CreateChunk()
 	{
 		for (int z = 0; z < Chunk::ChunkDepth; z++)
 		{
-			for (int y = 0; y < Chunk::ChunkTall; y++)
-			{
-				float scale = 2.0f;
+			float scale = 1.0f;
+			float val = (noise.GetNoise(x * scale, z * scale) + 1.0f) / 2.0f;
+			int maxY = round(val * (float)Chunk::ChunkTall);
 
+			float dirtVal = (noise.GetNoise(x * 10.0f, z * 10.0f) + 1.0f) / 2.0f;
+
+			for (int y = 0; y < maxY; y++) {
+				if ((maxY - y) < round((1.0 - dirtVal) * 5.0f)) {
+					chunk->SetBlock(x, y, z, Block(DirtType));
+				}
+				else {
+					chunk->SetBlock(x, y, z, Block(StoneType));
+				}
+			}
+
+			chunk->SetBlock(x, maxY, z, Block(GrassType));
+
+			if (x == 5 && z == 5) {
+				chunk->GetBlock(x, maxY, z).LightLevel = 255;
+			}
+
+			/*for (int y = 0; y < Chunk::ChunkTall; y++)
+			{
 				float val = (noise.GetNoise(x * scale, y * scale, z * scale) + 1.0f) / 2.0f;
 				//val *= 1.0f - pow((float)y / (float)Chunk::ChunkTall, 1);
 
 				int state = round(val * (float)Chunk::ChunkTall);
 
-				if (state > y)
+				if (state > y + 1) {
+					chunk->SetBlock(x, y, z, Block(DirtType));
+				} else if (state > y)
 				{
-					chunk->SetBlock(x, y, z, Block(StoneType));
+					chunk->SetBlock(x, y, z, Block(GrassType));
 				}
-			}
+			}*/
 		}
 	}
+
+	chunk->UpdateLighting();
 
 	ProceduralMesh mesh;
 
@@ -183,32 +251,32 @@ HStaticMesh* CreateChunk()
 
 				if (IsAir(topBlock))
 				{
-					AddFace(mesh, block, x, y, z, TopBlockPattern, BlockFace::Top);
+					AddFace(mesh, *chunk, block, x, y, z, TopBlockPattern, BlockFace::Top);
 				}
 
 				if (IsAir(bottomBlock))
 				{
-					AddFace(mesh, block, x, y, z, BottomBlockPattern, BlockFace::Bottom);
+					AddFace(mesh, *chunk, block, x, y, z, BottomBlockPattern, BlockFace::Bottom);
 				}
 
 				if (IsAir(leftBlock))
 				{
-					AddFace(mesh, block, x, y, z, LeftBlockPattern, BlockFace::Left);
+					AddFace(mesh, *chunk, block, x, y, z, LeftBlockPattern, BlockFace::Left);
 				}
 
 				if (IsAir(rightBlock))
 				{
-					AddFace(mesh, block, x, y, z, RightBlockPattern, BlockFace::Right);
+					AddFace(mesh, *chunk, block, x, y, z, RightBlockPattern, BlockFace::Right);
 				}
 
 				if (IsAir(frontBlock))
 				{
-					AddFace(mesh, block, x, y, z, FrontBlockPattern, BlockFace::Front);
+					AddFace(mesh, *chunk, block, x, y, z, FrontBlockPattern, BlockFace::Front);
 				}
 
 				if (IsAir(backBlock))
 				{
-					AddFace(mesh, block, x, y, z, BackBlockPattern, BlockFace::Back);
+					AddFace(mesh, *chunk, block, x, y, z, BackBlockPattern, BlockFace::Back);
 				}
 			}
 		}
@@ -230,8 +298,8 @@ void WorldGeneratorActor::BeginPlay()
 	FStaticMaterial staticMaterial = {  };
 	staticMaterial.Material = Engine->GetAssetManager()->GetMaterial("Assets/Materials/World.mat");
 
-	staticMaterial.Material->SetTexture("_GrassTex", Engine->GetAssetManager()->GetTexture("Assets/Textures/Terrain/Stony ground.png"));
-	staticMaterial.Material->SetSampler("DefaultSampler", Engine->GetGraphics()->CreateSampler("Asdds"));
+	staticMaterial.Material->SetTexture("_TerrainTexture", Engine->GetAssetManager()->GetTexture("Assets/Textures/terrain.png"));
+	//staticMaterial.Material->SetSampler("_PixelSampler", Engine->GetGraphics()->CreateSampler("_PixelSampler", WrapMode::WRAP_MODE_BORDER, WrapMode::WRAP_MODE_BORDER, WrapMode::WRAP_MODE_BORDER, false, false, true));
 
 	meshComponent->StaticMesh->StaticMaterials.push_back(staticMaterial);
 
