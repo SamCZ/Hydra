@@ -43,13 +43,13 @@ void Chunk::PropagateLight(int ox, int oy, int oz, int x, int y, int z, uint8_t 
 
 	float distance = distanceSquared(ox, oy, oz, x, y, z);
 
-	float lightTravelDistance = 10;
+	float lightTravelDistance = 5;
 
 	if (distance >= lightTravelDistance) {
 		distance = lightTravelDistance;
 	}
 
-	float distanceVal = 1.0f / (distance);
+	float distanceVal = 1.0f - (distance / lightTravelDistance);
 
 	if (distanceVal < 0.15f) {
 		distanceVal = 0.0f;
@@ -85,6 +85,24 @@ void Chunk::UpdateLighting()
 			{
 				Block& block = GetBlock(x, y, z);
 
+				if (!IsAir(block)) {
+					continue;
+				}
+
+				block.LightUpdated = false;
+				block.LightLevel = 0;
+			}
+		}
+	}
+
+	for (int x = 0; x < Chunk::ChunkWide; x++)
+	{
+		for (int z = 0; z < Chunk::ChunkDepth; z++)
+		{
+			for (int y = 0; y < Chunk::ChunkTall; y++)
+			{
+				Block& block = GetBlock(x, y, z);
+
 				if (IsAir(block)) {
 					continue;
 				}
@@ -96,7 +114,6 @@ void Chunk::UpdateLighting()
 					PropagateLight(x, y, z, x - 1, y, z, block.LightLevel);
 					PropagateLight(x, y, z, x, y, z + 1, block.LightLevel);
 					PropagateLight(x, y, z, x, y, z - 1, block.LightLevel);
-					return;
 				}
 			}
 		}
