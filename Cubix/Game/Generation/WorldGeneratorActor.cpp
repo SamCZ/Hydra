@@ -147,6 +147,9 @@ HStaticMesh* CreateChunk()
 	GrassType->Texture[(int)BlockFace::Front].x = 3;
 	GrassType->Texture[(int)BlockFace::Back].x = 3;
 
+	BlockType* LightType = new BlockType();
+	LightType->Texture[0].y = 4;
+
 	FastNoise noise;
 	noise.SetNoiseType(FastNoise::PerlinFractal);
 
@@ -176,14 +179,16 @@ HStaticMesh* CreateChunk()
 
 			if (x == 5 && z == 5)
 			{
-				chunk->GetBlock(x, maxY, z).LightLevel = 255;
+				chunk->SetBlock(x, maxY + 1, z, Block(LightType));
+				chunk->GetBlock(x, maxY + 1, z).LightLevel = 255;
 
 				chunk->SetBlock(x, maxY + 3, z, Block(GrassType));
 			}
 
-			if (x == 0 && z == 5)
+			if (x == 16 && z == 16)
 			{
-				chunk->GetBlock(x, maxY, z).LightLevel = 255;
+				chunk->SetBlock(x, maxY + 1, z, Block(LightType));
+				chunk->GetBlock(x, maxY + 1, z).LightLevel = 255;
 			}
 
 			/*for (int y = 0; y < Chunk::ChunkTall; y++)

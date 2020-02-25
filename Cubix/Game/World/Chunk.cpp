@@ -44,7 +44,7 @@ void Chunk::PropagateLight(int ox, int oy, int oz, int x, int y, int z, uint8_t 
 
 	float distance = distanceSquared(ox, oy, oz, x, y, z);
 
-	float lightTravelDistance = 5;
+	float lightTravelDistance = 10;
 
 	if (distance >= lightTravelDistance)
 	{
