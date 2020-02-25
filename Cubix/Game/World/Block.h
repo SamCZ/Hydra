@@ -21,7 +21,7 @@ struct Block
 	uint8_t Meta = 0;
 
 	uint8_t LightLevel = 0;
-	bool LightUpdated = false;
+	uint8_t LightStage = 0;
 
 public:
 	explicit constexpr Block(BlockType* type) : Type(type)

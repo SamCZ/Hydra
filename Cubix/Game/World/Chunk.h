@@ -15,12 +15,12 @@ public:
 	~Chunk();
 
 	void UpdateLighting();
-	
+
 	bool IsInside(int x, int y, int z);
 
 	Block& GetBlock(int x, int y, int z);
 	void SetBlock(int x, int y, int z, const Block& block);
 
 private:
-	void PropagateLight(int ox, int oy, int oz, int x, int y, int z, uint8_t lightValue);
+	void PropagateLight(int ox, int oy, int oz, int x, int y, int z, uint8_t lightValue, uint8_t lightStage);
 };

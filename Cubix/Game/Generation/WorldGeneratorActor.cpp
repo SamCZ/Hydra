@@ -73,30 +73,32 @@ void AddFace(ProceduralMesh& mesh, Chunk& chunk, Block& block, float x, float y,
 {
 	Block* faceBlock = nullptr;
 
-	switch (face) {
-	case BlockFace::Top:
+	switch (face)
+	{
+		case BlockFace::Top:
 		faceBlock = &chunk.GetBlock((int)x, (int)y + 1, (int)z);
 		break;
-	case BlockFace::Bottom:
+		case BlockFace::Bottom:
 		faceBlock = &chunk.GetBlock((int)x, (int)y - 1, (int)z);
 		break;
-	case BlockFace::Left:
+		case BlockFace::Left:
 		faceBlock = &chunk.GetBlock((int)x - 1, (int)y, (int)z);
 		break;
-	case BlockFace::Right:
+		case BlockFace::Right:
 		faceBlock = &chunk.GetBlock((int)x + 1, (int)y, (int)z);
 		break;
-	case BlockFace::Front:
+		case BlockFace::Front:
 		faceBlock = &chunk.GetBlock((int)x, (int)y, (int)z - 1);
 		break;
-	case BlockFace::Back:
+		case BlockFace::Back:
 		faceBlock = &chunk.GetBlock((int)x, (int)y, (int)z + 1);
 		break;
 	}
 
 	uint8_t lightLevel = 0;
 
-	if (faceBlock != nullptr) {
+	if (faceBlock != nullptr)
+	{
 		lightLevel = faceBlock->LightLevel;
 	}
 
@@ -158,21 +160,30 @@ HStaticMesh* CreateChunk()
 
 			float dirtVal = (noise.GetNoise(x * 10.0f, z * 10.0f) + 1.0f) / 2.0f;
 
-			for (int y = 0; y < maxY; y++) {
-				if ((maxY - y) < round((1.0 - dirtVal) * 5.0f)) {
+			for (int y = 0; y < maxY; y++)
+			{
+				if ((maxY - y) < round((1.0 - dirtVal) * 5.0f))
+				{
 					chunk->SetBlock(x, y, z, Block(DirtType));
 				}
-				else {
+				else
+				{
 					chunk->SetBlock(x, y, z, Block(StoneType));
 				}
 			}
 
 			chunk->SetBlock(x, maxY, z, Block(GrassType));
 
-			if (x == 5 && z == 5) {
+			if (x == 5 && z == 5)
+			{
 				chunk->GetBlock(x, maxY, z).LightLevel = 255;
 
 				chunk->SetBlock(x, maxY + 3, z, Block(GrassType));
+			}
+
+			if (x == 0 && z == 5)
+			{
+				chunk->GetBlock(x, maxY, z).LightLevel = 255;
 			}
 
 			/*for (int y = 0; y < Chunk::ChunkTall; y++)
