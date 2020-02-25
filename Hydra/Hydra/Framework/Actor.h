@@ -18,7 +18,7 @@ class HYDRA_API AActor : public HObject
 	HCLASS_GENERATED_BODY()
 public:
 	EngineContext* Engine;
-	FWorld* World;
+	FWorld* EWorld;
 
 	uint8 IsIndestructible : 1;
 	uint8 IsActive : 1;

@@ -5,6 +5,7 @@
 struct PS_Input
 {
 	float4 position   : SV_Position;
+	float3 positionWS : WSPOSITION0;
 	float3 positionLS : WSPOSITION1;
 	float3 normal : NORMAL;
 	float2 uv : TEXCOORD0;
@@ -22,6 +23,7 @@ PS_Input MainVS(in VS_Input input, uint id : SV_VertexID)
 {
 	PS_Input OUT;
 
+	OUT.positionWS = mul(_ModelMatrix, float4(input.position.xyz, 1.0));
 	OUT.position = mul(mul(mul(_ProjectionMatrix, _ViewMatrix), _ModelMatrix), float4(input.position.xyz, 1.0));
 
 	OUT.positionLS = input.position.xyz;
@@ -42,6 +44,11 @@ SamplerState _PixelSamplera
 	MagFilter = NEAREST;
 };
 
+cbuffer Camera
+{
+	float3 _CameraWorldPos;
+};
+
 float4 MainPS(PS_Input IN) : SV_Target
 {
 	float d = dot(float3(0.5, 1, 0.5), IN.normal);
@@ -53,8 +60,14 @@ float4 MainPS(PS_Input IN) : SV_Target
 
 	float lightLevel = IN.color.x / 256.0;
 	lightLevel = clamp(lightLevel, 0.25, 1.0);
-	
+
 	d *= lightLevel;
 
-	return float4(d * color.r, d * color.g, d * color.b, 1.0);
+	float4 finalColor = float4(d * color.r, d * color.g, d * color.b, 1.0);
+
+	float dist = 5.0 / distance(_CameraWorldPos, IN.positionWS);
+
+	finalColor.rgb += finalColor.rgb * dist;
+
+	return finalColor;
 }

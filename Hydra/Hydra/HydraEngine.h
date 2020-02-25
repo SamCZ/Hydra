@@ -11,7 +11,7 @@ class HYDRA_API HydraEngine
 {
 protected:
 	EngineContext* Context;
-	FWorld* World;
+	FWorld* EWorld;
 
 public:
 	~HydraEngine();

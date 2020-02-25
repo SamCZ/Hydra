@@ -22,7 +22,7 @@ public:
 	uint8 IsActive : 1;
 	uint8 IsEditorOnly : 1;
 
-	FWorld* World;
+	FWorld* EWorld;
 	EngineContext* Engine;
 	AActor* Owner;
 public:

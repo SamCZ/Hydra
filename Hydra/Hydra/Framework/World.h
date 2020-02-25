@@ -45,7 +45,7 @@ public:
 		T* actorTemplated = new T();
 		AActor* actor = static_cast<AActor*>(actorTemplated);
 		actor->Engine = _Engine;
-		actor->World = this;
+		actor->EWorld = this;
 		actor->Name = Name;
 
 		actor->InitializeComponents();
@@ -81,7 +81,7 @@ public:
 		T* actorTemplated = new T();
 		AActor* actor = static_cast<AActor*>(actorTemplated);
 		actor->Engine = _Engine;
-		actor->World = this;
+		actor->EWorld = this;
 
 		_GameMode = static_cast<HGameModeBase*>(actorTemplated);
 

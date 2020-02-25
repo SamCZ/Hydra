@@ -2,7 +2,7 @@
 #include "Hydra/Framework/World.h"
 #include "Hydra/Framework/Components/PrimitiveComponent.h"
 
-AActor::AActor() : HObject(), Engine(nullptr), World(nullptr), RootComponent(nullptr), IsIndestructible(false), IsActive(true), IsEditorOnly(false)
+AActor::AActor() : HObject(), Engine(nullptr), EWorld(nullptr), RootComponent(nullptr), IsIndestructible(false), IsActive(true), IsEditorOnly(false)
 {
 
 }
@@ -22,7 +22,7 @@ void AActor::DestroyComponent(HSceneComponent*& component)
 
 		if (RootComponent != component)
 		{
-			World->UnregisterComponent(component);
+			EWorld->UnregisterComponent(component);
 		}
 
 		List_Remove(Components, component);
@@ -60,7 +60,7 @@ void AActor::Destroy()
 {
 	if (!IsIndestructible)
 	{
-		World->DestroyActor(this);
+		EWorld->DestroyActor(this);
 	}
 }
 
@@ -173,14 +173,14 @@ Vector3 AActor::GetLeftVector() const
 
 HGameModeBase* AActor::GetGameMode()
 {
-	return World->GetGameMode();
+	return EWorld->GetGameMode();
 }
 
 void AActor::InitilizeComponent(HSceneComponent* component)
 {
-	component->World = World;
+	component->EWorld = EWorld;
 	component->Engine = Engine;
 	component->Owner = this;
 
-	World->RegisterComponent(component);
+	EWorld->RegisterComponent(component);
 }

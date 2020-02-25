@@ -15,10 +15,10 @@ IndustryEmpire::IndustryEmpire()
 
 void IndustryEmpire::SceneInit()
 {
-	World->SpawnActor<FirstPersonCharacter>("Player", Vector3(0, 0, 0), Vector3());
+	EWorld->SpawnActor<FirstPersonCharacter>("Player", Vector3(0, 0, 0), Vector3());
 
-	World->SpawnActor<ACubeActor>("Cube", Vector3(), Vector3(), Vector3(0.01, 0.01, 0.01));
-	//World->SpawnActor<ACubeActor>("Cube2", Vector3(0, 0, 1.5f), Vector3());
+	EWorld->SpawnActor<ACubeActor>("Cube", Vector3(), Vector3(), Vector3(0.01, 0.01, 0.01));
+	//EWorld->SpawnActor<ACubeActor>("Cube2", Vector3(0, 0, 1.5f), Vector3());
 
-	World->OverrideGameMode<HGameModeBase>();
+	EWorld->OverrideGameMode<HGameModeBase>();
 }

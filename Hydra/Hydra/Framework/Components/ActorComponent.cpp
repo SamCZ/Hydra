@@ -1,6 +1,6 @@
 #include "ActorComponent.h"
 
-HActorComponent::HActorComponent() : HObject(), RenderTransformDirty(true), IsActive(false), IsEditorOnly(false), World(nullptr), Owner(nullptr)
+HActorComponent::HActorComponent() : HObject(), RenderTransformDirty(true), IsActive(false), IsEditorOnly(false), EWorld(nullptr), Owner(nullptr)
 {
 
 }

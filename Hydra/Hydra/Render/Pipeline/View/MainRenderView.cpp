@@ -314,6 +314,8 @@ void MainRenderView::UpdateMaterialGlobalVariables(MaterialInterface* materialIn
 	materialInterface->SetMatrix4("_ViewMatrix", viewMatrix);
 
 	materialInterface->SetMatrix4("_ModelMatrix", modelMatrix);
+
+	materialInterface->SetVector3("_CameraWorldPos", camera->Location);
 }
 
 void MainRenderView::UpdateComponent(HSceneComponent* component, float Delta)

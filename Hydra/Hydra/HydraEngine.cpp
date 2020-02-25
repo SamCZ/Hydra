@@ -49,14 +49,14 @@ void HydraEngine::Start()
 	deviceManager->AddVisualController(new MainRenderView(Context, this));
 	deviceManager->AddVisualController(new UIRenderView(Context, this));
 
-	World = new FWorld(Context);
+	EWorld = new FWorld(Context);
 
 	deviceManager->InitContext();*/
 
 
 	SharedPtr<Application> app = MakeShared<WinApplication>();
 
-	World = new FWorld(Context);
+	EWorld = new FWorld(Context);
 
 	GEngine->GetContext()->ScreenSize = Vector2(1280, 720);
 
@@ -88,10 +88,10 @@ void HydraEngine::Start()
 
 void HydraEngine::OnDestroy()
 {
-	if (World)
+	if (EWorld)
 	{
-		delete World;
-		World = nullptr;
+		delete EWorld;
+		EWorld = nullptr;
 	}
 }
 
@@ -132,7 +132,7 @@ void HydraEngine::InitializeAssetManager(AssetManager* assetManager)
 
 FWorld* HydraEngine::GetWorld() const
 {
-	return World;
+	return EWorld;
 }
 
 EngineContext* HydraEngine::GetContext() const
