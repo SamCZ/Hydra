@@ -6,8 +6,8 @@ class Chunk
 {
 public:
 	static constexpr int ChunkTall = 64;
-	static constexpr int ChunkWide = 32;
-	static constexpr int ChunkDepth = 32;
+	static constexpr int ChunkWide = 16;
+	static constexpr int ChunkDepth = 16;
 private:
 	Block* m_Blocks;
 public:

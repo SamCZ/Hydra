@@ -335,6 +335,8 @@ void WorldGeneratorActor::BeginDestroy()
 			HStaticMeshComponent* meshComponent = component->SafeCast<HStaticMeshComponent>();
 
 			Engine->GetAssetManager()->OnMeshDeleted.Invoke(meshComponent->StaticMesh);
+
+			delete meshComponent->StaticMesh;
 		}
 	}
 }

@@ -219,6 +219,7 @@ void MainRenderView::OnMeshLoaded(HStaticMesh* mesh)
 
 		NVRHI::BufferDesc vertexBufferDesc;
 		vertexBufferDesc.isVertexBuffer = true;
+		vertexBufferDesc.isCPUWritable = true;
 		vertexBufferDesc.byteSize = uint32_t(lodResouces.VertexData.size() * sizeof(VertexBufferEntry));
 		bufferData->VertexBuffer = Context->GetRenderInterface()->createBuffer(vertexBufferDesc, &lodResouces.VertexData[0]);
 
