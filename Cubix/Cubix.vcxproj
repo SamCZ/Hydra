@@ -129,6 +129,7 @@
     <ClCompile Include="Game\CubixGameMode.cpp" />
     <ClCompile Include="Game\FirstPersonCharacter.cpp" />
     <ClCompile Include="Game\Generation\WorldGeneratorActor.cpp" />
+    <ClCompile Include="Game\World\BlockType.cpp" />
     <ClCompile Include="Game\World\Chunk.cpp" />
     <ClCompile Include="Game\World\Render\ChunkRenderCache.cpp" />
     <ClCompile Include="Game\World\World.cpp" />

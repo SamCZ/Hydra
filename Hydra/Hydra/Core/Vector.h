@@ -4,6 +4,9 @@
 #include <limits>
 #include "glm/basic.hpp"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/hash.hpp"
+
 typedef glm::vec4 Vector4;
 typedef glm::vec3 Vector3;
 typedef glm::vec2 Vector2;

@@ -4,10 +4,11 @@
 
 #include "Hydra/Core/Container.h"
 #include "Hydra/Core/Vector.h"
+#include "BlockType.h"
 
 #include <algorithm>
 
-Chunk::Chunk()
+Chunk::Chunk(int x, int z) : m_X(x), m_Z(z)
 {
 	m_Blocks = new Block[ChunkTall * ChunkWide * ChunkDepth];
 	std::fill(m_Blocks, m_Blocks + (ChunkTall * ChunkWide * ChunkDepth), AirBlock);
@@ -166,4 +167,16 @@ void Chunk::SetBlock(int x, int y, int z, const Block & block)
 	}
 
 	m_Blocks[index] = block;
+}
+
+void Chunk::SetBlock(int x, int y, int z, uint32_t blockId)
+{
+	if (BlockType::Types.find(blockId) != BlockType::Types.end())
+	{
+		SetBlock(x, y, z, Block(BlockType::Types[blockId]));
+	}
+	else
+	{
+		SetBlock(x, y, z, Block(AirBlock));
+	}
 }

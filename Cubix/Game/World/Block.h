@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include "Hydra/Core/Vector.h"
 
 class BlockType;
 
@@ -13,6 +14,27 @@ enum class BlockFace : uint8_t
 	Front = 4,
 	Back = 5
 };
+
+static Vector3i GetFaceVector(const BlockFace& face)
+{
+	switch (face)
+	{
+		case BlockFace::Top:
+		return Vector3i(0, 1, 0);
+		case BlockFace::Bottom:
+		return Vector3i(0, -1, 0);
+		case BlockFace::Left:
+		return Vector3i(-1, 0, 0);
+		case BlockFace::Right:
+		return Vector3i(1, 0, 0);
+		case BlockFace::Front:
+		return Vector3i(0, 0, -1);
+		case BlockFace::Back:
+		return Vector3i(0, 0, 1);
+		default:
+		return Vector3i(0, 0, 0);
+	}
+}
 
 struct Block
 {

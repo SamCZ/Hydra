@@ -142,10 +142,10 @@ float4 MainPS(PS_Input IN) : SV_Target
 	finalColor.rgb = sky/* *(1.0 - 0.8 * ray_world.y)*/;
 
 	// Stars in night
-	float starsValue = snoise(ray_world * 100.0);
+	float starsValue = snoise(ray_world * 150.0);
 	if (starsValue > 0.8)
 	{
-		float3 backStars = starsValue.xxx;
+		float3 backStars = starsValue.xxx * snoise(ray_world * 10.0);
 		backStars = lerp(backStars, 0.0.xxx, 1.0 - nightdot);
 		finalColor.rgb += backStars;
 	}
