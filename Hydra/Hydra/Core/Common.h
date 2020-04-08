@@ -95,3 +95,13 @@ typedef uintptr_t uintptr;
 #endif
 
 #define LOG(message) std::cout << message << std::endl;
+
+#define INDEX_NONE -1
+
+template<typename T>
+static void Memzero(T& type)
+{
+	memset(&type, 0, sizeof(T));
+}
+
+#define ALPHA_BLENDED_WINDOWS 1

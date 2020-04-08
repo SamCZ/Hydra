@@ -23,6 +23,7 @@ private:
 	float _TextBounds[4];
 public:
 	UIRenderer();
+	virtual ~UIRenderer();
 
 	void Create();
 	void Destroy();
@@ -50,6 +51,8 @@ public:
 	void RB_RenderGradient(float x, float y, float width, float height, const ColorRGBA& leftColor, const ColorRGBA& rightColor, float radius = 0.0f);
 	void RB_RenderBlock(const String& title, float x, float y, float width, float height, bool isSelected);
 	void RB_RenderSpline(float x1, float y1, float x2, float y2, int count, float strokeWidth = 1.5f);
+
+	void DrawCheck(float x, float y, const ColorRGBA& color, float thickness);
 
 protected:
 	virtual NVGcontext* CreateContext(int flags) = 0;

@@ -22,6 +22,24 @@ struct HYDRA_API ColorRGBA
 	{
 		return Vector3(r, g, b);
 	}
+
+	inline ColorRGBA operator+=(const ColorRGBA& other)
+	{
+		r += other.r;
+		g += other.g;
+		b += other.b;
+		a += other.a;
+		return *this;
+	}
+
+	inline ColorRGBA operator+(const ColorRGBA& other)
+	{
+		r += other.r;
+		g += other.g;
+		b += other.b;
+		a += other.a;
+		return *this;
+	}
 };
 
 HYDRA_API ColorRGBA MakeRGB(int r, int g, int b);

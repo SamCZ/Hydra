@@ -1,7 +1,7 @@
 #include "UIRendererDX11.h"
 
-#define NANOVG_D3D11_IMPLEMENTATION
-#include "NanoVG/nanovg_d3d11.h"
+//#define NANOVG_D3D11_IMPLEMENTATION
+//#include "NanoVG/nanovg_d3d11.h"
 
 #include "GFSDK_NVRHI_D3D11.h"
 #include "Hydra/Render/Pipeline/Windows/DX11/DeviceManager11.h"
@@ -35,17 +35,18 @@ void UIRendererDX11::SetRenderTarget(NVRHI::TextureHandle tex)
 
 NVGcontext* UIRendererDX11::CreateContext(int flags)
 {
-	return nvgCreateD3D11(_Device, flags | NVG_ANTIALIAS | NVG_STENCIL_STROKES);
+	//return nvgCreateD3D11(_Device, flags | NVG_ANTIALIAS | NVG_STENCIL_STROKES);
+	return nullptr;
 }
 
 void UIRendererDX11::DestroyContext(NVGcontext* context)
 {
-	nvgDeleteD3D11(context);
+	//nvgDeleteD3D11(context);
 }
 
 int UIRendererDX11::GetHandleForTexture(NVGcontext* context, NVRHI::TextureHandle handle)
 {
-	NVGparams* params = nvgInternalParams(context);
+	/*NVGparams* params = nvgInternalParams(context);
 
 	struct D3DNVGcontext* D3D = (struct D3DNVGcontext*)(params->userPtr);
 
@@ -70,5 +71,6 @@ int UIRendererDX11::GetHandleForTexture(NVGcontext* context, NVRHI::TextureHandl
 
 	_TexMap[handle] = newId;
 
-	return newId;
+	return newId;*/
+	return 0;
 }

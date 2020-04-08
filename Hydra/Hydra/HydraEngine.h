@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Hydra/Engine.h"
 #include "Hydra/Core/Library.h"
 #include "Hydra/Render/Pipeline/DeviceCreationParameters.h"
 #include "Hydra/EngineContext.h"

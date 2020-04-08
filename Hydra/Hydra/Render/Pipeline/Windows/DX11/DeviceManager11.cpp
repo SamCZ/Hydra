@@ -16,6 +16,8 @@
 #include <sstream>
 #include <algorithm>
 
+#include <ShObjIdl.h> //Taskbar
+
 #include "Hydra/Core/Timing.h"
 #include "VisualController11.h"
 
@@ -448,12 +450,12 @@ LRESULT DeviceManagerDX11::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 {
 	switch (uMsg)
 	{
-	case WM_DESTROY:
-	case WM_CLOSE:
+		case WM_DESTROY:
+		case WM_CLOSE:
 		PostQuitMessage(0);
 		return 0;
 
-	case WM_SYSKEYDOWN:
+		case WM_SYSKEYDOWN:
 		if (wParam == VK_F4)
 		{
 			PostQuitMessage(0);
@@ -461,18 +463,18 @@ LRESULT DeviceManagerDX11::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 		}
 		break;
 
-	case WM_ENTERSIZEMOVE:
+		case WM_ENTERSIZEMOVE:
 		m_InSizingModalLoop = true;
 		m_NewWindowSize.cx = m_SwapChainDesc.BufferDesc.Width;
 		m_NewWindowSize.cy = m_SwapChainDesc.BufferDesc.Height;
 		break;
 
-	case WM_EXITSIZEMOVE:
+		case WM_EXITSIZEMOVE:
 		m_InSizingModalLoop = false;
 		ResizeSwapChain();
 		break;
 
-	case WM_SIZE:
+		case WM_SIZE:
 		// Ignore the WM_SIZE event if there is no device,
 		// or if the window has been minimized (size == 0),
 		// or if it has been restored to the previous size (this part is tested inside ResizeSwapChain)
@@ -555,6 +557,42 @@ void DeviceManagerDX11::Render()
 	m_ImmediateContext->OMSetRenderTargets(0, NULL, NULL);
 }
 
+namespace ETaskbarProgressState
+{
+	enum Type
+	{
+		//Stops displaying progress and returns the button to its normal state.
+		NoProgress = 0x0,
+
+		//The progress indicator does not grow in size, but cycles repeatedly along the 
+		//length of the task bar button. This indicates activity without specifying what 
+		//proportion of the progress is complete. Progress is taking place, but there is 
+		//no prediction as to how long the operation will take.
+		Indeterminate = 0x1,
+
+		//The progress indicator grows in size from left to right in proportion to the 
+		//estimated amount of the operation completed. This is a determinate progress 
+		//indicator; a prediction is being made as to the duration of the operation.
+		Normal = 0x2,
+
+		//The progress indicator turns red to show that an error has occurred in one of 
+		//the windows that is broadcasting progress. This is a determinate state. If the 
+		//progress indicator is in the indeterminate state, it switches to a red determinate 
+		//display of a generic percentage not indicative of actual progress.
+		Error = 0x4,
+
+		//The progress indicator turns yellow to show that progress is currently stopped in 
+		//one of the windows but can be resumed by the user. No error condition exists and 
+		//nothing is preventing the progress from continuing. This is a determinate state. 
+		//If the progress indicator is in the indeterminate state, it switches to a yellow 
+		//determinate display of a generic percentage not indicative of actual progress.
+		Paused = 0x8,
+	};
+}
+
+
+static ITaskbarList3* TaskBarList3;
+
 void DeviceManagerDX11::Animate(double fElapsedTimeSeconds)
 {
 	// front-to-back, but the order shouldn't matter
@@ -569,6 +607,18 @@ void DeviceManagerDX11::Animate(double fElapsedTimeSeconds)
 
 void DeviceManagerDX11::DeviceCreated()
 {
+	::CoInitialize(NULL);
+
+	if (CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_INPROC_SERVER, IID_ITaskbarList3, (void **)&TaskBarList3) != S_OK)
+	{
+		TaskBarList3 = nullptr;
+	}
+
+	TaskBarList3->SetProgressState(m_hWnd, (TBPFLAG)ETaskbarProgressState::NoProgress);
+
+
+	//TaskBarList3->SetProgressValue(m_hWnd, (ULONGLONG)25, (ULONGLONG)100);
+
 	// creating resources front-to-back
 	for (auto it = m_vControllers.begin(); it != m_vControllers.end(); it++)
 	{
@@ -578,6 +628,11 @@ void DeviceManagerDX11::DeviceCreated()
 
 void DeviceManagerDX11::DeviceDestroyed()
 {
+	if (TaskBarList3)
+	{
+		TaskBarList3->Release();
+	}
+
 	// releasing resources back-to-front
 	for (auto it = m_vControllers.rbegin(); it != m_vControllers.rend(); it++)
 	{

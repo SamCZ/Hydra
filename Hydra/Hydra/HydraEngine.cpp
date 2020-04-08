@@ -11,6 +11,16 @@
 
 #include "GeneratedHeaders/HydraClassDatabase.generated.h"
 
+// Test includes
+#include "Hydra/Platform/Windows/App/WinApplication.h"
+#include "Hydra/Platform/Windows/App/WinWindow.h"
+
+#include "Hydra/App/WindowManager.h"
+
+#include "Hydra/App/UI/Widgets/GameViewWidget.h"
+
+HydraEngine* GEngine = nullptr;
+
 HydraEngine::~HydraEngine()
 {
 	delete Context;
@@ -25,7 +35,9 @@ void HydraEngine::Start()
 {
 	Context = new EngineContext();
 
-	DeviceManager* deviceManager = DeviceManager::CreateDeviceManagerForPlatform();
+	GEngine = this;
+
+	/*DeviceManager* deviceManager = DeviceManager::CreateDeviceManagerForPlatform();
 	Context->SetDeviceManager(deviceManager);
 
 	deviceManager->OnPrepareDeviceContext += EVENT_ARGS(HydraEngine, PrepareForEngineStart, DeviceCreationParameters&);
@@ -36,13 +48,44 @@ void HydraEngine::Start()
 
 	World = new FWorld(Context);
 
-	deviceManager->InitContext();
+	deviceManager->InitContext();*/
+
+
+	SharedPtr<Application> app = MakeShared<WinApplication>();
+	app->Initialize();
+
+	app->InitializeEngineContext(Context);
+
+	World = new FWorld(Context);
+
+	{
+		SharedPtr<UIWindow> window = UINew(UIWindow)
+			.Type(EWindowType::Normal)
+			.CreateTitleBar(true)
+			.FocusWhenFirstShown(true)
+			.HasCloseButton(true)
+			.InitialOpacity(1.0f)
+			.SupportsMaximize(true)
+			.SupportsMinimize(true)
+			.Title("Hydra")
+			.UseOSWindowBorder(true)
+			[
+				UINew(GameViewWidget)
+			];
+
+		WindowManager::Get().AddWindow(window, true);
+	}
+
+	app->Run();
 }
 
 void HydraEngine::OnDestroy()
 {
-	delete World;
-	World = nullptr;
+	if (World)
+	{
+		delete World;
+		World = nullptr;
+	}
 }
 
 void HydraEngine::PrepareForEngineStart(DeviceCreationParameters& params)

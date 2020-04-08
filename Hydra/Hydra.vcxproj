@@ -126,7 +126,7 @@
       <PreprocessorDefinitions>USE_D3D11=1;NVRHI_WITH_WRL;NOMINMAX;WIN32;_DEBUG;DEBUG;PROFILE;_WINDOWS;_CRT_SECURE_NO_WARNINGS;HYDRA_EXPORTS;WITH_EDITOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;assimp-vc140-mt.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;assimp-vc140-mt.lib;FreeImage.lib;Dwmapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)nvapi-public\amd64;$(ProjectDir)assimp\lib;$(ProjectDir)FreeImage\Win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
@@ -180,6 +180,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Hydra\App\Application.h" />
+    <ClInclude Include="Hydra\App\Render\PaintRenderQueueLayered.h" />
+    <ClInclude Include="Hydra\App\Render\WindowRender.h" />
+    <ClInclude Include="Hydra\App\Taskbar.h" />
+    <ClInclude Include="Hydra\App\UI\UI.h" />
+    <ClInclude Include="Hydra\App\UI\UIWindow.h" />
+    <ClInclude Include="Hydra\App\UI\Widgets\GameViewWidget.h" />
+    <ClInclude Include="Hydra\App\WindowManager.h" />
+    <ClInclude Include="Hydra\App\Window.h" />
     <ClInclude Include="Hydra\Assets\Asset.h" />
     <ClInclude Include="Hydra\Assets\IAssetImporter.h" />
     <ClInclude Include="Hydra\Assets\AssetManager.h" />
@@ -207,6 +216,7 @@
     <ClInclude Include="Hydra\Core\YamlConvertors.h" />
     <ClInclude Include="Hydra\Editor\ShaderGraph\GraphLibrary.h" />
     <ClInclude Include="Hydra\Editor\ShaderGraph\GraphNode.h" />
+    <ClInclude Include="Hydra\App\UI\UIWidget.h" />
     <ClInclude Include="Hydra\Engine.h" />
     <ClInclude Include="Hydra\EngineContext.h" />
     <ClInclude Include="Hydra\Framework\Character.h" />
@@ -223,6 +233,7 @@
     <ClInclude Include="Hydra\Framework\Pawn.h" />
     <ClInclude Include="Hydra\Framework\StaticMesh.h" />
     <ClInclude Include="Hydra\Framework\StaticMeshResources.h" />
+    <ClInclude Include="Hydra\Framework\Optional.h" />
     <ClInclude Include="Hydra\Framework\World.h" />
     <ClInclude Include="Hydra\HydraEngine.h" />
     <ClInclude Include="Hydra\Input\GenericPlatformInput.h" />
@@ -237,6 +248,11 @@
     <ClInclude Include="Hydra\Physics\Collisons\CollisionResults.h" />
     <ClInclude Include="Hydra\Physics\Collisons\Ray.h" />
     <ClInclude Include="Hydra\Physics\Collisons\Testing.h" />
+    <ClInclude Include="Hydra\Platform\Windows\App\D3DUIRenderer.h" />
+    <ClInclude Include="Hydra\Platform\Windows\App\D3DWindowRender.h" />
+    <ClInclude Include="Hydra\Platform\Windows\App\WinApplication.h" />
+    <ClInclude Include="Hydra\Platform\Windows\App\WinTaskbar.h" />
+    <ClInclude Include="Hydra\Platform\Windows\App\WinWindow.h" />
     <ClInclude Include="Hydra\Render\DrawState.h" />
     <ClInclude Include="Hydra\Render\Graphics.h" />
     <ClInclude Include="Hydra\Render\InputLayoutDefinition.h" />
@@ -263,6 +279,7 @@
     <ClInclude Include="Hydra\Render\ShaderVertexInputDefinition.h" />
     <ClInclude Include="Hydra\Render\Technique.h" />
     <ClInclude Include="Hydra\Render\TextureLayoutDef.h" />
+    <ClInclude Include="Hydra\Render\UI\ImHud.h" />
     <ClInclude Include="Hydra\Render\UI\UIRenderer.h" />
     <ClInclude Include="Hydra\Render\VarType.h" />
     <ClInclude Include="Hydra\Render\VertexBuffer.h" />
@@ -316,6 +333,14 @@
     <ClInclude Include="Yaml\src\token.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Hydra\App\Application.cpp" />
+    <ClCompile Include="Hydra\App\Render\PaintRenderQueueLayered.cpp" />
+    <ClCompile Include="Hydra\App\Taskbar.cpp" />
+    <ClCompile Include="Hydra\App\UI\UIWidget.cpp" />
+    <ClCompile Include="Hydra\App\UI\UIWindow.cpp" />
+    <ClCompile Include="Hydra\App\UI\Widgets\GameViewWidget.cpp" />
+    <ClCompile Include="Hydra\App\WindowManager.cpp" />
+    <ClCompile Include="Hydra\App\Window.cpp" />
     <ClCompile Include="Hydra\Assets\AssetManager.cpp" />
     <ClCompile Include="Hydra\Assets\Importers\ModelImporter.cpp" />
     <ClCompile Include="Hydra\Assets\Importers\TextureImporter.cpp" />
@@ -340,6 +365,11 @@
     <ClCompile Include="Hydra\Physics\Collisons\BIH\BIHTree.cpp" />
     <ClCompile Include="Hydra\Physics\Collisons\CollisionResults.cpp" />
     <ClCompile Include="Hydra\Physics\Collisons\Ray.cpp" />
+    <ClCompile Include="Hydra\Platform\Windows\App\D3DUIRenderer.cpp" />
+    <ClCompile Include="Hydra\Platform\Windows\App\D3DWindowRender.cpp" />
+    <ClCompile Include="Hydra\Platform\Windows\App\WinApplication.cpp" />
+    <ClCompile Include="Hydra\Platform\Windows\App\WinTaskbar.cpp" />
+    <ClCompile Include="Hydra\Platform\Windows\App\WinWindow.cpp" />
     <ClCompile Include="Hydra\Render\DrawState.cpp" />
     <ClCompile Include="Hydra\Render\Pipeline\DeviceManager.cpp" />
     <ClCompile Include="Hydra\Render\Pipeline\View\MainRenderView.cpp" />
@@ -349,6 +379,7 @@
     <ClCompile Include="Hydra\Render\Shader.cpp" />
     <ClCompile Include="Hydra\Render\Technique.cpp" />
     <ClCompile Include="Hydra\Render\TextureLayoutDef.cpp" />
+    <ClCompile Include="Hydra\Render\UI\ImHud.cpp" />
     <ClCompile Include="Hydra\Render\UI\UIRenderer.cpp" />
     <ClCompile Include="Hydra\Render\Material.cpp" />
     <ClCompile Include="Hydra\Render\RenderManager.cpp" />
