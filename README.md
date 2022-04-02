@@ -1,6 +1,6 @@
 ﻿# Hydra
  
- This engine is **DISCONTINUED** nad its pretty old.
+ This engine is **DISCONTINUED** and its pretty old.
 
 My old C++ game engine based on DirectX11.
 
